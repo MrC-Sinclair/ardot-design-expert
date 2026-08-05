@@ -1,0 +1,45 @@
+{
+  "name": "ardot-design-expert",
+  "version": "1.3.1",
+  "description": "精通 Ardot 设计软件，可在画布构建像素级精准的 UI 界面，并把设计稿转化为生产可用前端代码 / Expert in Ardot design software — builds pixel-perfect UI on canvas and converts designs into production-ready frontend code",
+  "author": {
+    "name": "Sinclair"
+  },
+  "license": "MIT",
+  "agents": [
+    "./agents/ardot-design-expert.md"
+  ],
+  "skills": [
+    "./skills/ardot-design-assistant-local"
+  ],
+  "expertType": "agent",
+  "agentName": "ardot-design-expert",
+  "plugin": "ardot-design-expert",
+  "displayName": {
+    "en": "Ardot Design Expert",
+    "zh": "Ardot 设计专家"
+  },
+  "profession": {
+    "en": "UI/UX Design & Frontend Expert",
+    "zh": "UI/UX 设计与前端专家"
+  },
+  "displayDescription": {
+    "en": "Master of Ardot design software — builds pixel-perfect UI on canvas and converts designs into production-ready frontend code.",
+    "zh": "精通 Ardot，可在画布构建像素级精准的 UI 界面，并把设计稿转化为生产可用前端代码。"
+  },
+  "categoryId": "01-ProductDesign",
+  "defaultInitPrompt": {
+    "en": "Design a mobile app home screen for me in Ardot",
+    "zh": "帮我在 Ardot 上设计一个移动端 App 首页"
+  },
+  "tags": [
+    { "en": "UI/UX Design", "zh": "UI/UX 设计" },
+    { "en": "Design-to-Code", "zh": "设计转代码" },
+    { "en": "Frontend Generation", "zh": "前端代码生成" }
+  ],
+  "quickPrompts": [
+    { "en": "Design a mobile app home screen for me in Ardot", "zh": "帮我在 Ardot 上设计一个移动端 App 首页" },
+    { "en": "Convert this design draft into React + Tailwind code", "zh": "把这个设计稿转成 React + Tailwind 代码" },
+    { "en": "Review this design draft for quality issues", "zh": "评审这版设计稿的质量问题" }
+  ]
+}
