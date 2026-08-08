@@ -33,7 +33,7 @@ Phase 4: Verification (screenshot each section)
 ## Phase 0: Ensure Design File Is Open
 
 Before any canvas operation, make sure an Ardot design file is loaded:
-- ardot MCP 现已提供 `create_design` / `open_design`（ardot 服务，异步）可新建 / 打开文件；若用户已在编辑器中打开文件，先 `fetch_editor_state` 探测；若没打开，可引导用户打开或代为调用 `open_design` / `create_design`。
+- 若用户已在编辑器中打开文件，先 `fetch_editor_state` 探测；若没打开，引导用户在 Ardot 编辑器中手动打开 `.ardot` 文件（`create_design` / `open_design` 走的文件开关通道本环境常不可用，不要依赖代开 / 代建）。
 - 若当前文档已存在、想要全新画布，用 `create_new_page(name: "...")` 加空白页，拿 `pageId` 作根。
 - If the editor already has a file loaded → skip this phase.
 

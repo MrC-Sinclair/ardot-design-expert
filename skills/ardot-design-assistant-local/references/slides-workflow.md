@@ -21,7 +21,7 @@ Before doing anything on the canvas, load all required knowledge and context. Th
 ### 0.0 Ensure Design File Is Open
 
 Before any canvas operation, make sure an Ardot design file is loaded:
-- ardot MCP 现已提供 `create_design` / `open_design`（ardot 服务，异步）可新建 / 打开文件；若用户已在编辑器中打开文件，先 `fetch_editor_state` 探测；若没打开，可引导用户打开或代为调用 `open_design` / `create_design`。
+- 若用户已在编辑器中打开文件，先 `fetch_editor_state` 探测；若没打开，引导用户在 Ardot 编辑器中手动打开 `.ardot` 文件（`create_design` / `open_design` 走的文件开关通道本环境常不可用，不要依赖代开 / 代建）。
 - 若当前文档已存在、想要全新画布，用 `create_new_page(name: "...")` 加空白页，拿 `pageId` 作根。
 - If the editor already has a file loaded (determined in Step 0.2) → skip this step.
 
@@ -50,7 +50,7 @@ These rules are enforced throughout Phase 1-4. References to "Rule 1/2/3" in lat
 
 ### 0.4 Fetch Visual Style Inspiration
 
-1. Read `style-guide-tags.md` to get English keyword ideas, or call `fetch_style_guide_tags` (now available in ardot-design) to fetch the official tag catalog
+1. Read `style-guide-tags.md` to get English keyword ideas (the `fetch_style_guide_tags` tool does not exist in the current Ardot version — use this local file instead)
 2. Select 5–10 English keywords that match the deck's topic and tone
 3. Call `search_style_guide({ styleKeywords, colorKeywords, typographyKeywords, layoutKeywords, sceneKeywords, compositionKeywords })` (all English), pick candidates by `summary`+`bestFor`
 4. Call `build_style_guide({ style, color, typography, layout, scene, composition })` to materialize a concrete palette, typography, spacing tokens, and decorative patterns

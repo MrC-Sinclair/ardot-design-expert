@@ -3,7 +3,7 @@
 端到端流程示例。设计规则、属性约束、排障、完整 **Tiered Validation / 收敛阈值** 见 `design-rules.md`。
 
 > **四件事先记住**：
-> 1. **文件开关**：ardot MCP 现已提供 `create_design` / `open_design`（ardot 服务，异步——调用后轮询 `fetch_file_info` 确认就绪）可新建 / 打开文件。若用户已在编辑器中打开文件，先用 `fetch_editor_state()` 探测当前选区；若没打开，可引导用户打开，或由你用 `open_design` / `create_design` 代开。（要在当前文档内加一块全新画布，用 `create_new_page(name: "...")`，拿返回的 `pageId` 作根。）
+> 1. **文件开关**：`create_design` / `open_design` 走 `mcp__ardot__*` 文件开关通道，该通道本环境常 `NO_ADAPTER`、工具未注册，**不要依赖它代开 / 代建文件**。若用户已在编辑器中打开文件，先用 `fetch_editor_state()` 探测当前选区；若没打开，引导用户在 Ardot 编辑器中手动打开 `.ardot` 文件。（要在当前文档内加一块全新画布，用 `create_new_page(name: "...")`，拿返回的 `pageId` 作根。）
 > 2. **并行读取无依赖的读调用** —— 一步里有多个无相互依赖的调用，一条消息并行发出；不要串行。示例用 `(parallel, single message)` 标注。
 > 3. **校验 tier** —— `[T1]`/`[T3]`/`[T4]`/`[T5]` 标注每批 `batch_edit` 适用的校验 tier。不要每批都跑全量 screenshot+layout。每区块最多 2 次修复迭代。
 > 4. **capture 必填参数** —— `capture_screenshot` 必须带 `screenShotDir`（绝对目录）+ `nodeIds`；`capture_layout` 必须带 `parentId`。
@@ -31,7 +31,7 @@ Step 3: fetch_guidelines(topic: "landing-page")   (parallel, single message)
 Steps 4–6 (parallel, single message):
   search_style_guide({ styleKeywords: "...", colorKeywords: "...", typographyKeywords: "...", layoutKeywords: "...", sceneKeywords: "...", compositionKeywords: "..." })  ← 英文关键词
   locate_available_space(width: 1440, height: 3000)
-  # `fetch_style_guide_tags`（ardot-design）现已提供，可直接获取官方英文关键词；也可继续用 Step 2 的 style-guide-tags.md
+  # 直接读本地 `references/style-guide-tags.md` 选官方英文关键词（`fetch_style_guide_tags` 当前版本不存在，不要调用）
 
 Step 4b: build_style_guide({ style, color, typography, layout, scene, composition })
          → 读返回的 design tokens（background_primary, radius_card …）并套用

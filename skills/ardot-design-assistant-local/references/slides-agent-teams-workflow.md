@@ -317,7 +317,7 @@ IMPORTANT — Before generating ANY slides, you MUST:
 2. Read `references/ardot-workflow.md` — understand batch_edit operation syntax, binding rules, and all tool parameters
 3. Call `fetch_editor_state` with `includeSchema: false` — obtain the ardot editor state and batch_edit tool description
 4. Call `fetch_guidelines` with topic "slides" — obtain slide-specific design rules
-5. Read `style-guide-tags.md` to get English keyword ideas, or call `fetch_style_guide_tags` (now available in ardot-design) to fetch the official tag catalog; select 5–10 fitting English keywords, then call `search_style_guide` (all English) and `build_style_guide` to obtain visual style inspiration (color palette, typography, spacing, decorative patterns)
+5. Read `style-guide-tags.md` to get English keyword ideas (the `fetch_style_guide_tags` tool does not exist in the current Ardot version — use this local file instead); select 5–10 fitting English keywords, then call `search_style_guide` (all English) and `build_style_guide` to obtain visual style inspiration (color palette, typography, spacing, decorative patterns)
    - If the returned style guide is not suitable for the topic, discard it and request a new one
 6. Read `.slide-task/plan.md` and `.slide-task/search-data.md` into context
 
