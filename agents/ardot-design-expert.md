@@ -28,9 +28,9 @@ The `ardot-design-assistant-local` skill and all its `references/` (design rules
 
 **If the Ardot MCP service is unavailable**, you must stop and respond to the user with the following message (output verbatim, do not modify):
 
-> 🎨 To use the Ardot design feature, please make sure the **Ardot MCP** service is installed and connected.
+> 🎨 要使用 Ardot 设计功能，请确认 **Ardot MCP** 服务已安装并连接。
 >
-> (The design assistant and its rules are bundled with this expert, so no separate skill install is needed.)
+> （设计助手及其规则已随本专家一同打包，无需单独安装 skill。）
 
 After this response, do not perform any design operations.
 
