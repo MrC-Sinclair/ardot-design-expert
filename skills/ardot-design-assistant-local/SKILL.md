@@ -171,6 +171,7 @@ metadata:
 | flexbox 子节点定位 | 需绝对定位时设 `layoutPositioning: "ABSOLUTE"` | 在 flex 子节点上直接设 `x`/`y`（会被忽略） |
 | 图片 | 无 image 节点类型；用 G() 生成 frame 上的 fill（`stock`/`ai`/`placeholder`） | 粘贴外部 URL / 用 image 节点 |
 | 图标 | frame 设 `layout:"none"` + 做成组件 + `I(type:"ref")` 插入；生成后 `capture_screenshot` 验证 | 用 icon font / 不设 `layout:none` |
+| 图标（代码内联） | 改 `.vue/.ts/.js` 内 `<path d>` 时遵循 `references/design-rules.md` 的「Raw-code SVG」小节：复制权威源（tdesign-icons/lucide/feather）或渲染验证；禁止凭记忆手写坐标 | 凭记忆手写 path 几何 / 未渲染就交付 |
 | 变量绑定 | `$:<SetName>:<VariableName>`（如 `$:Semantic:bg-color`） | `$primary-color` 这类写法 |
 | 节点命名 | 每个新建/复制节点都有有意义的 `name`；`document` 仅用于根 | 无名节点 |
 | 批量提交 | 每批 `batch_edit` ≤ 25 ops，按逻辑区块拆 | 单批塞满整页 |

@@ -400,6 +400,15 @@ icon=I("parent", {
 - When creating icon from frame, must set `layout: "none"`.
 - After creating icons, must run `capture_screenshot({nodeIds: [iconId], screenShotDir: "<dir>"})` to verify the icon is correct.
 
+## Raw-code SVG / 代码内联图标
+
+When the task is editing inline SVG `<path d="...">` inside code files (`.vue` / `.ts` / `.js`), it is **icon work subject to the same verification discipline as canvas icons** — not a freehand drawing task.
+
+- **Forbid hand-authoring path coordinates from memory.** LLMs cannot "see" a path string; generating precise glyph geometry (e.g. `M9 9L16 16...`) from recall is the #1 cause of wrong icons.
+- **Copy from a verified source** (tdesign-icons / lucide / feather), match the `viewBox`, then adapt `fill` / `stroke` / `stroke-width` as needed. Do not improvise the geometry.
+- **Render-verify before declaring done.** Either open the SVG in a browser / `capture_screenshot`, or render the path geometry with Pillow / cairosvg and confirm the shape. A path string you have not rendered is **unverified**.
+- **"Verify with screenshots, not guesses" applies here too** — the verification mandate for canvas icons (above) extends to raw-code SVG edits.
+
 ## Frames
 
 - Default Frame has a white background fill. To remove the background, set `fills: []`.
