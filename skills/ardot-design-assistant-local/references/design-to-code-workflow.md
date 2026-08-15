@@ -360,6 +360,16 @@ Start a local preview server and open it in the IDE's built-in browser, then com
 - [ ] Window scaling maintains correct proportions
 - [ ] No unexpected horizontal scrollbar / container not overflowing the viewport (focus on full-width containers with padding, e.g. scroll-view, content wrapper)
 
+### Step 4.3: 双证据终验（声明值 × 渲染像素）
+
+设计转码的终验**不能只靠「起服务 + 肉眼看截图」**。必须交叉比对三段证据：
+
+1. **设计节点声明值**：`batch_read(..., {resolveVariables: true})` 取关键节点的解析填充 / 字号 / 间距（变量已展开的计算值）。
+2. **设计侧实际像素**：`capture_screenshot` 导出设计节点 + Pillow 程序化取色（无视觉能力时的唯一可靠 B 路）。
+3. **生成代码的实际渲染**：本地服务截图，或读取运行态 computed style / 像素。
+
+三段一致才判「还原达标」。**变量绑定失效、字体回退、父级裁剪 / 透明度叠加**等只在像素层暴露的问题，若仅比对节点声明值会漏判——必须靠像素采样捕获（方法论见 `code-review-workflow.md` 模式 B）。无视觉能力时，改用 Python + Pillow 对设计与代码两侧分别取色比对，**禁止仅凭「节点数据相同」下「已还原」结论**；单源取证须标「低置信度」。
+
 ---
 
 ## Lessons Learned & Best Practices

@@ -3,9 +3,10 @@ name: ardot-design-assistant-local
 description: |
   Ardot 画布设计助手：在 .ardot 文件上创建 / 修改 UI 界面、页面、布局、组件，以及把设计稿转成前端代码。
   当用户说 "设计一个页面 / 屏幕"、"画一个落地页"、"做个 dashboard"、"修改这个设计"、"生成风格指南 / 设计系统"、
-  "设计稿转代码 / 出码"、"生成幻灯片 / 演示文稿"、"一比一还原 / 复刻设计稿"、"导出为网页"，或英文
+  "设计稿转代码 / 出码"、"生成幻灯片 / 演示文稿"、"一比一还原 / 复刻设计稿"、"导出为网页"、
+  "对齐真实代码 / 校对设计稿 / 和代码对比一下"，或英文
   "design a page / screen", "create a landing page", "build a UI", "modify the design",
-  "design to code", "generate slides", "pixel-perfect reproduction" 时使用。
+  "design to code", "generate slides", "pixel-perfect reproduction", "align design to code", "design to code align" 时使用。
   Triggers 覆盖中英文口语化表达。所有画布操作必须经过 ardot MCP 工具。
 metadata:
   version: "1.3.1"
@@ -30,6 +31,7 @@ metadata:
 - 生成 / 提取视觉风格指南、搭建设计系统 / 设计变量
 - 生成幻灯片 / 演示文稿
 - 审查已有前端代码对设计稿的还原度（像素级走查 / 找出偏差）
+- 把设计稿校对 / 对齐到已实现的真实代码（反向：以代码为真理、改设计稿贴合代码；触发词：和代码对比一下 / 对齐真实代码 / 校对设计稿 / design to code align）
 - 对已完成的设计稿**本身**做质量走查（视觉 / 交互 / 内容）——触发词：评审 / 走查 / 体检 / design review / critique
 
 ## Reference Files
@@ -46,7 +48,7 @@ metadata:
 | `references/slides-agent-teams-workflow.md` | 幻灯片 — Agent Teams 协作流程（质量更高但更慢、更费 token；作为选项提供给用户） |
 | `references/extract-style-guide-from-web.md` | 网站 → 设计指南提取 |
 | `references/design-to-code-workflow.md` | 设计 → 前端代码（HTML/CSS/JS、Application、幻灯片转场、响应式） |
-| `references/code-review-workflow.md` | 代码 → 设计稿 逆向评审（还原度评分卡 + P0–P2 修复清单 + 可访问性 / 语义化 / 状态机） |
+| `references/code-review-workflow.md` | 设计↔代码 **双向**校对：**模式 A** 代码→设计稿 还原度评审 + **模式 B** 设计稿→代码 反向对齐（双证据硬门：节点声明值 × 像素采样，无视觉一律 Pillow 兜底） |
 | `references/design-review-workflow.md` | 设计稿**本身**质量走查（视觉 / 交互 / 内容三维度 + WCAG 对比度 + 状态机 + 结构化输出），与 `code-review-workflow.md` 方向相反 |
 | `references/guidelines-landing-page.md` 等 | 各类型设计的**补充**手册（**权威规则以 `fetch_guidelines(topic=...)` 为准**） |
 
@@ -121,6 +123,8 @@ metadata:
 
 ### Step 8: 校验
 
+> **双证据硬门（全局纪律）**：任何「已对齐 / 已还原 / 无偏差」结论，必须同时基于 ① **节点声明值**（`batch_read`，务必开启 `resolveVariables` 拿变量解析后的计算值）+ ② **实际渲染像素**。**无视觉能力时，像素一律用 `capture_screenshot` 导出 + Pillow 程序化取色兜底**（方法论与可复用脚本见 `references/code-review-workflow.md` 模式 B 的 B 路）。**禁止仅凭节点数据下结论**——变量未生效、字体回退、父级 `clipsContent` / 透明度叠加等，会让「声明正常、渲染错误」（实证见像素探针实验）。截图肉眼与像素采样结论冲突时以像素为准；仅采到单源须显式标「低置信度、视觉未验证」。
+
 遵循 `references/design-rules.md` 的 **Post-Generation Validation Pattern**，使用分层校验（T1 结构 → `capture_layout`；T3 视觉 → `capture_screenshot`；T4 区块完成 → 两者各一次；T5 整页 → 一次 `capture_screenshot`）。
 
 **关键参数约束（ardot MCP 实测）**：
@@ -137,7 +141,7 @@ metadata:
 - 幻灯片 / 演示文稿 → 问用户用哪种：Agent Teams 协作（`references/slides-agent-teams-workflow.md`，质量高但慢 / 费 token）或标准流程（`references/slides-workflow.md`，快）。强制设计规则在 `references/guidelines-slides.md`。
 - 网站 → 风格指南提取 → `references/extract-style-guide-from-web.md`
 - 设计 → 前端代码 → `references/design-to-code-workflow.md`
-- 代码 → 设计稿 还原度评审 → `references/code-review-workflow.md`
+- 代码 → 设计稿 还原度评审 / 设计稿 → 代码 反向对齐（校对设计稿贴合真实代码）→ `references/code-review-workflow.md`（模式 A / 模式 B）
 - 设计稿质量评审（与「代码 → 设计稿」方向相反：审**设计稿本身**）→ `references/design-review-workflow.md`
 
 ## When NOT to use

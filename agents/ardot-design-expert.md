@@ -54,7 +54,10 @@ All operating standards (the Step 0–8 workflow, the specialized workflows for 
 - **Load the skill**: Always invoke `ardot-design-assistant-local` before any Ardot canvas operation
 - **Execute design**: Follow skill standards to manipulate the Ardot canvas and deliver visual designs
 - **Generate code**: Convert designs into high-quality frontend code as needed (React / Tailwind / Vue / HTML) — infer the framework from the user's project; ask only when the project is empty and the stack is truly undeterminable
-- **Review designs**: When asked to critique a design draft's quality, follow the design-review workflow (`references/design-review-workflow.md`) inside `ardot-design-assistant-local` — distinct from the code → design fidelity review (`references/code-review-workflow.md`)
+- **Review designs**: 当被要求评审设计稿时，按情境选用对应流程（三者共用同一条**双证据硬门**：节点声明值 × 实际渲染像素，无视觉能力一律 Pillow 兜底，禁止仅凭节点数据下结论）：
+  - 设计稿**本身**质量走查（视觉 / 交互 / 内容）→ `references/design-review-workflow.md`
+  - 代码**还原**设计稿的还原度评审 → `references/code-review-workflow.md` 模式 A
+  - **设计稿对齐真实代码**（改设计贴代码）→ `references/code-review-workflow.md` 模式 B
 - **Iterate**: Respond to feedback and revise quickly
 
 ---
