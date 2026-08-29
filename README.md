@@ -3,6 +3,8 @@
 > ⚠️ **非官方声明**：本专家由社区个人维护（作者 Sinclair），与 Ardot 官方无任何隶属或合作关系。Ardot 是其各自权利人的商标。
 
 > 这是一个自包含的 Ardot 设计专家，技能与规则已随包完整内置，唯一外部依赖是 Ardot MCP 服务需保持连接。
+> **可跨 IDE 使用**：WorkBuddy（含设计创意模式）以及 Cursor / Claude Code / Cline 等任意支持 MCP 的 IDE。
+> MCP 通道名在运行时探测，不写死。
 
 ## 人设
 
@@ -60,24 +62,29 @@ ardot-design-expert/
 ├── .codebuddy-plugin/plugin.json   # 专家元数据（含展示字段）
 ├── agents/ardot-design-expert.md   # 人设 / 提示词（Jax）
 ├── skills/ardot-design-assistant-local/  # 设计助理技能（自包含）
-│   ├── SKILL.md
-│   └── references/                 # 设计规则 / 风格指南 / 各类型工作流
-│       ├── design-rules.md         # 唯一事实来源：编辑原则 / 坐标 / flexbox / 属性 schema / 排障
-│       ├── style-guide.md          # 视觉风格指南
-│       ├── style-guide-tags.md     # search_style_guide 英文关键词清单（离线备份；fetch_style_guide_tags 当前版本不存在，请勿调用，直接读本地文件选关键词）
-│       ├── ardot-workflow.md       # 通用生成/修改/换肤工作流
-│       ├── slides-workflow.md      # 幻灯片工作流
-│       ├── slides-agent-teams-workflow.md  # Agent Teams 并行幻灯片工作流
-│       ├── design-to-code-workflow.md      # 设计稿转代码工作流
-│       ├── design-review-workflow.md       # 设计稿本身质量走查（视觉/交互/内容三维度）
-│       ├── code-review-workflow.md         # 代码→设计稿 还原度评审（5 维评分卡 + P0–P2 清单）
+│   ├── SKILL.md                    # 主入口：可移植性说明 / 通道探测 / 三处纠正 / 工作流 / 硬规则
+│   └── references/                 # 24 份，全部随包提供
+│       ├── 【核心规则】
+│       ├── design-rules.md         # 唯一事实来源：编辑原则 / 坐标 / flexbox / 组件 / 变量 / 共享样式 / 属性 schema / 排障 / ⛔ Forbidden Patterns
+│       ├── style-guide.md          # 视觉风格哲学（反 AI 套路 / 方差等级 / Bento 网格 / 创意弹药库）
+│       ├── style-guide-tags.md     # search_style_guide 英文关键词清单（fetch_style_guide_tags 工具不存在，读本地文件）
+│       ├── effects-guide.md        # 🆕 复合效果配方：玻璃拟态 / 霓虹 / 金属 / 渐变描边 / 虹彩 / 新拟态
+│       ├── ardot-schema.md         # 🆕 节点属性 schema（Node→Mixin 组合 / 属性默认值）
+│       ├── 【专项能力】
+│       ├── component-instance.md   # 🆕 组件 / 实例 / 变体（属性定义、实例覆盖、隐藏可选子节点）
+│       ├── design-variables.md     # 🆕 变量绑定解绑 / apply_variables / variableModes 切换
+│       ├── shared-styles.md        # 🆕 共享样式 textStyleId / fillStyleId
+│       ├── batch-edit-tool-usage.md      # 🆕 batch_edit 完整操作手册（18K）
+│       ├── apply-variables-tool-usage.md # 🆕 apply_variables 使用手册
+│       ├── 【工作流】
+│       ├── ardot-workflow.md       # 端到端示例（新建 / 修改 / 换肤 / 变量 / 表单）
+│       ├── slides-workflow.md      # 幻灯片标准 5 阶段流程
+│       ├── slides-agent-teams-workflow.md  # 幻灯片 Agent Teams 协作（须用户显式点选）
+│       ├── design-to-code-workflow.md      # 设计→代码（Phase 0 平台澄清 … Phase 4 双证据终验）
 │       ├── extract-style-guide-from-web.md # 从网页提取风格指南
-│       ├── guidelines-landing-page.md      # 落地页设计指南
-│       ├── guidelines-web-app.md           # Web App 设计指南
-│       ├── guidelines-mobile-app.md        # 移动端设计指南
-│       ├── guidelines-slides.md            # 幻灯片设计指南
-│       ├── guidelines-tailwind.md          # Tailwind 出码指南
-│       ├── guidelines-table.md             # 表格设计指南
-│       └── guidelines-code.md              # 设计转代码指南
+│       ├── design-review-workflow.md       # 设计稿本身质量走查（视觉 / 交互 / 内容）
+│       ├── code-review-workflow.md         # 设计↔代码双向校对（模式 A / 模式 B）
+│       ├── 【类型指南】
+│       └── guidelines-{landing-page,web-app,mobile-app,table,slides,code,tailwind}.md
 └── README.md
 ```

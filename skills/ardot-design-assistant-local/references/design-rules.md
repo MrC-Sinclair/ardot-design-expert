@@ -640,3 +640,43 @@ locked: false, layoutPositioning: "AUTO", blendMode: "NORMAL",
 strokeAlign: "INSIDE", strokeWeight: 1,
 layoutSizingHorizontal: "FIXED", layoutSizingVertical: "FIXED"
 ```
+
+---
+
+## 附录：补充自 ardot-design-core（内置独有章节）
+
+## Working with Shared Styles
+
+Bind reusable shared styles (text / fill / stroke / effect) to nodes by GUID. The `<StyleId>` is the style nodeId.
+完整内容见 `references/shared-styles.md`。
+
+| Location | template |
+|---|---|
+| Local | `xxxStyleId:<StyleId>` |
+| Team library | `xxxStyleId:<StyleId>, libraryKey:<LibraryKey>` |
+
+```javascript
+title=I(parent, {type: "text", content: "Heading", textStyleId: "<StyleId>"})
+card=I(parent, {type: "frame", fillStyleId: "<StyleId>"})
+U("nodeId", {strokeStyleId: "<StyleId>", effectStyleId: "<StyleId>"})
+libraryCard=I(parent, {type: "frame", fillStyleId: "366:20", libraryKey: "693499159567438"})
+```
+
+**规则**
+- ID 格式：传裸 style nodeId，**不要**加 `$`（`$` 前缀是变量引用专用的）。
+- `textStyleId` 只用于 TEXT 节点；`fillStyleId` / `strokeStyleId` 用于任何有 fills/strokes 的节点；`effectStyleId` 用于任何有 effects 的节点。
+- 样式绑定在渲染时**覆盖**内联的 `fontName` / `fills` / `strokes` / `effects`——绑定样式后不要再写对应的字面量属性，除非是给单个实例做覆盖。
+- 团队库样式：`styleId` + `libraryKey` 一起传，取自 `search_styles`。
+- 解绑：把字段设为 `null`（`U("nodeId", {textStyleId: null, fillStyleId: null})`）。
+
+## ⛔ Forbidden Patterns
+
+- **Emoji or Unicode pictographs anywhere in a `type: "text"` node's `content`** — not as an icon, not as a section-title prefix, not as a label decoration, not as a button suffix. Forbidden in every form, including:
+  - Standalone: `content: "☀️"`, `content: "✓"`, `content: "▶"`
+  - Prefix: `content: "🏝️ 热门"`, `content: "📸 旅行瞬间"`, `content: "👋 好友动态"`
+  - Suffix: `content: "编辑 ✏️"`, `content: "查看更多 →"`
+  - Mixed: any `content` string containing characters in U+2300–U+27BF, U+2600–U+27BF, or U+1F300–U+1FAFF.
+
+  Visual symbols MUST be a separate `type: "frame"` + `svg` node; text nodes hold pure text only. If you want an icon next to a label, build a horizontal flex frame with `[svg-frame, text-node]` — never merge them into one string.
+- `type: "icon_font"` / `iconFontName` / `iconFontFamily` — deprecated, no engine support.
+- Single-letter text in a circle as a fake icon.

@@ -14,12 +14,14 @@ CORE RULES:
 
 CRITICAL – TYPOGRAPHY:
 - Max 2 font families.
-- Body >=24px (prefer 28–32).
-- Titles >=40px.
-- Key numbers can be larger.
+- Body >=28px (prefer 28–36).
+- Titles >=56px (prefer 56–80).
+- Section headings >=40px (prefer 40–56).
+- Captions/labels >=22px. NEVER below 22px — if content doesn't fit, split or remove.
+- Key data numbers 56–96px (prefer dramatically large, up to 120+ for single hero KPI).
 - Use weight, not many sizes.
 - Avoid ALL CAPS except labels.
-- Line-height ~1.1–1.2.
+- Line-height: prefer `lineHeight: "AUTO"`. If explicit, use PIXEL values (e.g. Body 28 → `lineHeight: 36`, Title 56 → `lineHeight: 64`). NEVER use unit-less multipliers like `1.2` / `1.4` / `1.6`.
 - High contrast always.
 
 LAYOUT & SPACING:
@@ -68,31 +70,31 @@ LAYOUT CONTRACTS (use IDs, follow strictly):
 L01:
 Intent=Cover
 Grid=CenterStack
-Content=Title(48-64,Bold); Subtitle(28-32); Meta(20-24)
+Content=Title(64-96,Bold); Subtitle(32-40); Meta(24-28)
 Rules=CenterXY; PlentySpace; NoExtras
 
 L02:
 Intent=BoldCover
 Grid=LeftBlock
-Content=Title(56-72,Max2Lines); Subtitle(28); Meta
+Content=Title(72-96,Max2Lines); Subtitle(32-40); Meta(24-28)
 Rules=LeftMargin~120; Logo=BR; NoClutter
 
 L03:
 Intent=SectionBreak
 Grid=Center
-Content=Label(24,Muted); Title(48-56)
+Content=Label(28,Muted); Title(56-72)
 Rules=OnlyThese2; MaxWhitespace
 
 L04:
 Intent=KeyStatement
 Grid=Center
-Content=Statement(36-48,Max2Lines); OptionalAttribution(24)
+Content=Statement(48-64,Max2Lines); OptionalAttribution(28)
 Rules=Only1Message
 
 L05:
 Intent=Concept+Visual
 Grid=2col(50/50)
-Left=Title(36-40)+Body(24-28,Max4Lines)
+Left=Title(40-48)+Body(28-32,Max4Lines)
 Right=Image
 Rules=Gap>=40; CenterY; NoOverflow
 
@@ -100,73 +102,73 @@ L06:
 Intent=Concept+Visual
 Grid=2col(50/50)
 Left=Image
-Right=Title(36-40)+Body(24-28,Max4Lines)
+Right=Title(40-48)+Body(28-32,Max4Lines)
 Rules=Mirror(L05)
 
 L07:
 Intent=3Pillars
 Grid=3col
-Each=Visual+Label(28)+Desc(20,Max2Lines)
+Each=Visual+Label(32)+Desc(24,Max2Lines)
 Rules=EqualWidth; SameTopY; Gap=30-50
 
 L08:
 Intent=Compare2
 Grid=2col
-Each=Heading(28-32)+Points(24,2-4)
+Each=Heading(32-40)+Points(28,2-4)
 Rules=BalancedContent; Gap=40-60
 
 L09:
 Intent=SingleKPI
 Grid=CenterStack
-Content=Label(24,Muted); Number(120-200); Context(24-28)
+Content=Label(28,Muted); Number(120-200); Context(28-32)
 Rules=NumberIsHero; NothingCompetes
 
 L10:
 Intent=TwoKPIs
 Grid=2col
-Each=Number(80-120)+Label(24)
+Each=Number(96-120)+Label(28)
 Rules=EqualWeight
 
 L11:
 Intent=ThreeKPIs
 Grid=3col
-Each=Number(64-80)+Label(24)
+Each=Number(72-96)+Label(28)
 Rules=SameBaseline
 
 L12:
 Intent=Quote
 Grid=CenterStack
-Content=Quote(28-36,Max3Lines); Attribution(20-24)
+Content=Quote(36-48,Max3Lines); Attribution(24-28)
 Rules=GenerousPadding
 
 L13:
 Intent=Process
 Grid=Row(3-5Steps)
-Each=Icon/Number+Label(28)+Desc(20,1Line)
+Each=Icon/Number+Label(32)+Desc(24,1Line)
 Rules=EqualSpacing; SameBaseline
 
 L14:
 Intent=HeroImage
 Grid=FullBleed
-Content=OverlayTitle(40-56)+Subtitle(24-28)
+Content=OverlayTitle(56-72)+Subtitle(28-32)
 Rules=DarkOverlay; HighContrast
 
 L15:
 Intent=Matrix4
 Grid=2x2
-Each=Heading(28)+Desc(20)
+Each=Heading(32)+Desc(24)
 Rules=EqualCards; Gap=20-30
 
 L16:
 Intent=IconRow
 Grid=Row(3-4)
-Each=Icon+Label(28)+Desc(20,1-2Lines)
+Each=Icon+Label(32)+Desc(24,1-2Lines)
 Rules=SameIconSize; AlignBaselines
 
 L17:
 Intent=Data+Insight
 Grid=Stack
-Content=Chart(~60%H); Insight(24-28,Bold)
+Content=Chart(~60%H); Insight(28-32,Bold)
 Rules=1Highlight; NoChartJunk
 
 L18:
@@ -179,13 +181,13 @@ Rules=ClearContrast
 L19:
 Intent=List
 Grid=Stack
-Content=Title(40); Items(28,3-5)
+Content=Title(48); Items(28-32,3-5)
 Rules=NoWrap; LargeGaps
 
 L20:
 Intent=Closing
 Grid=CenterStack
-Content=Headline(48-56); Sub(24-28); Contact(24)
+Content=Headline(56-72); Sub(28-32); Contact(24-28)
 Rules=Clean; FinalImpression
 
 OPENING & CLOSING SLIDES:

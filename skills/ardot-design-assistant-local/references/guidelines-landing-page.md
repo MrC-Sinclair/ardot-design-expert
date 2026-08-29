@@ -261,3 +261,21 @@ If the landing page would benefit from product screenshots (common for SaaS, app
 
 IMPORTANT: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
 Remember: Models are capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+
+---
+
+## 附录：补充自 ardot-ui-design（内置独有章节）
+
+### Section Selection (Mandatory Hard Stop)
+
+**Before starting any landing page task, you MUST ask the user which sections to include using the `AskUserQuestion` tool as a multi-select question.** This prevents over-long tasks and keeps the design focused on what the user actually needs.
+
+Rules:
+- The question MUST be multi-select, listing sections 3–9 above as options (Header, Hero, and Footer are always included by default and should NOT appear as selectable options — they are implicit).
+- Provide an explicit "Skip / use default" option in the choices.
+- If the user does not select anything, picks "Skip / use default", or otherwise declines to choose, fall back to the **default minimal structure**: Header + Hero Section + Footer.
+- Never silently include all 10 sections. A full 10-section page is only allowed when the user explicitly selects every option.
+- Respect the user's selection literally: include only Header, Hero, Footer, and the user-picked sections, in the order listed above.
+- This selection step runs **before** the Brief & Requirements Check below and is independent of it. Do not skip it even if the user wrote a detailed brief.
+
+This structure is a baseline. Within the user-selected sections, you may still adapt content, ordering nuances, and emphasis based on the specific product and conversion goals — but you may not add sections the user did not pick.

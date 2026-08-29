@@ -16,6 +16,78 @@ Phase 4: Verification & Preview (local server preview and comparison)
 
 ---
 
+## Phase 0: Platform Clarification (MANDATORY)
+
+Before calling any Ardot tool, you **MUST** confirm the output strategy with the user through a structured multiple-choice dialog. Free-form questions are **forbidden** in this phase — always present concrete options.
+
+### Default Strategy (Highest Priority)
+
+**The default and ALWAYS preferred output is a single self-contained HTML file** (one `.html` file with inline `<style>` and `<script>`, external assets only for exported images/SVGs). Unless the user explicitly opts into a framework or multi-file structure, you MUST default to single-HTML output.
+
+### Mandatory Rules
+
+1. **MUST use the AskUserQuestion tool** — never output the questions as plain text.
+2. **Ask all questions in a single call**: content source / use case / visual style / page count / (...).
+3. **No default fallbacks** — unless the user explicitly says "you decide", any unanswered item blocks entry into Phase 0; do NOT silently fall back to "use Free creation if unsure".
+5. **After the AskUserQuestion call**, supplement with a plain-text note describing your assumptions/recommendation rationale (for transparency), then wait for the user's reply.
+
+### Step 0.1: Ask via Multiple-Choice Questions (MANDATORY)
+
+You MUST use the tool (or the platform's equivalent structured-options UI) to present the following questions. **Do NOT ask these as free-text questions.** Each question must list explicit options with the recommended default clearly marked.
+
+Ask the following four questions in a single batch:
+
+**Q1. Output format?** (single-select)
+- `单 HTML 文件（推荐 / 默认）` — one self-contained `.html` with inline CSS & JS
+- `多文件 Web（HTML + 独立 CSS/JS）`
+- `React 项目`
+- `Vue 项目`
+- `微信小程序`
+- `Flutter`
+- `React Native`
+- `SwiftUI`
+- `Jetpack Compose`
+- `其他（请说明）`
+
+**Q2. Target device / viewport?** (single-select)
+- `跟随设计稿原始画布（推荐 / 默认）`
+- `Desktop 1920×1080`
+- `Desktop 1440×900`
+- `iPad 1024×768`
+- `Mobile iOS (375×812)`
+- `Mobile Android (360×800)`
+
+**Q3. Canvas strategy?** (single-select)
+- `保留原始像素画布 + 等比缩放（推荐 / 默认，最像设计稿）`
+- `自适应目标设备宽度（响应式重排）`
+- `固定像素，不缩放`
+
+**Q4. Stack details** (only show when Q1 is NOT `单 HTML 文件`; otherwise skip)
+- Language: `TypeScript` / `JavaScript`
+- Styling: `Tailwind` / `CSS Modules` / `SCSS` / `原生 CSS`
+- UI library: `无` / `Ant Design` / `Material UI` / `其他`
+- Output directory: ask user to specify path
+
+### Step 0.2: Confirm and Lock Decisions
+
+After collecting answers:
+
+1. Summarize the locked decisions in **one line**, e.g.:
+   > 已确认：单 HTML 文件 · 跟随设计稿原始画布 · 保留原画布 + 等比缩放。
+2. Wait for **explicit confirmation** ("确认" / "OK" / "继续" 等) before proceeding to Phase 1.
+3. If the user replies "随便" / "你决定" / 未明确选择 — apply the **default combination**: `单 HTML 文件 + 跟随设计稿原始画布 + 保留原画布 + 等比缩放`, restate it, and still wait for confirmation.
+4. **A missing or ambiguous answer is a hard blocker** — do not proceed to Phase 1 with assumptions.
+5. If the user later changes their mind, re-run Step 0.1 for the affected questions only.
+
+### Single-HTML Output Rules (when Q1 = 单 HTML 文件)
+
+When the default single-HTML path is chosen, the generated file MUST:
+- Be a single `.html` containing `<!DOCTYPE html>`, `<head>` with inline `<style>`, and `<body>` with inline `<script>` if interactions exist.
+- Reference exported images/SVGs via relative paths (e.g. `./assets/xxx.png`); do NOT inline base64 unless the asset is < 4 KB.
+- Avoid build tools, bundlers, npm dependencies, and CDN frameworks unless the user explicitly requests them.
+- Use vanilla HTML/CSS/JS only (no React/Vue/JSX).
+- Be directly openable in a browser by double-clicking, with no server required.
+
 ## Phase 1: Design Analysis
 
 ### Step 1.1: Get Editor State
@@ -145,7 +217,20 @@ call `export_nodes` with parameters (nodeIds: [...svgNodeIds], outputDir: "<proj
 - Suitable for SVG export: corner decorations, dividers, icons, emblems, arrows, etc.
 - Not suitable for SVG export: nodes with image fills, complex lighting effects
 
-### Step 2.4: Naming Conventions
+### Step 2.4: Exported File Paths
+
+`export_nodes` generates a unique filename for each export in the form `{safeFileName}-{timestamp}.{ext}`, e.g., `2_5-20260721_123456789.svg`.
+The timestamp and final path are generated at runtime. **You MUST use the exact `nodeId → path` mapping returned by `export_nodes`; never guess, reconstruct, or hardcode a filename from the node ID.**
+When generating project-relative URLs or imports, derive them from the returned path relative to the project root and preserve the returned basename exactly:
+
+```html
+<!-- Use the exact basename returned by export_nodes -->
+<img src="assets/svg/<returned-svg-basename>" alt="">
+```
+
+---
+
+### Step 2.5: Naming Conventions
 
 Exported files automatically use `nodeId` as the filename (colons replaced with underscores), e.g., `2_5.svg`.
 It is recommended to preserve semantic names in code via comments or variable names for maintainability:

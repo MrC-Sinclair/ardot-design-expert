@@ -2,80 +2,161 @@
 
 This is the end-to-end workflow for creating presentation decks on the ardot canvas. Follow the phases in order — do NOT skip phases or reorder steps.
 
-**Mandatory design rules are defined in `references/guidelines-slides.md`** — load it in Phase 0.3 and enforce throughout all phases. Key rules referenced below as "Rule 1" (Large Typography), "Rule 2" (Rich Backgrounds), "Rule 3" (Decorative Elements & SVG Charts).
+## Execution Protocol (read first, applies to entire workflow)
+
+1. **Sequential Lock**: Phases 0→4 are strictly sequential. You MUST NOT
+   start Phase X+1 until Phase X's Postconditions are all satisfied.
+2. **State Echo**: At the start of each Phase, output a one-line status:
+   `[Phase X.Y] <name> — preconditions: PASS/FAIL`
+3. **No Silent Skips**: If you intentionally skip a step (e.g., 3.1 for
+   fresh files), explicitly state the skip reason.
+4. **No Fabrication**: Never invent values that should come from a tool
+   call (palette, file ID, slide count). If a tool call is missing, halt.
 
 ## Table of Contents
 
-- [Phase 0: Preparation](#phase-0-preparation) — read references, fetch state, guidelines, style guide
-- [Phase 1: Planning](#phase-1-planning) — slide count, outline, canvas grid
-- [Phase 2: Canvas Setup](#phase-2-canvas-setup) — locate space, create all slide frames
-- [Phase 3: Slide Generation](#phase-3-slide-generation) — per-slide generate → screenshot → layout check → fix
-- [Phase 4: Final Review](#phase-4-final-review) — holistic visual pass
+- [Phase 0: Requirement Clarification](#phase-0-requirement-clarification) — resolve sources, scenario, style, slide count, generate `slide-outline.md`
+- [Phase 1: Preparation](#phase-1-preparation) — read references, fetch state, guidelines, style guide
+- [Phase 2: Planning](#phase-2-planning) — slide count, outline, canvas grid
+- [Phase 3: Canvas Setup](#phase-3-canvas-setup) — locate space, create all slides
+- [Phase 4: Slide Generation](#phase-4-slide-generation) — per-slide generate → layout check → fix
+- [Phase 5: Final Review](#phase-5-final-review) — holistic visual pass
 
 ---
 
-## Phase 0: Preparation
+## Phase 0: Requirement Clarification (MANDATORY)
+
+**Run before any MCP call.** Resolve four inputs from the current request, prior messages, attachments, and referenced materials:
+
+- **Content source**: provided materials, web research, or free creation.
+- **Scenario**: audience, purpose, and delivery context.
+- **Style**: visual direction or references.
+- **Slide count**: explicit count or count implied by an approved outline.
+
+User-provided information is already confirmed. Do not repeat questions or reopen a clear choice.
+
+If anything material is missing or ambiguous, use **one AskUserQuestion call** containing only those gaps. If nothing is missing, skip the question and continue. Defaults are allowed only when the user delegates a choice or says they are unsure; record the assumption briefly.
+
+When clarification is required:
+
+- For an unresolved source, offer: provided materials / web research / free creation.
+- For an unresolved style, offer exactly 5 concise, topic-specific directions; preserve any style or reference already supplied.
+- For a delegated slide count, use the scenario range: pitch 10–12, internal review 6–8, keynote 15–20, training 8–15, quick share 5–7.
+- Reconfirm only a slide count outside 3–30.
+
+Do not enter Phase 1 until all four inputs are resolved and `slide-outline.md` is generated.
+
+### 0.1 Generate `slide-outline.md`
+
+Synthesize the four resolved dimensions into an outline file and **save it to the project workspace** (alongside the design file or in the conversation working directory) as `slide-outline.md`. This file is referenced in Phase 2.1 and Phase 4.1 — do **not** skip generation.
+
+The file MUST follow this structure exactly:
+
+```markdown
+# Slide Outline
+
+## Meta
+- Topic: <one-sentence topic>
+- Scenario: <resolved scenario>
+- Content Source: <provided | web research | free creation>
+- Style: <chosen style name> — <2–3 sentence palette/type/motif direction>
+- Slide Count: <N>
+- Generated At: <ISO timestamp>
+
+## Source Materials
+<If "provided": list/summarize the user-supplied materials.
+If "web research": list the planned search queries and target source types.
+If "free creation": write "N/A — generated from topic knowledge.">
+
+## Slide-by-Slide Outline
+1. **Slide 1 — <Role: Cover>** — <one-line message> | Layout hint: L?? | Image provided: yes/no | Chart: yes/no
+2. **Slide 2 — <Role: Agenda>** — <one-line message> | Layout hint: L?? | Image provided: yes/no | Chart: yes/no
+... (continue for all N slides)
+
+## Visual Rhythm Notes
+- Chart-bearing slides at positions: <e.g., 4, 6>
+- Slides are viewed on large screens, often from a distance. Small text is unreadable. Every text element must be sized generously and fill its container space rather than floating in emptiness.
+- Slides should feel visually rich and layered, not like text pasted on rectangles. Decorative elements add polish, and SVG charts communicate data far more effectively than text or numbers alone.
+```
+### Ask User Confirmation(Gated)
+
+Show the generated outline to the user and **use the AskUserQuestion tool** to ask for explicit confirmation ("approve / revise"). If the user requests changes, update the file and re-confirm. **Only after explicit approval may you advance to Phase 1.**
+
+---
+
+## Phase 1: Preparation (MANDATORY)
 
 Before doing anything on the canvas, load all required knowledge and context. This phase is non-negotiable — skipping it will produce low-quality slides that violate design rules.
 
-### 0.0 Ensure Design File Is Open
+### 1.0 Ensure Design File Is Open
 
-Before any canvas operation, make sure an Ardot design file is loaded:
-- 若用户已在编辑器中打开文件，先 `fetch_editor_state` 探测；若没打开，引导用户在 Ardot 编辑器中手动打开 `.ardot` 文件（`create_design` / `open_design` 走的文件开关通道本环境常不可用，不要依赖代开 / 代建）。
-- 若当前文档已存在、想要全新画布，用 `create_new_page(name: "...")` 加空白页，拿 `pageId` 作根。
-- If the editor already has a file loaded (determined in Step 0.2) → skip this step.
+**Follow `ardot-design-core` SKILL.md → Step 0** for the full file-open rule — including the injected
+`<ardot_file_directive action="create|open">` main path, the **at-most-one** `create_design` / `open_design`
+idempotency hard rule, the async-load wait gate (never re-issue to "confirm"), and the empty-canvas note
+(root `0:1`, skip `fetch_editor_state`). Do not re-derive create vs. open here.
 
-### 0.1 Load Reference Knowledge (read these files if not already loaded)
+**Slides-specific deviation — deferred `fetch_file_info`:** on the `create_design` branch, defer
+`fetch_file_info` until **1.4's MCP batch** (not "Step 6"). Steps 1.1/1.3 are local file reads (no MCP)
+and 1.2 is skipped for fresh files, so they cover the async load window; issue `fetch_file_info` alongside
+`search_style_guide` in 1.4. On the `open_design` branch, call `fetch_file_info` right after the file is ready (before 1.2).
 
-- `design-rules.md` (in this `references/` folder) — ardot design constraints (flexbox, text, components, property reference)
-- `references/ardot-workflow.md` — `batch_edit` operation syntax, binding rules, full tool parameters
+### 1.1 Load Reference Knowledge (read these files if not already loaded)
 
-### 0.2 Fetch Editor State
+> These two files live in the **ardot-design-core** skill (injected alongside this one). Read them from the core skill's root directory — its absolute path is provided in the same prompt that injected this skill.
 
-Call `fetch_editor_state` with `includeSchema: false` to get:
+- `references/design-rules.md` — ardot design constraints (flexbox, text, color, property reference)
+- `references/batch-edit-tool-usage.md` — `batch_edit` operation syntax, binding rules, full tool parameters
+
+### 1.2 Fetch Editor State
+
+**Skip this step for fresh `create_design` files** — empty canvas, root is `0:1`, no variables, no components yet. There is nothing to fetch.
+
+Otherwise (opened existing file / file already loaded), call `fetch_editor_state` with `includeSchema: false` to get:
 - Current page ID
 - Active selection
 - Available components in the file
 
-### 0.3 Load Slide Design Guidelines
+### 1.3 Load Slide Design Guidelines
 
 Load `references/guidelines-slides.md` — this is the **authoritative source** for all slide design rules, including:
-- **Rule 1**: Large Typography (Title ≥40px, Body ≥24px, no text below 22px)
+- **Rule 1**: Large Typography (Title ≥56px, Body ≥28px, no text below 22px)
 - **Rule 2**: Rich Backgrounds (gradients + decorative patterns, no pure white/black)
 - **Rule 3**: Decorative Elements & SVG Data Charts (≥2 decorative elements per slide)
 - 20 Layout Contracts (L01-L20) for different slide types
 - Color, imagery, and content density guidelines
 
-These rules are enforced throughout Phase 1-4. References to "Rule 1/2/3" in later phases point to this file.
+These rules are enforced throughout Phase 2-5. References to "Rule 1/2/3" in later phases point to this file.
 
-### 0.4 Fetch Visual Style Inspiration
+### 1.4 Fetch Visual Style Inspiration
 
-1. Read `style-guide-tags.md` to get English keyword ideas (the `fetch_style_guide_tags` tool does not exist in the current Ardot version — use this local file instead)
-2. Select 5–10 English keywords that match the deck's topic and tone
-3. Call `search_style_guide({ styleKeywords, colorKeywords, typographyKeywords, layoutKeywords, sceneKeywords, compositionKeywords })` (all English), pick candidates by `summary`+`bestFor`
-4. Call `build_style_guide({ style, color, typography, layout, scene, composition })` to materialize a concrete palette, typography, spacing tokens, and decorative patterns
-5. If the returned style does not fit the topic, adjust the chosen candidates and call `build_style_guide` again
+**If the user provided explicit style guidance OR `<ardot_design_style>` is present**, SKIP call `search_style_guide`/`build_style_guide`. For `<ardot_design_style>` specifically, follow the injected `[style-template]` instruction to `curl` the template md and use it as the **base** style guide; if the user also stated explicit style/visual constraints, those win on conflict and the template only fills unspecified gaps.
 
-**Output of Phase 0**: a concrete color palette, type scale, spacing tokens, and decorative motif to apply consistently across all slides.
+1. Call `search_style_guide` with keywords extracted from the deck's topic and tone (e.g. `styleKeywords: "corporate presentation modern"`). **For the `create_design` branch, issue `fetch_file_info` in the same parallel batch** (this is the deferred call from 1.0 — safe now because 1.1/1.3 ran in between).
+2. Review the returned candidates, select best fit per domain
+3. Call `build_style_guide` with your selections to get the complete design system
+4. If the returned style does not fit the topic or contradicts the approved style, call `search_style_guide` again with adjusted keywords or `true` for full catalog, or make your own style guide
 
----
+**Output of Phase 1**: a concrete color palette, type scale, spacing tokens, and decorative motif to apply consistently across all slides.
 
-## Phase 1: Planning
+## Phase 2: Planning
 
-Plan the deck before touching the canvas. Do NOT start creating frames until planning is complete.
+Plan the deck before touching the canvas. Do NOT start creating slides until planning is complete.
 
-### 1.1 Determine Slide Count & Outline
+### 2.1 Determine Slide Count & Outline
 
-Based on the user's request, decide:
-- Total slide count N (typical decks: 8-10 slides)
-- Slide roles: Cover → Agenda → Content × M → Section dividers → Data/KPI → Closing
-- Per-slide purpose: one clear message per slide
-- At least 1–2 dark accent slides for visual rhythm (see guidelines-slides.md Rule 2)
-- Which slides contain data that warrant SVG charts (see guidelines-slides.md Rule 3)
+**Read `slide-outline.md` (generated in Phase 0.1) — it is the authoritative source for slide count, roles, and per-slide messages.** Do not invent a new count or re-decide roles here.
 
-### 1.2 Plan Canvas Grid Layout
+From the outline file, extract:
+- Total slide count `N` (Meta → Slide Count)
+- Per-slide role and one-line message (Slide-by-Slide Outline)
+- Dark accent slide positions (Visual Rhythm Notes) — must satisfy guidelines-slides.md Rule 2 (at least 1–2 dark slides)
+- Chart-bearing slide positions (Visual Rhythm Notes) — must align with guidelines-slides.md Rule 3
 
-Each slide frame is **1920 × 1080** px. Lay slides out on the canvas in a grid:
+If the outline lacks any of the above, return to Phase 0.1 and amend it before proceeding.
+
+### 2.2 Plan Canvas Grid Layout
+
+Each slide is **1920 × 1080** px. Lay slides out on the canvas in a grid:
 - **Max 5 slides per row**
 - Horizontal gap between slides: **100px**
 - Vertical gap between rows: **100px**
@@ -87,21 +168,21 @@ For N slides:
 
 ---
 
-## Phase 2: Canvas Setup
+## Phase 3: Canvas Setup (MUST READ AND FOLLOW)
 
-### 2.1 Locate Available Space
+### 3.1 Locate Available Space
 
-Call `locate_available_space` with `totalWidth` and `totalHeight` from Phase 1.2. Record the returned `space.x` and `space.y` as the grid origin.
+Call `locate_available_space` with `totalWidth` and `totalHeight` from Phase 2.2. Record the returned `space.x` and `space.y` as the grid origin.
 
-### 2.2 Create All Slide Frames in One Batch
+### 3.2 Create All Slides in One Batch (MUST READ AND FOLLOW)
 
-Use `batch_edit` (≤25 ops per call; split into multiple calls if N > 25) to create all slide frames up front.
+Use `batch_edit` (≤25 ops per call; split into multiple calls if N > 25) to create all slides up front.
 
 For slide at grid position `(row, col)` where `row = floor(i / 5)` and `col = i % 5`:
 - `x = space.x + col × (1920 + 100)`
 - `y = space.y + row × (1080 + 100)`
 
-Each frame must set:
+Each slide node must set:
 - `width: 1920, height: 1080`
 - `clipsContent: true`
 - Meaningful `name` (e.g., `"Slide 3 - Market Size"`)
@@ -109,20 +190,29 @@ Each frame must set:
 
 Example:
 ```javascript
-slide1=I(document, {type: "frame", name: "Slide 1 - Cover", width: 1920, height: 1080, clipsContent: true, x: X1, y: Y1, fills: [/* gradient from style guide */]})
-slide2=I(document, {type: "frame", name: "Slide 2 - Agenda", width: 1920, height: 1080, clipsContent: true, x: X2, y: Y2, fills: [/* gradient from style guide */]})
+slide1=I("pageId", {type: "slide", name: "Slide 1 - Cover", width: 1920, height: 1080, clipsContent: true, x: X1, y: Y1, fills: [/* gradient from style guide */]})
+slide2=I("pageId", {type: "slide", name: "Slide 2 - Agenda", width: 1920, height: 1080, clipsContent: true, x: X2, y: Y2, fills: [/* gradient from style guide */]})
 // ... continue for all N slides
 ```
 
-**Do NOT populate slide content in this phase.** Only create the empty frames.
+**Do NOT populate slide content in this phase.** Only create the empty slides.
+**Don't use `type: "frame"`, use `type: "slide"` to create root slides.**
 
 ---
 
-## Phase 3: Slide Generation
+## Phase 4: Slide Generation
 
 Generate slides **one at a time, sequentially**. For each slide `i` from 1 to N, run this sub-loop:
 
-### 3.1 Generate Slide Content
+### Language Rules
+
+> ⛔ **HARD RULE — OUTPUT LANGUAGE.** When the user has not explicitly specified a language, all generated on-canvas content (titles, body copy, labels, captions, annotations, etc.) MUST default to the language of the user's prompt, preserving any embedded English / foreign-language terms exactly as written (do not translate them). When the user explicitly specifies a target language (e.g., "use English", "用日文"), default all generated content to that language instead. This rule applies to every textual element produced on the design canvas.
+>
+> 🔔 **MANDATORY PRE-GENERATION ANNOUNCEMENT — NON-NEGOTIABLE.** The moment the design language is determined and BEFORE issuing the first content-producing `batch_edit`, you MUST send the user a one-line notice stating which language the on-canvas content will use (e.g., `本次幻灯片内容将使用中文生成` / `Generating the Slide content in English`). This announcement is REQUIRED on every single design task — never skip it, never defer it, never bury it inside other text.
+
+### 4.1 Generate Slide Content
+
+Before generating slide `i`, re-read its row in `slide-outline.md` (role, one-line message, layout hint, dark/chart flags) and treat it as the spec for this slide.
 
 Call `batch_edit` (≤25 ops) to add content into slide `i`'s frame. Build order:
 1. **Background layer** — gradient fill + decorative pattern (Rule 2)
@@ -131,30 +221,28 @@ Call `batch_edit` (≤25 ops) to add content into slide `i`'s frame. Build order
 4. **Decoration** — 2–3 decorative elements per slide (Rule 3)
 5. **Charts** — if data is present, inline SVG chart (Rule 3)
 
-If a single slide needs more than 25 ops, split into multiple sequential `batch_edit` calls on the same frame.
+If a single slide needs more than 25 ops, split into multiple sequential `batch_edit` calls on the same slide.
 
-### 3.2–3.4 Verify & Fix
+### 4.2 Verify & Fix
 
-Follow the **Post-Generation Validation Pattern** in `design-rules.md`:
-1. `capture_screenshot({nodeIds: [slideId_i], screenShotDir: "<dir>"})` on slide `i` — check text readability (Rule 1), background richness (Rule 2), decorative elements (Rule 3), color consistency
-2. `capture_layout({parentId: slideId_i, problemsOnly: true})` on slide `i` — check overlapping, clipping, misalignment
-3. If issues found → `batch_edit` corrections → re-run 1 + 2
+1. `capture_layout` on slide `i` with `problemsOnly: true` — check overlapping, clipping, misalignment
+2. If issues found → `batch_edit` corrections → re-run 1 + 2
 
 Only advance to slide `i+1` after the current slide passes both checks.
-
+**IMPORTANT: Do not call `capture_screenshot` before Phase 5.**
 ---
 
-## Phase 4: Final Review
+## Phase 5: Final Review
 
 After all N slides have passed their per-slide checks:
 
-### 4.1 Deck-Level Screenshot
+### 5.1 Deck-Level Screenshot
 
 Screenshot each slide one more time to compare neighbors side-by-side. Verify:
 - Consistent palette across all slides (Rule 2)
 - Dark accent slides appear at planned positions
 - Typography hierarchy is uniform (same title/body sizes across similar slide types)
 
-### 4.2 Final Fixes
+### 5.2 Final Fixes
 
 For any cross-slide inconsistencies, issue fix-up `batch_edit` calls and re-screenshot. Stop only when the full deck is visually cohesive.

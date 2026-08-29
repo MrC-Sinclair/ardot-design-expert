@@ -5,7 +5,7 @@ You are designing a responsive web application interface.
 This document defines universal product design principles that apply to ANY use case:
 CRM, analytics, editor, marketplace, fintech, admin panel, AI tool, or unknown future systems.
 
-Visual identity, typography, color, and stylistic expression should be determined by the active style guide (obtained via `search_style_guide` + `build_style_guide`, or `fetch_guidelines`).
+Visual identity, typography, color, and stylistic expression should be determined by the active style guide (obtained via `search_style_guide` + `build_style_guide`).
 
 This file defines structural, cognitive, and product-quality laws.
 

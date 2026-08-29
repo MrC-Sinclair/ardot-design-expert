@@ -32,10 +32,14 @@ Phase 4: Verification (screenshot each section)
 
 ## Phase 0: Ensure Design File Is Open
 
-Before any canvas operation, make sure an Ardot design file is loaded:
-- 若用户已在编辑器中打开文件，先 `fetch_editor_state` 探测；若没打开，引导用户在 Ardot 编辑器中手动打开 `.ardot` 文件（`create_design` / `open_design` 走的文件开关通道本环境常不可用，不要依赖代开 / 代建）。
-- 若当前文档已存在、想要全新画布，用 `create_new_page(name: "...")` 加空白页，拿 `pageId` 作根。
-- If the editor already has a file loaded → skip this phase.
+**Follow `ardot-design-core` SKILL.md → Step 0** for the full file-open rule — including the injected
+`<ardot_file_directive action="create|open">` main path, the **at-most-one** `create_design` / `open_design`
+idempotency hard rule, and the async-load wait gate (never re-issue to "confirm"). Do not re-derive create vs. open here.
+
+**Design-to-code deviation — deferred `fetch_file_info`:** on the `create_design` branch, defer
+`fetch_file_info` until just before the first MCP call in **Phase 2** (`apply_variables`). Phase 1 is entirely
+local/web tooling (`curl`, `WebFetch`, `playwright`), which covers the async file-load window — pair
+`fetch_file_info` with Phase 2's first MCP message. On the `open_design` branch, call it right after the file is ready.
 
 ---
 
@@ -184,7 +188,7 @@ locate_available_space(width: 1440, height: 5000)  → find placement
 ### Step 3.2: Create Main Container
 
 ```javascript
-page=I(document, {type: "frame", name: "<ProjectName> Design Style Guide", layout: "vertical", width: 1440, height: "hug_contents", fill: "<bg-color>", padding: [80, 100], gap: 80})
+page=I("pageId", {type: "frame", name: "<ProjectName> Design Style Guide", layout: "vertical", width: 1440, height: "hug_contents", fill: "<bg-color>", padding: [80, 100], gap: 80})
 ```
 
 The main frame uses the website's background color as `fill`. All child sections use `fills: []` (transparent) to inherit the parent background.
@@ -298,8 +302,6 @@ cardNum=I(cardBody, {type: "text", content: "01", fontSize: 14, fontWeight: "700
 cardTitle=I(cardBody, {type: "text", content: "Title", fontSize: 20, fontWeight: "600", fill: "<text-primary>"})
 cardDesc=I(cardBody, {type: "text", content: "Description", fontSize: 14, fill: "<text-muted>"})
 ```
-
-Optionally use `G(node, "stock", "<prompt>")` / `G(node, "ai", "<prompt>")` / `G(node, "placeholder", "label")` to add images to card image areas (stock = real photo library, preferred; ai = AI-generated; placeholder = gray label box for drafts).
 
 ---
 
