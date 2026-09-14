@@ -1,9 +1,10 @@
 {
   "name": "ardot-design-expert",
   "version": "1.4.0",
-  "description": "精通 Ardot 设计软件，可在画布构建像素级精准的 UI 界面，把设计稿转化为生产可用前端代码，并做设计↔代码双向校对与设计稿质量走查。自包含，可在任意支持 MCP 的 IDE 中运行 / Expert in Ardot design software — builds pixel-perfect UI on canvas, converts designs into production-ready frontend code, and audits design-vs-code fidelity in both directions. Self-contained; runs in any MCP-capable IDE.",
+  "description": "Expert in Ardot design software: builds pixel-perfect UI on canvas, converts designs into production-ready frontend code, and audits design-vs-code fidelity in both directions. Self-contained; runs in any MCP-capable IDE.",
   "author": {
-    "name": "Sinclair"
+    "name": "Sinclair",
+    "email": "2256843428@qq.com"
   },
   "license": "MIT",
   "agents": [
@@ -25,8 +26,9 @@
   },
   "displayDescription": {
     "en": "Master of Ardot design software — pixel-perfect UI on canvas, production-ready frontend code, and bidirectional design-vs-code fidelity audits. Self-contained, portable across IDEs.",
-    "zh": "精通 Ardot，可在画布构建像素级精准的 UI 界面，把设计稿转成生产可用前端代码，并做设计↔代码双向校对与质量走查。自包含，可跨 IDE 使用。"
+    "zh": "精通Ardot设计软件，能做像素级UI设计与设计稿转代码，并双向走查设计稿与代码质量。"
   },
+  "avatar": "avatars/expert.png",
   "categoryId": "01-ProductDesign",
   "defaultInitPrompt": {
     "en": "Design a mobile app home screen for me in Ardot",
@@ -40,10 +42,6 @@
     {
       "en": "Design-to-Code",
       "zh": "设计转代码"
-    },
-    {
-      "en": "Frontend Generation",
-      "zh": "前端代码生成"
     },
     {
       "en": "Design Review",
