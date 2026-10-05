@@ -17,7 +17,7 @@
 
 1. `capture_layout({parentId:<pageId>, problemsOnly:true})` → 自动列出结构问题（重叠 / 溢出 / 错位），作为 P0 候选。
 2. `batch_read` 遍历关键节点，提取字段（见 SKILL.md 列表）。
-3. `capture_screenshot({nodeIds:[...], screenShotDir:"<绝对目录>"})` 截图，与节点数据交叉印证。
+3. `capture_screenshot({fileUrl, nodeIds:[...]})` 截图（**无 `screenShotDir` 参数**），下载返回 URL 并 Read 图片，与节点数据交叉印证。
 
 ## 2. 评审检查清单（逐项打分 + 找问题）
 

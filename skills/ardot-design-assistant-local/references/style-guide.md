@@ -112,7 +112,7 @@ To guarantee premium, non-generic output, strictly avoid these common AI design 
 * **NO Filler Words** — avoid "Elevate", "Seamless", "Unleash", "Next-Gen". Use concrete verbs.
 
 ### External Resources
-* **NO External Image URLs** — Ardot has no `image` node type; images are fills on a frame/rectangle node. Always generate imagery with the `G()` operation (`type: "stock"` preferred real-library image, `"ai"` for prompt-generated, or `"placeholder"` for a gray labeled stub). Never paste external URLs (Unsplash, picsum.photos, etc.) — they do not work as fills and violate the platform model.
+* **NO External Image URLs** — Ardot has no `image` node type; images are fills on a frame/rectangle node. Always generate imagery with the `G()` operation, which accepts **only** `type: "ai"` (prompt-generated real image) or `type: "placeholder"` (gray labeled stub, prompt = short label <= 20 chars). There is **no `"stock"` type**. Never paste external URLs (Unsplash, picsum.photos, etc.) — they do not work as fills and violate the platform model. One `G()` per image node, never retry.
 
 ## 10. THE CREATIVE ARSENAL (Design Inspiration)
 

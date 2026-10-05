@@ -167,7 +167,7 @@ Imagery Intent Hierarchy (prioritize in this order):
 
 Think of every image as a scene from the visitor's future life. You are casting them as the protagonist. The product is a prop. Ask: What is the person feeling in this image? What just happened, or is about to happen? Would the visitor look at this and think "I want to feel that way"?
 
-Image sourcing: Use the image (G) operation to generate visuals. Prefer `G(node, "stock", "<prompt>")` for general/random imagery (real photo library); use `G(node, "ai", "<prompt>")` for semantically specific AI-generated photos, illustrations, or brand assets; use `G(node, "placeholder", "label")` for quick wireframe placeholder boxes. Do not search external image libraries.
+Image sourcing: Use the image (G) operation to generate visuals. **Only two legal `type` values exist: `"ai"` and `"placeholder"`** — there is NO `"stock"` type and no real photo library. Use `G(node, "ai", "<full prompt>")` for AI-generated photos / illustrations / brand assets; use `G(node, "placeholder", "<=20-char label>")` for quick wireframe boxes. Do not search external image libraries, never paste external URLs. Call `G()` at most once per image node.
 
 For generated images: Write prompts that describe the feeling and human state, not just the object.
 - Example prompts: "modern office workspace bright", "mountain landscape sunset", "abstract gradient blue purple", "minimalist laptop desk"

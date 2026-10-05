@@ -32,7 +32,7 @@ Phase 4: Verification (screenshot each section)
 
 ## Phase 0: Ensure Design File Is Open
 
-**Follow `ardot-design-core` SKILL.md → Step 0** for the full file-open rule — including the injected
+**Follow 本包 `SKILL.md` → Step 0 与「宿主注入指令块」** for the full file-open rule — including the injected
 `<ardot_file_directive action="create|open">` main path, the **at-most-one** `create_design` / `open_design`
 idempotency hard rule, and the async-load wait gate (never re-issue to "confirm"). Do not re-derive create vs. open here.
 

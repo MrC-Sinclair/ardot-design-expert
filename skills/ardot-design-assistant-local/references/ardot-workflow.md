@@ -90,8 +90,9 @@ Step 5: capture_layout(parentId: "headerId", maxDepth: 2) → mandatory post-fli
 ```
 Step 0: Ensure design file is open → skip if editor already has a file loaded
 Step 1: fetch_editor_state(includeSchema: false) → check current state
-Step 2: scan_all_unique_properties(parentIds: ["rootFrame"]) → audit existing styles
-Step 3: substitute_all_matching_properties → bulk update matching properties
+Step 2: batch_read(parentId, {readDepth: 3}) → audit existing styles
+Step 3: batch_edit with explicit U() ops per node → bulk update matching properties
+(⛔ `scan_all_unique_properties` / `substitute_all_matching_properties` do not exist in the current MCP)
 Step 4: capture_screenshot → verify the global changes            [T3]
         (No capture_layout — substitutions don't change structure.)
 ```

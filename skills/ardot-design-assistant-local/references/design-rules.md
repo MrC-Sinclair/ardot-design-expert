@@ -12,7 +12,7 @@ Comprehensive rules for creating and editing .ardot designs. This is the single 
 ## Editing Principles
 
 - After generating, validate with the schema and proceed or correct as needed.
-- Use `capture_layout({parentId, problemsOnly: true})` and `capture_screenshot({nodeIds, screenShotDir: "<dir>"})` periodically and at the end to verify design changes (see Tiered Validation).
+- Use `capture_layout({parentId, problemsOnly: true})` as the **default** check. Treat `capture_screenshot` as a **scarce vision-only resource**: at most 1–2 calls after a completed batch of related edits, never after each small fix, and never if you cannot read images. Never pass `screenShotDir` — the current MCP does not have it; download the returned URL and Read the image instead.
 - Be thorough — make sure all task requirements are met. Verify after finishing.
 - Follow `gap` and `padding` layout properties exactly on each component (buttons, tables, cards, etc.).
 - If a property is not defined, treat it as 0 — do NOT hallucinate values.
@@ -41,8 +41,8 @@ Comprehensive rules for creating and editing .ardot designs. This is the single 
 
 - **Always prefer flexbox layout** for arranging and sizing objects.
 - When inserting a new frame, always explicitly set `width` and `height` — never assume auto layout.
-- When only setting `layout` to `horizontal` or `vertical`, the default sizing mode for both `width` and `height` is `FIXED`. If dynamic sizing is needed, you must explicitly set `width` and `height`.
-- Frames default to horizontal layout and `hug_contents` sizing.
+- **Frame defaults at creation time**: a brand-new frame is `layout: "horizontal"` with `hug_contents` sizing on both axes — but only when you don't override either field.
+- **Override caveat**: as soon as you explicitly set `layout` (to `horizontal`, `vertical` or `wrap`) without also setting `width` / `height`, sizing falls back to `FIXED`, not `hug_contents`. So if you want dynamic sizing alongside an explicit `layout`, set `width` / `height` (to `fill_container` or `hug_contents`) explicitly in the same call.
 - Prefer `fill_container` or `hug_contents` over hardcoded pixel values.
 - When using flexbox, **x/y on children are completely ignored**. To position a child in a flexbox container, set the child's `layoutPositioning` to `ABSOLUTE` (default is `AUTO`).
 - `fill_container` is only valid when parent has flexbox layout.
@@ -50,9 +50,9 @@ Comprehensive rules for creating and editing .ardot designs. This is the single 
 - A parent cannot use `hug_contents` if **all** direct children use `fill_container` — circular dependency.
 - Padding affects ALL children uniformly. To offset one child, wrap it in a frame with padding (no margin in flexbox).
 - `layout: "none"` makes children use absolute positioning — avoid unless necessary.
-- Use `primaryAxisAlignItems: "CENTER"` + `counterAxisAlignItems: "CENTER"` to center children.
+- Use `primaryAxisAlignItems: "CENTER"` + `counterAxisAlignItems: "CENTER"` to center children (only works for flexbox layout).
 - Use `layoutGrow: 1` to make a child fill remaining space along the primary axis.
-- Use `primaryAxisAlignItems: "SPACE_BETWEEN"` to distribute children to opposite ends.
+- Use `primaryAxisAlignItems: "SPACE_BETWEEN"` to distribute children to opposite ends (only works for flexbox layout).
 - Setting layout to `"none"` will make all children use absolute positioning. Avoid using absolute positioning unless absolutely necessary.
 
 ### Layout Code Example
@@ -340,7 +340,9 @@ badText=I(badRow, {type: "text", content: "John"})
 
 - NO `image` node type. Images are **fills** on frame/rectangle nodes.
 - Use `G()` for images — never generate random URLs.
-- 图片生成用 `G()` 操作，`type` 取 `"stock"`（真实图库随机图，首选）/ `"ai"`（按 prompt 生成）/ `"placeholder"`（灰底标签占位框，用于快速草稿）。
+- 图片生成用 `G()` 操作，**`type` 只有两种合法值**：`"ai"`（按 prompt 生成真实图，成品 / 交付稿用）/ `"placeholder"`（灰底 + 短标签占位块，草稿 / 线框用，**prompt 写 ≤ 20 字符短标签**，用用户语言）。
+- ⛔ **没有 `"stock"` 类型**（真实图库随机图不存在）。也不存在 `fetch_style_guide` / `fetch_style_guide_tags` / `scan_all_unique_properties` / `substitute_all_matching_properties` 这几个工具，风格关键词灵感读本地 `style-guide-tags.md`。
+- ⛔ **一个图像节点只允许一次 `G()`，绝不重试**（结果不满意也不重发）。等它跑完，或用 `U()` 修版式 / 样式 —— 重复 `G()` 既烧预算又与上一个任务抢跑。
 - Pattern: Insert frame → apply G() as fill.
 - When G() is unavailable, use `GRADIENT_LINEAR` fills as placeholders with different color schemes per section.
 
@@ -382,7 +384,7 @@ U("cardId", {effects: [
 - Prefer SVG nodes over icon fonts.
 - Use `type: "frame"` with `svg` property containing full SVG markup.
 - When creating icon from frame, must set `layout: "none"`.
-- Always `capture_screenshot({nodeIds: [iconId], screenShotDir: "<dir>"})` after creating SVG icons to verify.
+- Always `capture_screenshot({fileUrl, nodeIds: [iconId]})` after creating SVG icons to verify (no `screenShotDir`).
 
 ```javascript
 icon=I("parent", {
@@ -398,7 +400,7 @@ icon=I("parent", {
 
 - Always create icon as a component, then use `I(parentId, {type: "ref", ref: "iconId"})` to insert the icon instance.
 - When creating icon from frame, must set `layout: "none"`.
-- After creating icons, must run `capture_screenshot({nodeIds: [iconId], screenShotDir: "<dir>"})` to verify the icon is correct.
+- After creating icons, must run `capture_screenshot({fileUrl, nodeIds: [iconId]})` to verify the icon is correct.
 
 ## Raw-code SVG / 代码内联图标
 
@@ -524,14 +526,14 @@ Pick the tier that matches what the batch changed. **Do not run full dual-verifi
 |---|---|---|
 | **T1 — Structural scaffold** | New frames, layout mode, padding, hierarchy | `capture_layout({parentId, problemsOnly: true})` only — screenshot not useful yet |
 | **T2 — Content fill** | Text content, token binding, component instance props | **Skip validation**; defer to the next style/phase batch |
-| **T3 — Visual/style** | `fill`, typography, effects, cornerRadius, strokes | `capture_screenshot({nodeIds, screenShotDir: "<dir>"})` only |
-| **T4 — Section complete** | A whole logical section (hero, features, footer) is done | Run **both** `capture_screenshot({nodeIds, screenShotDir: "<dir>"})` + `capture_layout({parentId, problemsOnly: true})` **once** |
-| **T5 — Final page** | All sections merged | One final `capture_screenshot({nodeIds: [pageId], screenShotDir: "<dir>"})` of the full page |
+| **T3 — Visual/style** | `fill`, typography, effects, cornerRadius, strokes | `capture_screenshot({fileUrl, nodeIds})` only |
+| **T4 — Section complete** | A whole logical section (hero, features, footer) is done | Run **both** `capture_screenshot({fileUrl, nodeIds})` + `capture_layout({parentId, problemsOnly: true})` **once** |
+| **T5 — Final page** | All sections merged | One final `capture_screenshot({fileUrl, nodeIds: [pageId]})` of the full page |
 
 Rules of thumb:
 - If two consecutive batches are both T2 or T3, validate **once at the end**, not after each.
 - Prefer batching corrective fixes: accumulate issues and fix them in **one** `batch_edit`, then re-validate once.
-- `capture_screenshot({nodeIds, screenShotDir: "<dir>"})` for nodes > 2000px tall: screenshot sections, not the whole node.
+- `capture_screenshot({fileUrl, nodeIds})` for nodes > 2000px tall: screenshot sections, not the whole node.
 
 ### Convergence Threshold — When to Stop Iterating
 

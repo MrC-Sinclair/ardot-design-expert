@@ -174,7 +174,7 @@ batch_read(nodeIds: [...textIds, ...bgIds], readDepth: 0, properties: ["fills", 
 ### Step 1.5: Screenshot Each Page
 
 ```
-capture_screenshot(nodeIds: ["<frameId>", ...], screenShotDir: "<dir>") → get visual references for all pages in one call
+capture_screenshot({fileUrl, nodeIds: ["<frameId>", ...]}) → 下载返回 URL 并 Read 图片，一次拿到全部页面视觉参考
 ```
 
 **Screenshot all pages in parallel.** Carefully analyze screenshots to understand:

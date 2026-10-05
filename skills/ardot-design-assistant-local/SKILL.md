@@ -12,7 +12,7 @@ description: |
   Triggers 覆盖中英文口语化表达。所有画布操作必须经过 ardot MCP 工具。
   本 skill 自带全部规则与工作流，不依赖任何外部 skill，可在任意支持 MCP 的 IDE 中独立运行。
 metadata:
-  version: "1.4.0"
+  version: "1.5.0"
   author: Sinclair
   license: MIT
   portability: "自包含。已在 WorkBuddy（含设计创意模式）与其他支持 MCP 的 IDE 中验证；MCP 通道名以运行时探测为准，不写死。"
@@ -30,7 +30,26 @@ metadata:
 |---|---|---|
 | **其他 IDE**（Cursor / Claude Code / Cline 等） | 无 WorkBuddy 内置技能、无指令块 | 完全正常，走本文件全部流程即可 |
 | **WorkBuddy · 日常办公 / 代码开发模式** | Ardot MCP 可能未注入 | 按下面「MCP 通道探测」判定；拿不到画布工具就终止 |
-| **WorkBuddy · 设计创意模式** | 会**额外**注入 `ardot-design-core` + 领域技能 | 二者内容同源（本包为合并后的超集）。**以本包为准**；本包未覆盖处可参考注入技能 |
+| **WorkBuddy · 设计创意模式** | 会**额外**注入 `ardot-design-core` + 领域技能 + Miora 五件套 | **执行下面的「宿主注入加载门」**：只读本包分叉部分，跳过 verbatim 文件 |
+
+### 宿主注入加载门（WorkBuddy 设计创意模式必读）
+
+宿主注入的 `ardot-design-core` / `ardot-ui-design` / `ardot-slides` / `ardot-design-to-code`
+与本包 **24 个 reference 中 17 个逐字节相同**。两套同时进上下文会导致规则冲突
+（模型看到"两套都说对"）并白烧 100KB+ 上下文。
+
+**判定与处置**：
+
+1. 检查是否已注入 `ardot-design-core`（宿主指令块或已加载技能列表中出现它）。
+2. **未注入**（其他 IDE / 其他模式）→ 按本文件「Reference Files」正常加载全部所需 reference。
+3. **已注入** → 执行**跳过清单**，只读本包分叉部分：
+
+| 跳过（与上游逐字节相同，宿主已有） | 仍须读本包（本地分叉/独有） |
+|---|---|
+| `ardot-schema.md` · `effects-guide.md` · `apply-variables-tool-usage.md` · `batch-edit-tool-usage.md` · `component-instance.md` · `design-variables.md` · `shared-styles.md` · `style-guide.md` · `ardot-workflow.md` · `guidelines-web-app.md` · `guidelines-mobile-app.md` · `guidelines-table.md` · `guidelines-slides.md` · `guidelines-code.md` · `guidelines-tailwind.md` · `guidelines-landing-page.md` · `guidelines-poster.md` · `extract-style-guide-from-web.md` · `slides-workflow.md` · `design-to-code-workflow.md` · `references/miora/**` | **`design-rules.md`**（本地扩充 40KB，组件属性/变体章节上游没有）· **`design-review-workflow.md`** · **`code-review-workflow.md`** · **`slides-agent-teams-workflow.md`** · **`style-guide-tags.md`** |
+
+> ⚠️ 上游文件与本包分叉文件**冲突时一律以本包为准**——本包是当前环境的权威规则源。
+> 上游独有的新增内容不会自动进来，需按 `PROVENANCE.md` 合并（`bash sync-check.sh` 检测漂移）。
 
 > 设计创意模式下宿主会预置一些结论（指令块），见「宿主注入指令块」——**出现就服从，没出现也不影响本流程**。
 
@@ -134,7 +153,33 @@ metadata:
 | `references/guidelines-mobile-app.md` | 移动端 / App |
 | `references/guidelines-table.md` | 表格 / 数据密集 |
 | `references/guidelines-slides.md` | 幻灯片 |
+| `references/guidelines-poster.md` | **通用**海报 / 封面 / banner / 电商主图 / 展架（画布内可编辑交付物） |
+| `references/livestream-poster/SKILL.md` | **直播海报**（生图底图 + 画布排版；含 3 条风格工作流 + 自适应尺寸 + 人物尺寸控制 + DSL 合成）。先读它再进`workflows/` |
 | `references/guidelines-code.md` | 转代码（+ `references/guidelines-tailwind.md` 若用 Tailwind） |
+
+### 生成媒体（Miora 家族）
+
+>⛔ **先读环境护栏**：`references/miora/creative-core.md` 开头有「环境前置检查」。
+> `miora_*` MCP 工具**只在 WorkBuddy 设计创意模式存在**，其他 IDE 里探测不到 →
+> 立即停止 Miora 路线并告知用户，**不要伪造产物**。Ardot 画布路线不受影响。
+
+| File | 触发 |
+|---|---|
+| `references/miora/creative-core.md` | **Miora 底座，必先读**：意图识别、参数契约、费用边界、画布交付、质量门 |
+| `references/miora/brand/SKILL.md` + `brand-logo.md` / `brand-mascot.md` / `brand-full-package.md` / `ip-materials.md` | Logo、吉祥物 / IP 角色、品牌VI 全案、IP 物料延展 |
+| `references/miora/image/SKILL.md` + `ecommerce-detail.md` / `series-consistency.md` | 电商详情图、App 图标、插画、游戏原画、系列一致性 |
+| `references/miora/video/SKILL.md` + `short-video.md` | 短视频、动效|
+
+### 家族分诊（不确定交付形态时先问）
+
+「海报 / 封面 / 图标 / banner」两个家族都能做，**按交付形态而非名词判断**：
+
+| 想要什么 | 走哪 | 理由 |
+|---|---|---|
+| 还要能改的设计稿（活字、可重排、可出码） | **Ardot 家族** | 见上文「类型指南」 |
+| 成品像素，直接发布不复改 | **Miora 家族** | 见上文「生成媒体」 |
+| 视频 / 动效 | **Miora 家族**（永远） | Ardot 无视频能力 |
+| 信号不明 | **问一句** | 猜错= 白烧生成费或交付不可用文件 |
 
 > `fetch_guidelines(topic: ...)`（topic：`table` / `landing-page` / `web-app` / `mobile-app` / `slides` /
 > `posters` / `code` / `tailwind`）是 Ardot 官方维护的规则源。**若该工具可用，它与本地 `guidelines-*.md`
@@ -175,9 +220,11 @@ metadata:
 | 1 | slides, 幻灯片, 演示文稿 | `guidelines-slides.md` |
 | 2 | mobile, app, 移动端 | `guidelines-mobile-app.md` |
 | 3 | landing, 营销, 落地页 | `guidelines-landing-page.md` |
-| 4 | table, 表格 | `guidelines-table.md` |
-| 5 | 转代码, 出码, 生成应用 | `references/guidelines-code.md`（+ `references/guidelines-tailwind.md`） |
-| 6 | web app（默认） | `guidelines-web-app.md` |
+| 4 | poster, 海报, 封面, banner, 电商主图, 展架 | `guidelines-poster.md` |
+| 4.5 | 直播海报, 直播宣传图, 预告海报, livestream poster | `references/livestream-poster/SKILL.md`（先读，再按其工作流表进 `workflows/`） |
+| 5 | table, 表格 | `guidelines-table.md` |
+| 6 | 转代码, 出码, 生成应用 | `references/guidelines-code.md`（+ `references/guidelines-tailwind.md`） |
+| 7 | web app（默认） | `guidelines-web-app.md` |
 
 > ⛔ **用户指引优先**：用户给出的风格约束（自由文本、`DESIGN.md`、design tokens）与任何指南、
 > 产品类型先验、或选中的风格模板冲突时，**一律听用户的**。模板和内置指南只填补未指定的空白。
@@ -292,6 +339,9 @@ metadata:
 | 代码还原设计稿的还原度评审 | `references/code-review-workflow.md` 模式 A |
 | 设计稿对齐真实代码（改设计贴代码） | `references/code-review-workflow.md` 模式 B |
 | 设计稿质量评审（审**设计稿本身**） | `references/design-review-workflow.md` |
+| **通用海报 / 封面 / banner** | `references/guidelines-poster.md`（画布内可编辑交付物） |
+| **直播海报** | `references/livestream-poster/SKILL.md` → 按其工作流选择表进 `workflows/style-reference\|style-selection\|style-matching.md`，再 `render-and-compose.md` 出图排版。⛔ 依赖 `ImageGen` 工具，工具不可用时停止并告知用户 |
+| **AI 生图 / 生视频 / 品牌资产** | 先读 `references/miora/creative-core.md`（环境护栏 + 家族底座），再按 `references/miora/{brand,image,video}/` 领域文档走。⛔ `miora_*` 工具不可用时立即停止并告知用户，不要伪造产物 |
 
 ---
 

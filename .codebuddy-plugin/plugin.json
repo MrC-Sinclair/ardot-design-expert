@@ -1,6 +1,6 @@
 {
   "name": "ardot-design-expert",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Expert in Ardot design software: builds pixel-perfect UI on canvas, converts designs into production-ready frontend code, and audits design-vs-code fidelity in both directions. Self-contained; runs in any MCP-capable IDE.",
   "author": {
     "name": "Sinclair",

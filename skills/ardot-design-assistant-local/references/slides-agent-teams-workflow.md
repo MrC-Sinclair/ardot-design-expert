@@ -409,7 +409,7 @@ IMPORTANT — Before reviewing ANY slides, you MUST:
 - Messages from the designer are fire-and-forget — do NOT send feedback messages back after each review; instead, write results into `.slide-task/fix-list.md`
 - For each slide, perform a thorough audit using these tools:
   1. `capture_layout({parentId: <slideFrameId>, problemsOnly: true})` — check for layout problems (overlaps, clips, misalignment)
-  2. `capture_screenshot({nodeIds: [<slideFrameId>], screenShotDir: "<workspace temp path>"})` — visually inspect the slide
+  2. `capture_screenshot({fileUrl, nodeIds: [<slideFrameId>]})` — 下载返回 URL 并 Read 图片做视觉检查（**无 `screenShotDir` 参数**）
 - Apply the Review Checklist below
 - Append your findings for that slide to `.slide-task/fix-list.md`:
   - Update the Status column in the summary table
@@ -425,7 +425,7 @@ IMPORTANT — Before reviewing ANY slides, you MUST:
 ### During designer's Fix Phase — Re-review
 
 - When `slide-designer` sends a message with a frame ID requesting re-review:
-  1. Call `capture_layout({parentId: <frameId>, problemsOnly: true})` and `capture_screenshot({nodeIds: [<frameId>], screenShotDir: "<workspace temp path>"})` on that frame
+  1. Call `capture_layout({parentId: <frameId>, problemsOnly: true})` and `capture_screenshot({fileUrl, nodeIds: [<frameId>]})` on that frame
   2. Re-run the Review Checklist
   3. Append a new `### Review Round N+1` section to that slide's entry in `.slide-task/fix-list.md`
   4. Update Status to `PASS` or `NEEDS_FIX`

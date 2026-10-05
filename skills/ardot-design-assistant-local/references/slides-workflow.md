@@ -90,7 +90,7 @@ Before doing anything on the canvas, load all required knowledge and context. Th
 
 ### 1.0 Ensure Design File Is Open
 
-**Follow `ardot-design-core` SKILL.md → Step 0** for the full file-open rule — including the injected
+**Follow 本包 `SKILL.md` → Step 0 与「宿主注入指令块」** for the full file-open rule — including the injected
 `<ardot_file_directive action="create|open">` main path, the **at-most-one** `create_design` / `open_design`
 idempotency hard rule, the async-load wait gate (never re-issue to "confirm"), and the empty-canvas note
 (root `0:1`, skip `fetch_editor_state`). Do not re-derive create vs. open here.
@@ -102,7 +102,8 @@ and 1.2 is skipped for fresh files, so they cover the async load window; issue `
 
 ### 1.1 Load Reference Knowledge (read these files if not already loaded)
 
-> These two files live in the **ardot-design-core** skill (injected alongside this one). Read them from the core skill's root directory — its absolute path is provided in the same prompt that injected this skill.
+> 这两个文件在本包内，路径相对本 SKILL.md 所在目录。若宿主注入了同源的 `ardot-design-core`，
+> 按「宿主注入加载门」跳过它们直接用宿主那份亦可（内容逐字节相同）。
 
 - `references/design-rules.md` — ardot design constraints (flexbox, text, color, property reference)
 - `references/batch-edit-tool-usage.md` — `batch_edit` operation syntax, binding rules, full tool parameters
