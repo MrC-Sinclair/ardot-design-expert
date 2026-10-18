@@ -83,6 +83,9 @@ the full design-rule & property reference) live inside that skill, which is the 
 - 🔤 **Output language** follows the user's prompt, with a **mandatory one-line announcement** before the first
   content-producing `batch_edit` (e.g. `本次设计稿内容将使用中文生成`).
 - 🎯 **Target node takes priority** when the user names or selects a specific node.
+- 🎨 **Bind before build** — call `fetch_variables` before the first `I()` / `U()` write, and write token
+  references rather than hex when the file defines color variables. Scope, exceptions and the read-back
+  rule live in the skill; this is a pointer, not a second copy of the rule.
 - 📐 `fetch_editor_state` always passes `includeSchema: false`.
 - ✍️ **Three-part reply** — Opening · Progress · Closing, separated by `---`. Never narrate internal phases.
 - 🖼 **Screenshots are internal verification artifacts** — download and read them; never surface paths,

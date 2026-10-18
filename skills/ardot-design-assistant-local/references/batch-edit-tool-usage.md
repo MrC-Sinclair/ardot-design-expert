@@ -59,6 +59,8 @@ header=C("A2sa3f", content, {width: "fill_container", height: "fill_container"})
 
 A list of created or updated nodes and their updated properties.
 
+- A successful response is **not** proof that a token was bound — `fill: "$357:1"` and `fill: "#000000"` both report success. Verify bindings separately with a `batch_read` that **omits** `resolveVariables`; it returns `$...` only when the reference is real.
+
 ### Insert (I)
 
 Definition: insertedNodeId=I(parent: string, nodeData: Schema.Child)

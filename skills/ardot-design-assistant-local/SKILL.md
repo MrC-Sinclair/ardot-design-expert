@@ -12,7 +12,7 @@ description: |
   Triggers 覆盖中英文口语化表达。所有画布操作必须经过 ardot MCP 工具。
   本 skill 自带全部规则与工作流，不依赖任何外部 skill，可在任意支持 MCP 的 IDE 中独立运行。
 metadata:
-  version: "1.5.0"
+  version: "1.5.1"
   author: Sinclair
   license: MIT
   portability: "自包含。已在 WorkBuddy（含设计创意模式）与其他支持 MCP 的 IDE 中验证；MCP 通道名以运行时探测为准，不写死。"
@@ -46,7 +46,7 @@ metadata:
 
 | 跳过（与上游逐字节相同，宿主已有） | 仍须读本包（本地分叉/独有） |
 |---|---|
-| `ardot-schema.md` · `effects-guide.md` · `apply-variables-tool-usage.md` · `batch-edit-tool-usage.md` · `component-instance.md` · `design-variables.md` · `shared-styles.md` · `style-guide.md` · `ardot-workflow.md` · `guidelines-web-app.md` · `guidelines-mobile-app.md` · `guidelines-table.md` · `guidelines-slides.md` · `guidelines-code.md` · `guidelines-tailwind.md` · `guidelines-landing-page.md` · `guidelines-poster.md` · `extract-style-guide-from-web.md` · `slides-workflow.md` · `design-to-code-workflow.md` · `references/miora/**` | **`design-rules.md`**（本地扩充 40KB，组件属性/变体章节上游没有）· **`design-review-workflow.md`** · **`code-review-workflow.md`** · **`slides-agent-teams-workflow.md`** · **`style-guide-tags.md`** |
+| `ardot-schema.md` · `effects-guide.md` · `apply-variables-tool-usage.md` · `batch-edit-tool-usage.md` · `component-instance.md` · `shared-styles.md` · `style-guide.md` · `ardot-workflow.md` · `guidelines-web-app.md` · `guidelines-mobile-app.md` · `guidelines-table.md` · `guidelines-slides.md` · `guidelines-code.md` · `guidelines-tailwind.md` · `guidelines-landing-page.md` · `guidelines-poster.md` · `extract-style-guide-from-web.md` · `slides-workflow.md` · `design-to-code-workflow.md` · `references/miora/**` | **`design-rules.md`**（本地扩充 40KB，组件属性/变体章节上游没有）· **`design-variables.md`**（本地新增「写画布前必做」与读回校验口径）· **`design-review-workflow.md`** · **`code-review-workflow.md`** · **`slides-agent-teams-workflow.md`** · **`style-guide-tags.md`** |
 
 > ⚠️ 上游文件与本包分叉文件**冲突时一律以本包为准**——本包是当前环境的权威规则源。
 > 上游独有的新增内容不会自动进来，需按 `PROVENANCE.md` 合并（`bash sync-check.sh` 检测漂移）。
@@ -205,10 +205,13 @@ metadata:
 | 已有文件、要做新设计 | `fetch_editor_state({includeSchema:false})` + `fetch_variables`（一条消息并行） |
 | 纯修改（文件已打开、目标已知） | 上面两个 **加** 按需 `batch_read` / `capture_layout` / `capture_screenshot`（均并行） |
 
+> ⛔ **Step 1 不可跳过**：即使目标节点已知、即使只是"改一个颜色"，`fetch_variables` 也必须先调一次。
+> 不读变量表就判断不了这个文件的颜色是 token 还是字面量——后面每一次"看起来对"的写入，都可能是在复制硬编码。
+
 ### Step 2: 创意 vs 组合
 
 - 创意（新屏幕 / 页面 / dashboard / 换肤）→ Step 3–4
-- 组合（"加个按钮"、"移动这个"）→ 跳到 Step 5，读 `references/design-rules.md`
+- 组合（"加个按钮"、"移动这个"）→ 跳过 Step 3–4，进 Step 5，读 `references/design-rules.md`（**Step 1 已完成**，这句话不能用来跳过变量表读取）
 
 ### Step 3: 加载设计类型指南
 
@@ -262,7 +265,11 @@ metadata:
 ### Step 8: 校验
 
 > **双证据硬门（全局纪律）**：任何「已对齐 / 已还原 / 无偏差」结论，必须同时基于
-> ① **节点声明值**（`batch_read`，务必开 `resolveVariables` 取变量解析后的计算值）+ ② **实际渲染像素**。
+> ① **节点声明值**（`batch_read`）+ ② **实际渲染像素**。
+> ① 要读**两遍**，差别只在 `resolveVariables`——别把两面当成同一件事：
+> - **开** `resolveVariables: true` → 拿变量的**计算值**，用来和像素比对（这是双证据的声明侧）。
+> - **不传** → 拿原始引用 `$412:14`，用来确认到底**绑没绑**（这是 token 侧）。
+> 开着它读到的 hex 与字面量**完全同形**，因此永远不能用它判断绑定是否存在。
 > **无视觉能力时，像素一律用 `capture_screenshot` 导出 + Pillow 程序化取色兜底。**
 > 禁止仅凭节点数据下结论——变量未生效、字体回退、父级 `clipsContent` / 透明度叠加，都会导致
 > 「声明正常、渲染错误」。只采到单源须显式标注「低置信度、视觉未验证」。
@@ -272,7 +279,8 @@ metadata:
 | 档 | 本批改了什么 | 校验方式 |
 |---|---|---|
 | T1 结构骨架 | 新 frame、布局模式、padding、层级 | 只 `capture_layout(problemsOnly: true)` |
-| T2 内容填充 | 文本内容、token 绑定、实例属性 | **跳过**，并入下一批一起验 |
+| T2 内容填充 | 文本内容、实例属性 | **跳过**，并入下一批一起验 |
+| T2b token 绑定 | 任何颜色 / 圆角 / 间距被写入或复制 | **只做结构读回**：`batch_read(properties: ["fills","strokes","cornerRadius"])`，**不传** `resolveVariables`；返回 `$...` 才算过，见到 hex 即返工。每个区块收尾跑一次，不必每批 |
 | T3 视觉 / 样式 | `fill`、排版、效果、圆角、描边 | 只 `capture_screenshot` |
 | T4 区块完成 | 一整个逻辑区块（hero / features / footer）做完 | `capture_screenshot` + `capture_layout` **各一次** |
 | T5 整页 | 所有区块合并 | 最后一次全页 `capture_screenshot` |
@@ -292,6 +300,12 @@ metadata:
   **确定语言后、发出第一个内容类 `batch_edit` 之前，必须向用户发一行公告**
   （如 `本次设计稿内容将使用中文生成` / `Generating the design content in English`）。每个设计任务都要发。
 - 🎯 **目标节点优先**：用户指名 / 选中了具体节点，就只改那个节点；没指定才自行推断。
+- 🎨 **设计系统门（硬门）**：发出任何 `I()` / `U()` **之前**必须先 `fetch_variables`。文件存在 **COLOR 变量集**
+  且目标属性有语义对应 token 时，颜色 / 圆角 / 间距只能写 `$<variableId>` 或 `$:<SetName>:<VariableName>`
+  （同一文件二选一，不混用，GUID 优先）；出现字面量 `#xxxxxx` 即返工。
+  - 例外 1：`effects` 的阴影色不支持绑定，可保留字面量。
+  - 例外 2：文件**没有**对应 token（例如只有 COLOR 集、没有 radius / spacing 集）→ 用最接近的 token，
+    或写字面量并在交付说明里列出"哪几处没有 token"。**禁止为了合规臆造 variableId**。
 - 📐 **`fetch_editor_state` 必须传 `includeSchema: false`**，避免巨型响应。
 - ✍️ **三段式回复**：Opening · Progress · Closing，用 `---` 分隔。不要对用户说"阶段 1/2/3"这类内部措辞。
 - 🖼 **截图是内部验证产物**：下载并 Read，不向用户暴露路径，不写入 `/tmp`、家目录、项目根目录。
@@ -316,7 +330,7 @@ metadata:
 | 图标 | frame 设 `layout:"none"` + 做成组件 + `I(type:"ref")` 插入；生成后截图验证 | 用 icon font / 不设 `layout:none` |
 | 图标（代码内联） | 改 `<path d>` 时遵循 `design-rules.md` 的「Raw-code SVG」小节：复制权威源（tdesign-icons / lucide / feather）或渲染验证 | 凭记忆手写 path 几何 / 未渲染就交付 |
 | emoji | 文本节点只放纯文本；图标单独做 SVG frame | 用 emoji / Unicode 符号当图标 |
-| 变量绑定 | `$:<SetName>:<VariableName>`（如 `$:Semantic:bg-color`） | `$primary-color` 这类写法 |
+| 变量绑定 | 文件有对应 token 时必须绑：`$<variableId>`（如 `$357:1`）或 `$:<SetName>:<VariableName>`（如 `$:Semantic:bg-color`），同一文件二选一；写之前先 `fetch_variables` | `#xxxxxx` 字面量（`effects` 阴影色除外）/ `$primary-color` 这类写法 / 两种寻址混用 |
 | 节点命名 | 每个新建 / 复制节点都有有意义的 `name` | 无名节点 |
 | 批量提交 | 每批 `batch_edit` ≤ 25 ops，按逻辑区块拆 | 单批塞满整页 |
 | 复制后代 | 用 C() 的 `descendants` 改复制出的后代 | 对复制出的后代直接 U()（ID 已变） |

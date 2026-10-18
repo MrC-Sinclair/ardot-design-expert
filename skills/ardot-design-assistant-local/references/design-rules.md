@@ -113,6 +113,7 @@ title=I("parent", {type: "text", name: "Page Title", content: "Welcome", fontSiz
 - Place reusable components on the side, next to the main design.
 - Overrides are applied only to the overridden object — changes will NOT be inherited to all children.
 - When parsing designs, treat "component" broadly — some are formal symbols, others are ad-hoc groupings visually behaving like components (sometimes prefixed "component/").
+- **Audit before copying (or inheriting) a reference node**: before `C()`-ing a node as a template, `batch_read` it **without** `resolveVariables` and check whether its `fills` / `strokes` / `cornerRadius` are `$...` references or raw literals. A sample copied from a hardcoded board carries that technical debt with it — re-bind the copy instead of reproducing its hex values.
 
 Use `descendants` property to override the child nodes inside the component.
 ``` javascript
@@ -268,10 +269,20 @@ Use different color schemes for different cards/sections to maintain visual dist
 
 Bind reusable design tokens to node properties with the **`$:<SetName>:<VariableName>`** syntax. The `SetName` is the variable set (collection) name and `VariableName` is the variable name within that set. Use `fetch_variables` to discover available variable sets, or `apply_variables` to create/update variables. Variable types: `FLOAT`, `COLOR`, `BOOLEAN`, `STRING`.
 
+The GUID-based form **`$<variableId>`** (e.g. `$357:1`) is equivalent and is what `batch_read` returns. Pick one addressing style per file and never mix them; prefer GUID when names may drift.
+
 ```javascript
 card=I(container, {type: "frame", width: "$:Primitives:card-width", cornerRadius: "$:Primitives:radius-lg", padding: "$:Primitives:spacing-md", fill: "$:Semantic:bg-color", visible: "$:Flags:show-card"})
 title=I(card, {type: "text", content: "$:Content:app-title", fontSize: "$:Primitives:heading-size", fontName: "$:Primitives:body-font", fill: "$:Semantic:text-primary"})
 ```
+
+### Bind Before Build — before you write
+
+1. **`fetch_variables()` first.** Build a semantic → variableId map (e.g. input background = `Input Background` = `$357:1`). If the file defines a COLOR set, never start from a hex you "remember".
+2. **Write the reference**, `$<variableId>` or `$:<SetName>:<VariableName>` — one style per file, never mixed.
+3. **Read back without `resolveVariables`.** With it on, `$412:14` comes back as `#000000` — indistinguishable from a hardcoded literal, which is how a bound node gets misread as "not bound".
+4. **`effects` shadow colors cannot be bound.** Literals are acceptable there, but mark them in the node name or the delivery notes.
+5. **Never inherit literals from a reference node.** The same file can hold both a tokenized board and an all-hardcoded one; whichever you copy, you inherit its debt.
 
 ### Supported Variable Binding Properties
 
@@ -525,7 +536,8 @@ Pick the tier that matches what the batch changed. **Do not run full dual-verifi
 | Batch type | What it changed | Validation |
 |---|---|---|
 | **T1 — Structural scaffold** | New frames, layout mode, padding, hierarchy | `capture_layout({parentId, problemsOnly: true})` only — screenshot not useful yet |
-| **T2 — Content fill** | Text content, token binding, component instance props | **Skip validation**; defer to the next style/phase batch |
+| **T2 — Content fill** | Text content, component instance props | **Skip validation**; defer to the next style/phase batch |
+| **T2b — Token binding** | Any color / radius / spacing written or copied | Structural read-back only: `batch_read({nodeIds, properties: ["fills", "strokes", "cornerRadius"]})` **without** `resolveVariables` — `$...` passes, a hex literal fails and must be re-bound. Once per section, not per batch. |
 | **T3 — Visual/style** | `fill`, typography, effects, cornerRadius, strokes | `capture_screenshot({fileUrl, nodeIds})` only |
 | **T4 — Section complete** | A whole logical section (hero, features, footer) is done | Run **both** `capture_screenshot({fileUrl, nodeIds})` + `capture_layout({parentId, problemsOnly: true})` **once** |
 | **T5 — Final page** | All sections merged | One final `capture_screenshot({fileUrl, nodeIds: [pageId]})` of the full page |

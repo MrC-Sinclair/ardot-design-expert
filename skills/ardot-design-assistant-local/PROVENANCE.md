@@ -16,6 +16,7 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 | 盘符路径（Windows） | `D:/codeSoftware/WorkBuddy/resources/app.asar.unpacked/resources/plugins/workbuddy-builtin/skills/` |
 | 上游族| `ardot-design-core` · `ardot-ui-design` · `ardot-slides` · `ardot-poster` · `ardot-design-to-code` · `miora-creative-core` · `miora-brand-design` · `miora-image-generation` · `miora-video-generation` |
 | 最近一次同步 | 2026-10-05 |
+| 本地版本 | 1.5.1（2026-10-18）：补齐「设计系统门 / Bind Before Build / T2b token 绑定校验」 |
 | 同步方式 | `bash sync-check.sh`（见下） |
 
 ---
@@ -52,13 +53,13 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 
 | 本包文件 | 上游来源 | 分叉内容 |
 |---|---|---|
-| `references/design-rules.md` | `ardot-design-core/rules/design-rules.md` | **本地扩充约 40KB**（组件属性定义 / 变体 / 组件属性绑定等章节为本地独有）；同时已修正上游的 `screenShotDir`、`G() "stock"` 等失效参数 |
+| `references/design-rules.md` | `ardot-design-core/rules/design-rules.md` | **本地扩充约 40KB**（组件属性定义 / 变体 / 组件属性绑定等章节为本地独有）；同时已修正上游的 `screenShotDir`、`G() "stock"` 等失效参数。1.5.1 新增 `### Bind Before Build`、`T2b — Token binding` 校验档、Components 段的「复制前审计参考节点」 |
 | `references/style-guide.md` | `ardot-design-core/rules/style-guide.md` | 小幅修订（`G()` 类型枚举更正） |
 | `references/shared-styles.md` | `ardot-design-core/func-rule/shared-styles/SKILL.md` | 去frontmatter，正文一致 |
 | `references/component-instance.md` | `ardot-design-core/func-rule/component-instance/SKILL.md` | 小幅修订 |
-| `references/design-variables.md` | `ardot-design-core/func-rule/design-variables/SKILL.md` | 小幅修订 |
+| `references/design-variables.md` | `ardot-design-core/func-rule/design-variables/SKILL.md` | 小幅修订；1.5.1 新增「写画布前必做（Bind Before Build）」与 `resolveVariables` 读回口径。**已从 SKILL.md 的「宿主注入跳过清单」移出**——本文件是 fork，旧清单按 verbatim 跳过它，会让本地新增内容在注入模式下永不生效 |
 | `references/ardot-workflow.md` | `ardot-design-core/workflows/ardot-workflow.md` | 不存在工具替换为`batch_read` / `batch_edit` |
-| `references/batch-edit-tool-usage.md` | `ardot-design-core/tool-usage/batch-edit.md` | 小幅修订 |
+| `references/batch-edit-tool-usage.md` | `ardot-design-core/tool-usage/batch-edit.md` | 小幅修订；1.5.1 补一条「成功响应 ≠ 已绑定 token」的校验提示 |
 | `references/slides-workflow.md` | `ardot-slides/workflows/slides-workflow.md` | 流程细化 |
 | `references/design-to-code-workflow.md` | `ardot-design-to-code/workflows/design-to-code-workflow.md` | 流程细化（Phase 0 平台澄清、双证据终验） |
 | `references/guidelines-landing-page.md` | `ardot-ui-design/references/guidelines-landing-page.md` | `G()` 类型枚举更正 |

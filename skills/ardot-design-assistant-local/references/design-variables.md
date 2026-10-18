@@ -1,5 +1,15 @@
 # Working with Design Variables
 
+## Bind Before Build（写画布前必做）
+
+1. `fetch_variables()` → 建「语义 → variableId」映射（如 输入框底 = `Input Background` = `$357:1`）。文件有 COLOR 集时，不要凭记忆里的 hex 开工。
+2. 写 `$<variableId>`（GUID）或 `$:<SetName>:<VariableName>`（name-based），**同一文件二选一、不混用**；`fill` / `stroke` 支持简写，多填充写进 `fills[].color`。
+3. 读回校验**不要传** `resolveVariables`：开着它 `$412:14` 会被解析成 `#000000`，和硬编码长得一模一样——这是"看起来没绑"的经典误判来源。
+4. `effects` 的阴影色不支持绑定，可保留字面量，但要在节点名或交付说明里标出。
+5. 参考节点上的字面量不得继承——同一个文件里可能既有 token 化的板子，也有全字面量的板子。
+
+> 完整规则与支持属性见 `design-rules.md` 的 `## Working with Design Variables`（唯一事实来源）。
+
 Bind reusable design tokens to node properties. References have two independent dimensions: **location** (local or team library) and **addressing** (name or GUID), producing four canonical forms:
 
 | Location | Name-based | GUID-based |
