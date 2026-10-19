@@ -105,7 +105,7 @@ text=I(component,{type:"text", text: "Text", fontSize: 24, componentPropertyRefe
 
 already exist three component nodes: `3:5` and `3:7`, and `3:11`, `3:11` has three component properties: Boolean Property: `Show Icon#252:1`, Text Property: `Label#252:2` and Instance Swap Property: `Icon#252:3`.
 
-For a remote team-library component, add `libraryKey` to the `ref` node. Use the component's source node id (`assetId` from `component_search`) as `ref`, and the library source file id as `libraryKey`.
+For a remote team-library component, add `libraryKey` to the `ref` node. Use the component's source node id (`assetId` from `component_search`) as `ref`, and the library source file id as `libraryKey`. `libraryKey` is **only** for `batch_edit` instance refs — **never** pass it to `open_design` / `create_design`. Copy ids from `component_search` / live file data, never from the sample below.
 
 ``` javascript
 item1=I("35:2", {type: "ref", ref: "3:11", componentProperties: {"Show Icon#252:1": true, "Label#252:2": "Text1"}})

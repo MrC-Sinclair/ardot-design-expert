@@ -232,12 +232,13 @@ When generating project-relative URLs or imports, derive them from the returned 
 
 ### Step 2.5: Naming Conventions
 
-Exported files automatically use `nodeId` as the filename (colons replaced with underscores), e.g., `2_5.svg`.
+`export_nodes` auto-generates each filename from the node ID and appends a **timestamp** to avoid overwrites (e.g. `2_5-1735689600000.svg`). **Never derive a filename from the node ID yourself** — always use the exact path / basename the tool returned; a hand-built name will 404.
+
 It is recommended to preserve semantic names in code via comments or variable names for maintainability:
 
 ```html
 <!-- Corner Decor Top Left -->
-<img src="assets/svg/2_5.svg" alt="">
+<img src="assets/svg/2_5-1735689600000.svg" alt="">
 ```
 
 ---
@@ -360,8 +361,9 @@ Slide 01 - Cover           <section class="slide slide-01">
 - e.g., `"Hero Background"` → `.hero-bg`
 
 **Image references:**
-- Image fill nodes → `<img src="assets/images/2_xxx.png">`
-- SVG decorative nodes → `<img src="assets/svg/2_xxx.svg">`
+- Image fill nodes → use the **exact PNG path / basename returned by `export_nodes`**
+- SVG decorative nodes → use the **exact SVG path / basename returned by `export_nodes`**
+- Never derive an exported filename from the node ID; preserve the runtime-generated timestamp
 - Pure CSS elements (gradients, solid rectangles) → no images needed, implement with CSS
 
 ### Step 3.5: Multi-Page/Slide Transition Effects
@@ -417,6 +419,10 @@ slide.style.transformOrigin = 'top left';
 ---
 
 ## Phase 4: Verification & Preview
+
+> **前置判断（上游 5.8.x 新增约束）**：宿主若**没有**本地服务 / 浏览器预览能力（或明确禁止起服务），**不要**为了"跑起来看看"而启动 dev server、也不要用臆想的截图冒充预览。
+> 此时降级为：静态打开生成的 HTML（依赖 CDN 的改用相对资源）→ 读关键节点的 computed style / 截图工具可得就用 → 其余按 4.3 标注「低置信度、未渲染验证」。
+> 有本地服务能力时，按下面 4.1–4.3 完整执行——**双证据终验不可省**。
 
 ### Step 4.1: Start Local Server
 

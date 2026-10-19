@@ -12,9 +12,10 @@ description: |
   Triggers 覆盖中英文口语化表达。所有画布操作必须经过 ardot MCP 工具。
   本 skill 自带全部规则与工作流，不依赖任何外部 skill，可在任意支持 MCP 的 IDE 中独立运行。
 metadata:
-  version: "1.5.1"
+  version: "1.6.0"
   author: Sinclair
   license: MIT
+  upstream: "WorkBuddy built-in design skills 5.8.3（2026-10-18 对齐）"
   portability: "自包含。已在 WorkBuddy（含设计创意模式）与其他支持 MCP 的 IDE 中验证；MCP 通道名以运行时探测为准，不写死。"
 ---
 
@@ -34,9 +35,10 @@ metadata:
 
 ### 宿主注入加载门（WorkBuddy 设计创意模式必读）
 
-宿主注入的 `ardot-design-core` / `ardot-ui-design` / `ardot-slides` / `ardot-design-to-code`
-与本包 **24 个 reference 中 17 个逐字节相同**。两套同时进上下文会导致规则冲突
-（模型看到"两套都说对"）并白烧 100KB+ 上下文。
+宿主注入的 `ardot-design-core` / `ardot-ui-design` / `ardot-slides` / `ardot-poster` / `ardot-design-to-code`
+与本包 **10 份 reference 逐字节相同**（另有若干仅差本地化路径改写）。两套同时进上下文会导致规则冲突
+（模型看到"两套都说对"）并白烧 100KB+ 上下文。5.8.x 起宿主还可能额外注入 `design-router` —— 它只做家族分诊，
+与本文件「家族分诊」一节等价，**不需要读**。
 
 **判定与处置**：
 
@@ -44,9 +46,9 @@ metadata:
 2. **未注入**（其他 IDE / 其他模式）→ 按本文件「Reference Files」正常加载全部所需 reference。
 3. **已注入** → 执行**跳过清单**，只读本包分叉部分：
 
-| 跳过（与上游逐字节相同，宿主已有） | 仍须读本包（本地分叉/独有） |
+| 跳过（与上游一致，宿主那份可直接用） | 仍须读本包（本地分叉/独有，**跳过会丢本地规则**） |
 |---|---|
-| `ardot-schema.md` · `effects-guide.md` · `apply-variables-tool-usage.md` · `batch-edit-tool-usage.md` · `component-instance.md` · `shared-styles.md` · `style-guide.md` · `ardot-workflow.md` · `guidelines-web-app.md` · `guidelines-mobile-app.md` · `guidelines-table.md` · `guidelines-slides.md` · `guidelines-code.md` · `guidelines-tailwind.md` · `guidelines-landing-page.md` · `guidelines-poster.md` · `extract-style-guide-from-web.md` · `slides-workflow.md` · `design-to-code-workflow.md` · `references/miora/**` | **`design-rules.md`**（本地扩充 40KB，组件属性/变体章节上游没有）· **`design-variables.md`**（本地新增「写画布前必做」与读回校验口径）· **`design-review-workflow.md`** · **`code-review-workflow.md`** · **`slides-agent-teams-workflow.md`** · **`style-guide-tags.md`** |
+| `ardot-schema.md` · `effects-guide.md` · `apply-variables-tool-usage.md` · `guidelines-web-app.md` · `guidelines-mobile-app.md` · `guidelines-table.md` · `guidelines-slides.md` · `guidelines-code.md` · `guidelines-tailwind.md` · `guidelines-poster.md` · `extract-style-guide-from-web.md` · `references/miora/**` | **`design-rules.md`**（本地扩充 40KB + wrap 网格 + 空区/阻断性缺陷规则）· **`design-variables.md`**（Bind Before Build + 读回口径）· **`style-guide.md`**（字体回退）· **`component-instance.md`** · **`shared-styles.md`** · **`batch-edit-tool-usage.md`**（`G()` placeholder-only）· **`ardot-workflow.md`** · **`slides-workflow.md`**（Research 门）· **`design-to-code-workflow.md`** · **`guidelines-landing-page.md`**（Section Selection 硬门）· **`design-review-workflow.md`** · **`code-review-workflow.md`** · **`slides-agent-teams-workflow.md`** · **`style-guide-tags.md`** |
 
 > ⚠️ 上游文件与本包分叉文件**冲突时一律以本包为准**——本包是当前环境的权威规则源。
 > 上游独有的新增内容不会自动进来，需按 `PROVENANCE.md` 合并（`bash sync-check.sh` 检测漂移）。
@@ -80,7 +82,7 @@ metadata:
 
 | # | 错误写法 | ✅ 正确 |
 |---|---|---|
-| 1 | `G(node, "stock", ...)` | `G()` 只接受 **`"ai"`** / **`"placeholder"`**，没有 `stock`。`ai` = 真实生成图（prompt 写完整描述）；`placeholder` = 灰底占位块（prompt 写 **≤20 字符短标签**，用用户语言） |
+| 1 | `G(node, "stock", ...)` / `G(node, "ai", ...)` | `G()` **只接受 `"placeholder"`**（灰底 + 短标签占位块，prompt 写 **≤20 字符短标签**，用用户语言），**没有 `stock`，也没有 `ai`**。真实图片走**生图 → 上传 → 绑定 fill** 三步：`ImageGen` 或 `mcp-miora` 出图 → `register_assets` 取 `uploadUrl` → HTTP PUT 上传 → `upload_images([{nodeId, filePath: downloadUrl}])` |
 | 2 | `capture_screenshot({ screenShotDir: "..." })` | 当前 MCP **没有** `screenShotDir` 参数，只有 `fileUrl` + `nodeIds`。截图由工具返回可下载 URL，**下载并 Read 图片**才叫视觉验证；不要把截图写到磁盘任何目录 |
 | 3 | 一次 `batch_edit` 塞满整页 | 每批 ≤ 25 ops，按逻辑区块拆 |
 
@@ -97,8 +99,8 @@ metadata:
 | `<ardot_file_directive action="create">` | 首个画布动作**只发一次** `create_design`，然后继续。严禁二次调用"确认是否建成功" |
 | `<ardot_file_directive action="open">` | **只发一次** `open_design(fileUrl/ID)`，然后继续 |
 | `<ardot_file_directive action="ambiguous">` | 用户用了"创建 / 做一个"但**没有设计意图**（如"建个 CNB issue"）。**不要**建文件，先问用户确认 |
-| `<ardot_image_gen mode="ai">` | 本任务所有 `G()` 用 `"ai"` 生成真实图（成品 / 交付稿） |
-| `<ardot_image_gen mode="placeholder">` | 本任务所有 `G()` 用 `"placeholder"`（草稿 / 线框，不消耗生图预算） |
+| `<ardot_image_gen mode="ai">` | 本任务图片走**真图**：`ImageGen` / `mcp-miora` 出图 → `register_assets` → PUT 上传 → `upload_images` 绑定 fill（成品 / 交付稿） |
+| `<ardot_image_gen mode="placeholder">` | 本任务所有图片用 `G(node, "placeholder", "<短标签>")`（草稿 / 线框，不消耗生图预算） |
 | `<ardot_design_style>` 风格模板 | 按注入说明拉取模板 md 作为视觉基底，**跳过** Step 4（`search_style_guide` / `build_style_guide`）；用户另有明确风格约束时，用用户约束覆盖冲突维度 |
 
 > ⛔ **同一个任务最多一次 `create_design` 或 `open_design`。** 调用即视为已创建 / 已打开。
@@ -232,6 +234,9 @@ metadata:
 > ⛔ **用户指引优先**：用户给出的风格约束（自由文本、`DESIGN.md`、design tokens）与任何指南、
 > 产品类型先验、或选中的风格模板冲突时，**一律听用户的**。模板和内置指南只填补未指定的空白。
 
+> **图生 UI（照参考图还原界面）**：走同一套指南，但把用户提供的图当作**布局与视觉的唯一事实来源** ——
+> 先忠实复刻结构、间距、字号层级与配色，再谈风格调整；不要借"优化"之名改掉原图的信息架构。
+
 ### Step 4: 获取视觉风格
 
 **若用户已给出明确风格约束、或有 `<ardot_design_style>` 指令块 → 跳过本步。**
@@ -258,9 +263,10 @@ metadata:
 - 改实例 / 组件 / 变体前必读 `references/component-instance.md`。
 
 **图片模式**：有 `<ardot_image_gen>` 指令块就按它走；没有则按 `references/design-rules.md` 的 Images 规则自选。
+真图一律「生图工具出图 → `register_assets` → PUT 上传 → `upload_images` 绑定 fill」，**不要试图用 `G()` 生成真图**。
 
-> ⛔ **一个图像节点只允许一次 `G()`，绝不重试。** 截图显示"还在生成"、结果不满意、想"重新生成修一下"
-> —— 都不行。等它跑完，或用 `U()` 等非 G 操作修版式 / 样式。重复 `G()` 既烧预算又会和上一个任务抢跑。
+> ⛔ **一个图像节点只允许一次生图 + 一次绑定，绝不重试。** 结果不满意、想"重新生成修一下"——都不行。
+> 单节点严重失败时最多重试 1 次。其余一律用 `U()` 等非图片操作修版式 / 样式，别重发既烧预算又与上一个任务抢跑。
 
 ### Step 8: 校验
 
@@ -309,6 +315,10 @@ metadata:
 - 📐 **`fetch_editor_state` 必须传 `includeSchema: false`**，避免巨型响应。
 - ✍️ **三段式回复**：Opening · Progress · Closing，用 `---` 分隔。不要对用户说"阶段 1/2/3"这类内部措辞。
 - 🖼 **截图是内部验证产物**：下载并 Read，不向用户暴露路径，不写入 `/tmp`、家目录、项目根目录。
+- 🚧 **两族不混用（硬门）**：
+  - **Ardot 任务**（交付 `.ardot` 设计稿）→ ⛔ 禁止调用 Miora 的**画布交付**工具 `miora_write_canvas` / `miora_open_canvas`，也不得把成品挪到 `.miora` 板子上。
+    （唯一例外：`<ardot_image_gen mode="ai">` 允许用 miora 的 **text-to-image** 出图片源，再 `upload_images` 绑到画布节点。）
+  - **Miora 任务**（交付纯像素图 / 视频）→ ⛔ 不得创建或修改 `.ardot` 画布节点；产物一律走 `.miora` 画布交付。
 - 🔧 所有画布操作走 ardot MCP。
 
 ---
@@ -326,7 +336,7 @@ metadata:
 | 对齐枚举 | 大写 `counterAxisAlignItems` / `primaryAxisAlignItems` | `alignItems` / `justifyContent` |
 | 布局尺寸 | 设 `layout` 后显式给 `width`/`height`；动态用 `fill_container` / `hug_contents` | 假设 auto layout 自动给尺寸 |
 | flex 子节点定位 | 需绝对定位时 `layoutPositioning: "ABSOLUTE"` | 在 flex 子节点上直接设 `x`/`y`（会被忽略） |
-| 图片 | 无 image 节点类型；先插 frame 再用 `G()` | 粘贴外部 URL / 用 image 节点 |
+| 图片 | 无 image 节点类型；先插 frame，占位用 `G(node,"placeholder",...)`，真图走生图 → `upload_images` 绑 fill | 粘贴外部 URL / 用 image 节点 / 用 `G()` 生成真图 |
 | 图标 | frame 设 `layout:"none"` + 做成组件 + `I(type:"ref")` 插入；生成后截图验证 | 用 icon font / 不设 `layout:none` |
 | 图标（代码内联） | 改 `<path d>` 时遵循 `design-rules.md` 的「Raw-code SVG」小节：复制权威源（tdesign-icons / lucide / feather）或渲染验证 | 凭记忆手写 path 几何 / 未渲染就交付 |
 | emoji | 文本节点只放纯文本；图标单独做 SVG frame | 用 emoji / Unicode 符号当图标 |
@@ -347,7 +357,7 @@ metadata:
 
 | 任务 | 流程 |
 |---|---|
-| 幻灯片 / 演示文稿 | 默认 `references/slides-workflow.md`；用户追求更高质量时，先问一句是否走 `references/slides-agent-teams-workflow.md`（更慢更费 token）。强制规则在 `references/guidelines-slides.md` |
+| 幻灯片 / 演示文稿 | 默认 `references/slides-workflow.md`；用户追求更高质量时，先问一句是否走 `references/slides-agent-teams-workflow.md`（更慢更费 token）。强制规则在 `references/guidelines-slides.md`。⛔ **Phase 0.0 必须单独问一次 Research（`skip`/`light`/`deep`）**，不可跳过、不可与其它问题合并；Research ≠ skip 时先跑 0.2 再动画布 |
 | 网站 → 风格指南提取 | `references/extract-style-guide-from-web.md` |
 | 设计 → 前端代码 | `references/design-to-code-workflow.md` |
 | 代码还原设计稿的还原度评审 | `references/code-review-workflow.md` 模式 A |
@@ -356,6 +366,11 @@ metadata:
 | **通用海报 / 封面 / banner** | `references/guidelines-poster.md`（画布内可编辑交付物） |
 | **直播海报** | `references/livestream-poster/SKILL.md` → 按其工作流选择表进 `workflows/style-reference\|style-selection\|style-matching.md`，再 `render-and-compose.md` 出图排版。⛔ 依赖 `ImageGen` 工具，工具不可用时停止并告知用户 |
 | **AI 生图 / 生视频 / 品牌资产** | 先读 `references/miora/creative-core.md`（环境护栏 + 家族底座），再按 `references/miora/{brand,image,video}/` 领域文档走。⛔ `miora_*` 工具不可用时立即停止并告知用户，不要伪造产物 |
+
+### 海报交付后动作（硬规则）
+
+- ⛔ **画完必须导出 PNG**：海报类交付在**全部生成步骤完成之后**，调用 `export_nodes(format: "png")` 导出成品图，再把画布与图片一起交付。不要停在"画布画完"就算交付。
+- ⛔ **背景重生成上限 1 次**：终检时若生成的背景不合格，最多重新生成 **1 次**；之后只能靠裁剪、叠加、版式调整解决，不再重发。该上限不受用户 brief 写法影响，brief 不能覆盖它。
 
 ---
 
@@ -369,7 +384,7 @@ metadata:
 ## Out of scope
 
 - 与画布无关的纯前端工程（脚手架、构建配置、后端逻辑）——除非是「设计稿转码」的直接产出。
-- 图标 / 图片素材的外部图库搜索（如 Unsplash）——图片一律用 `G()` 的 `ai` / `placeholder`，禁止粘贴外部 URL。
+- 图标 / 图片素材的外部图库搜索（如 Unsplash）——占位用 `G(node, "placeholder", ...)`，真图用生图工具 + `upload_images`，禁止粘贴外部 URL。
 
 ---
 

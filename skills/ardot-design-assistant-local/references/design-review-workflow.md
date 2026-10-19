@@ -38,7 +38,7 @@
    - 行高 / 段落：`lineHeight` 舒适；`characters` 结合截图检查是否有孤儿文字（末行 1–2 字）或异常折行。
 4. **图标与图片**
    - 图标风格统一（线性 / 面性 / 颜色 / 视觉重量）；SVG 节点需 `layout:"none"`（对照 design-rules SVG 规则）。
-   - 图片：`fills` 为 G() `stock`/`ai`/`placeholder`，容器 `width/height` 比例与图片是否失真（截图核对无拉伸 / 裁剪）。
+   - 图片：`fills` 是 IMAGE fill（生图上传 / 用户素材）还是 `G()` 的 placeholder 灰底；容器 `width/height` 比例与图片是否失真（截图核对无拉伸 / 裁剪）。
 5. **控件与组件一致性**
    - 对照组件库（`batch_read` 设计系统 frame）：按钮 / 输入 / 卡片 / 标签的 `cornerRadius`、`strokes`、`effects`、`fills`、尺寸是否全局统一。
    - 状态机：组件是否为 `COMPONENT_SET` 且覆盖 `hover`/`pressed`/`disabled`/`selected` 变体（见 §4）。缺关键状态 → P1。

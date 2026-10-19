@@ -53,7 +53,46 @@ Comprehensive rules for creating and editing .ardot designs. This is the single 
 - Use `primaryAxisAlignItems: "CENTER"` + `counterAxisAlignItems: "CENTER"` to center children (only works for flexbox layout).
 - Use `layoutGrow: 1` to make a child fill remaining space along the primary axis.
 - Use `primaryAxisAlignItems: "SPACE_BETWEEN"` to distribute children to opposite ends (only works for flexbox layout).
+- **Repeating card / product grids → `layout: "wrap"`**, not manual row math. Set `gap` (horizontal) + `counterAxisSpacing` (vertical) on the grid, fixed `width` + `height: "hug_contents"` on each card. See **Wrap Grid** below.
 - Setting layout to `"none"` will make all children use absolute positioning. Avoid using absolute positioning unless absolutely necessary.
+
+### Wrap Grid (cards / product grids)
+
+For repeating card layouts (product cards, feature cards, stat cards), use `layout: "wrap"` instead of manual row calculations:
+
+```javascript
+// Grid container — wraps cards automatically
+grid = I(section, {
+  type: "frame", name: "Product Grid",
+  layout: "wrap",              // ⭐ CRITICAL — enables auto-wrapping
+  width: "fill_container",
+  height: "hug_contents",      // grows with content
+  gap: 12,                     // horizontal gap between cards
+  counterAxisSpacing: 12       // vertical gap between wrapped rows
+})
+// Cards — fixed width, hug height
+card = I(grid, {
+  type: "frame", name: "Product Card",
+  width: 165,                  // fixed width determines when to wrap
+  height: "hug_contents",      // ⭐ NEVER fixed height on cards in grid
+  layout: "vertical", gap: 8
+})
+// Card image — fill width
+cardImg = I(card, { type: "frame", width: "fill_container", height: 165 })
+```
+
+**Key rules**:
+- Grid: `layout: "wrap"` + `height: "hug_contents"` (mandatory)
+- Cards: fixed `width` (controls column count) + `height: "hug_contents"` (adapts to content)
+- Card images: `width: "fill_container"` (stretches to card width)
+- Card width formula: `(available_width - gap × (columns - 1)) / columns`
+
+```diff
+❌ Fixed height cards in grid (clips or leaves whitespace):
+   card = I(grid, { width: 165, height: 240 })
+✅ Hug-height cards (adapts to varying content):
+   card = I(grid, { width: 165, height: "hug_contents", layout: "vertical" })
+```
 
 ### Layout Code Example
 
@@ -350,12 +389,16 @@ badText=I(badRow, {type: "text", content: "John"})
 ## Images
 
 - NO `image` node type. Images are **fills** on frame/rectangle nodes.
-- Use `G()` for images — never generate random URLs.
-- 图片生成用 `G()` 操作，**`type` 只有两种合法值**：`"ai"`（按 prompt 生成真实图，成品 / 交付稿用）/ `"placeholder"`（灰底 + 短标签占位块，草稿 / 线框用，**prompt 写 ≤ 20 字符短标签**，用用户语言）。
+- 占位图用 `G()`；**`G()` 的 `type` 只有一个合法值 `"placeholder"`**（灰底 + ≤20 字符短标签，用用户语言）。`stock` / `ai` 都不存在。
+- 真图（AI 生成 / 用户素材）走三步管线，**不要试图用 `G()` 出图**：
+  1. 生图：`ImageGen` 或 `mcp-miora` text-to-image 出**本地文件**
+  2. 上传：`register_assets({contentType})` 取 `uploadUrl` + `downloadUrl` → `curl -X PUT '<uploadUrl>' -H 'Content-Type: image/png' --data-binary '@<file>'`
+  3. 绑定：`upload_images({items: [{nodeId, filePath: "<downloadUrl>"}]})` —— 这会替换节点原有 fills
+- 用户提供的本地素材（Logo / 产品图 / 参考图）走同一条 2–3 步管线，不要试图内联 base64 或外链。
 - ⛔ **没有 `"stock"` 类型**（真实图库随机图不存在）。也不存在 `fetch_style_guide` / `fetch_style_guide_tags` / `scan_all_unique_properties` / `substitute_all_matching_properties` 这几个工具，风格关键词灵感读本地 `style-guide-tags.md`。
-- ⛔ **一个图像节点只允许一次 `G()`，绝不重试**（结果不满意也不重发）。等它跑完，或用 `U()` 修版式 / 样式 —— 重复 `G()` 既烧预算又与上一个任务抢跑。
-- Pattern: Insert frame → apply G() as fill.
-- When G() is unavailable, use `GRADIENT_LINEAR` fills as placeholders with different color schemes per section.
+- ⛔ **一个图像节点只允许一次生图 + 一次绑定，绝不重试**（不满意也不重发）。单节点严重失败最多重试 1 次；否则用 `U()` 修版式 / 样式 —— 重复生图既烧预算又与上一个任务抢跑。
+- Pattern: Insert frame → 占位用 `G()`，真图用生图 + `upload_images`。
+- 生图工具不可用时，用 `GRADIENT_LINEAR` fills 作占位，不同区块换配色以保持视觉区分。
 
 ## Effects
 
@@ -546,19 +589,23 @@ Rules of thumb:
 - If two consecutive batches are both T2 or T3, validate **once at the end**, not after each.
 - Prefer batching corrective fixes: accumulate issues and fix them in **one** `batch_edit`, then re-validate once.
 - `capture_screenshot({fileUrl, nodeIds})` for nodes > 2000px tall: screenshot sections, not the whole node.
+- **`capture_layout` is the default check.** `capture_screenshot` is a scarce, vision-only resource: **at most 2 calls per section / repair batch** (typically 1). If you cannot read image pixels, never call it — use `capture_layout` only.
+- **Every `capture_screenshot` must be Read**, not just saved. A returned path is not visual validation.
+- Findings visible in a screenshot are **tool evidence even when `capture_layout` came back clean** — do not dismiss a visible defect because the structural check passed.
+- **`capture_layout` reports large-empty-area warnings by default.** Treat them as review candidates: confirm from the screenshot and page contract whether the empty space is intentional before changing container size, padding, or adding content.
 
 ### Convergence Threshold — When to Stop Iterating
 
 Validation loops must **terminate**. Apply these stop conditions:
 
-1. **Hard cap**: at most **2 fix iterations** per section. If a third pass is about to start, record the remaining issue as a known limitation in your final summary and move on — do not keep looping.
+1. **Hard cap**: at most **2 fix iterations** per section. If a third pass is about to start, stop blind retries and record the remaining issue. **Blocking defects are the exception** — missing requested content, duplicated primary actions / navigation, unreadable data, empty modules, or wrong component semantics must not be reported as a successful delivery: change the implementation approach or report the result as incomplete.
 2. **Ignore cosmetic noise** from `capture_layout`:
    - Spacing deltas ≤ 4px
    - Sub-pixel misalignment (< 1px)
    - Non-critical overflow in decorative/background nodes
    - Problems on nodes outside the section currently being built
 3. **No subjective re-polishing**: once a section matches the style guide and has no structural problems, **do not** run additional screenshots "to double-check" or to hunt for aesthetic improvements. Ship it.
-4. **Only fix what the tool reported**: don't invent new issues from a screenshot when `capture_layout` came back clean.
+4. **Use tool evidence**: fix structural findings from `capture_layout` and visible defects from the screenshot. Do not invent issues unsupported by either source, but never dismiss a visible semantic defect merely because `capture_layout` is clean.
 
 ### Corrective Fix Protocol
 

@@ -187,7 +187,7 @@ Execute the following tasks in order. Use the shared task list to track progress
    - Analyze the topic — identify key themes, subtopics, data points needed
    - Search and collect information, save organized research data to `.slide-task/search-data.md`
    - Don't search too many sources, reference only 5-10 sources is enough, and make sure not spend too much time on searching
-3. Collect images — Use web search to find relevant images(preferred) or generate images using `image_gen` tool, save to `.slide-task/images/`. If the `image_gen` tool is unavailable and no suitable images can be found on the web, mark them in the Task 2 image index for later generation via the `batch_edit` G("ai") operation, and provide the image prompt. At least 8 images for all slides. Make sure all images fit the main theme and rename them to clean filenames.
+3. Collect images — Use web search to find relevant images(preferred) or generate images using `image_gen` tool, save to `.slide-task/images/`. If the `image_gen` tool is unavailable and no suitable images can be found on the web, mark them in the Task 2 image index for later generation via the image generation tool plus `register_assets` → `upload_images` binding (`G()` is placeholder-only and cannot produce real images), and provide the image prompt. At least 8 images for all slides. Make sure all images fit the main theme and rename them to clean filenames.
 
 ## Task 2: Create Slide Plan
 

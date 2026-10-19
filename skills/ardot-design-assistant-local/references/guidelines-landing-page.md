@@ -23,6 +23,20 @@ When designing a landing page for a SaaS product or startup, follow this proven 
 
 This structure is a baseline. Adapt, reorder, or omit sections based on the specific product and conversion goals.
 
+### Section Selection (Mandatory Hard Stop)
+
+**Before starting any landing page task, you MUST ask the user which sections to include using the `AskUserQuestion` tool as a multi-select question.** This prevents over-long tasks and keeps the design focused on what the user actually needs.
+
+Rules:
+- The question MUST be multi-select, listing sections 3–9 above as options (Header, Hero, and Footer are always included by default and should NOT appear as selectable options — they are implicit).
+- Provide an explicit "Skip / use default" option in the choices.
+- If the user does not select anything, picks "Skip / use default", or otherwise declines to choose, fall back to the **default minimal structure**: Header + Hero Section + Footer.
+- Never silently include all 10 sections. A full 10-section page is only allowed when the user explicitly selects every option.
+- Respect the user's selection literally: include only Header, Hero, Footer, and the user-picked sections, in the order listed above.
+- This selection step runs **before** the Brief & Requirements Check below and is independent of it. Do not skip it even if the user wrote a detailed brief.
+
+Within the user-selected sections you may still adapt content, ordering nuances, and emphasis to the product and conversion goals — but you may not add sections the user did not pick.
+
 ## Getting Started with batch_edit
 
 First, create the main page container with flex layout in a single batch_edit call:
@@ -37,8 +51,9 @@ Then add sections into the page container in a separate batch_edit tool call, ex
 
 ```javascript
 hero=I("d920d", {type: "frame", name: "Hero", layout: "vertical", width: "fill_container", height:"hug_contents", padding: [80, 120], gap: 32})
-G(hero, "ai", "modern team collaboration workspace")
-U(hero, {fill: "#000000AA"})
+// Hero 背景图：不要用 G() 出真图。生图工具出图 → register_assets → PUT 上传 → upload_images 绑定 fill。
+// 暂时没有图时用渐变兜底：
+U(hero, {fills: [{type: "GRADIENT_LINEAR", gradientStops: [{color: {r: 0.05, g: 0.05, b: 0.09, a: 1}, position: 0}, {color: {r: 0.15, g: 0.19, b: 0.35, a: 1}, position: 1}], gradientTransform: [[1, 0, 0], [0, 1, 0]], opacity: 1, visible: true, blendMode: "NORMAL"}]})
 heroHeadline=I(hero, {type: "text", content: "Transform Your Workflow", fontSize: 64, fontWeight: "700", fill: "#FFFFFF"})
 heroSubline=I(hero, {type: "text", content: "The all-in-one platform that helps teams ship faster", fontSize: 24, fill: "#A0A0A0"})
 ctaButton=I(hero, {type: "frame", layout: "horizontal", padding: [16, 32], cornerRadius: 8, fill: "#6366F1"})
@@ -157,7 +172,7 @@ Typography: Choose fonts that are beautiful, unique, and interesting. Opt into d
 Color & Theme: Commit to a cohesive aesthetic. Reuse elements (fonts, paddings, etc.) for consistency. Dominant colors with sharp accents outperform timid, evenly-distributed palettes.
 Spatial Composition: Unexpected layouts. Asymmetry. Overlap. Diagonal flow. Grid-breaking elements. Generous negative space OR controlled density.
 Backgrounds & Visual Details: Create atmosphere and depth rather than defaulting to solid colors. Add contextual effects and textures that match the overall aesthetic. Apply creative forms like gradient meshes, noise textures, geometric patterns, layered transparencies, dramatic shadows, decorative borders, custom cursors, and grain overlays.
-Photography: If photography is needed, look for an "images" folder first. If there is none, use the image (G) operation to generate visuals: `G(node, "ai", "<prompt>")` for real AI-generated photos/illustrations, or `G(node, "placeholder", ...)` for quick placeholder fills. **G() 只支持 `"placeholder"` 与 `"ai"` 两种类型，没有 `"stock"` 类型，不要尝试搜索外部图库（如 Unsplash）**。Write precise prompts describing the feeling and human state, not just the object. Do not assume or hallucinate image URLs. If no photos are needed, rely on UI, gradients, or illustration.
+Photography: If photography is needed, look for an "images" folder first. If there is none, generate the visuals with the image generation tool (`ImageGen` / `mcp-miora`), then bind them onto the node with `register_assets` → PUT upload → `upload_images`. `G()` is **placeholder-only** (`type: "placeholder"`) — there is no `"ai"` and no `"stock"` type, and no external image library (Unsplash etc.) is available. Write precise prompts describing the feeling and human state, not just the object. Do not assume or hallucinate image URLs. If no photos are needed, rely on UI, gradients, or illustration.
 
 Imagery Intent Hierarchy (prioritize in this order):
 1. Transformation imagery (highest impact): Show people in the after state—the emotion, the outcome, the identity achieved. The product may be absent or peripheral. This is the most powerful because viewers project themselves into the result.
@@ -167,7 +182,7 @@ Imagery Intent Hierarchy (prioritize in this order):
 
 Think of every image as a scene from the visitor's future life. You are casting them as the protagonist. The product is a prop. Ask: What is the person feeling in this image? What just happened, or is about to happen? Would the visitor look at this and think "I want to feel that way"?
 
-Image sourcing: Use the image (G) operation to generate visuals. **Only two legal `type` values exist: `"ai"` and `"placeholder"`** — there is NO `"stock"` type and no real photo library. Use `G(node, "ai", "<full prompt>")` for AI-generated photos / illustrations / brand assets; use `G(node, "placeholder", "<=20-char label>")` for quick wireframe boxes. Do not search external image libraries, never paste external URLs. Call `G()` at most once per image node.
+Image sourcing: Real imagery comes from the generation tool, not from `G()`. `G()` has exactly **one** legal `type` — `"placeholder"` (a gray box with a ≤20-char label) — and is only for drafts/wireframes. For final photography / illustration / brand assets: generate the file, then `register_assets` → PUT upload → `upload_images` to bind it as the node's fill. Never search external image libraries, never paste external URLs. One generation + one binding per image node.
 
 For generated images: Write prompts that describe the feeling and human state, not just the object.
 - Example prompts: "modern office workspace bright", "mountain landscape sunset", "abstract gradient blue purple", "minimalist laptop desk"

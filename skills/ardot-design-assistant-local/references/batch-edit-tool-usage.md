@@ -127,29 +127,21 @@ Definition: D(nodeId: string)
 - Delete a node from a .ardot file.
 - "nodeId": The ID of the node to delete. ALWAYS use a valid node id, NOT a path or binding.
 
-### Generate Image (G)
+### Placeholder Image (G)
 
-Definition: G(nodeId: string, type: "ai" | "placeholder", prompt: string)
+Definition: G(nodeId: string, type: "placeholder", prompt: string)
 
 - IMPORTANT: There is NO "image" node type! Images are applied as FILLS to frame/rectangle nodes.
-- Do not generate random URLs for image fills, always use the G operation to get an image from an AI service.
-- To display an image: first Insert a frame or rectangle, then use G to apply the image as a fill.
-- "nodeId": The ID of the frame/rectangle node to apply the image fill to. Can be a valid node ID or a binding name (e.g., "myFrame") created earlier in this operation list.
-- "type": One of:
-  - `"ai"` — AI-generated images related to the content (uses `prompt`).
-  - `"placeholder"` — a gray placeholder image with a centered text label (from `prompt`) is applied as the fill. Use for fast drafts/wireframes, or when image generation is unavailable/undesired.
-- "prompt":
-  - For `"ai"`: a full descriptive prompt of the image to generate.
-  - For `"placeholder"`: a **short label** (≤ 20 chars, ~2–4 words) shown on the placeholder, e.g. `"Hero image"`, `"User avatar"`. NOT a full AI prompt — long text overflows and looks broken. The label MUST be written in the same language as the user, e.g. use Chinese labels like `"封面图"`, `"用户头像"` when the user speaks Chinese.
+- **`G()` is placeholder-only.** `"type"` must be `"placeholder"` — there is no `"ai"` and no `"stock"` type.
+- Do not invent random URLs or `IMAGE` fills.
+- To display a labeled gray box: first Insert a frame or rectangle, then use `G` to apply the placeholder fill.
+- "nodeId": The ID of the frame/rectangle node to apply the fill to. Can be a valid node ID or a binding name (e.g. "myFrame") created earlier in this operation list.
+- "prompt": a **short label** (≤ 20 chars, ~2–4 words) shown on the placeholder, e.g. `"Hero image"`, `"User avatar"`. NOT a full AI prompt — long text overflows and looks broken. The label MUST be written in the same language as the user, e.g. Chinese labels like `"封面图"`, `"用户头像"` when the user speaks Chinese.
 
-Examples:
-- AI-generated image on existing node:
+**Real images are NOT produced by `G()`.** Generate/obtain the file first, then upload and bind it as a fill:
+`ImageGen` / `mcp-miora` → `register_assets` (`uploadUrl` + `downloadUrl`) → HTTP PUT the file to `uploadUrl` → `upload_images({items:[{nodeId, filePath: downloadUrl}]})`. One generation and one binding per image node — never retry to "fix" a result.
 
-``` javascript
-G("logo-frame", "ai", "minimalist coffee shop logo, flat design")
-```
-
-- Placeholder image (drafts/wireframes; pass a SHORT label ≤ 20 chars):
+Example — placeholder (drafts/wireframes; SHORT label ≤ 20 chars):
 
 ``` javascript
 avatar=I("parentId", {type: "frame", name: "Avatar", width: 120, height: 120})

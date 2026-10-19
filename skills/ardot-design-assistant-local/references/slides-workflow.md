@@ -4,8 +4,10 @@ This is the end-to-end workflow for creating presentation decks on the ardot can
 
 ## Execution Protocol (read first, applies to entire workflow)
 
-1. **Sequential Lock**: Phases 0→4 are strictly sequential. You MUST NOT
+1. **Sequential Lock**: Phases 0→5 are strictly sequential. You MUST NOT
    start Phase X+1 until Phase X's Postconditions are all satisfied.
+   Phase **0.0** (Research question) always runs first and on its own; 0.2 runs
+   before any canvas MCP call when Research ≠ `skip`.
 2. **State Echo**: At the start of each Phase, output a one-line status:
    `[Phase X.Y] <name> — preconditions: PASS/FAIL`
 3. **No Silent Skips**: If you intentionally skip a step (e.g., 3.1 for
@@ -15,7 +17,7 @@ This is the end-to-end workflow for creating presentation decks on the ardot can
 
 ## Table of Contents
 
-- [Phase 0: Requirement Clarification](#phase-0-requirement-clarification) — resolve sources, scenario, style, slide count, generate `slide-outline.md`
+- [Phase 0: Requirement Clarification](#phase-0-requirement-clarification) — 0.0 Research gate → resolve sources, scenario, style, slide count → generate `slide-outline.md` → gated approval → 0.2 research
 - [Phase 1: Preparation](#phase-1-preparation) — read references, fetch state, guidelines, style guide
 - [Phase 2: Planning](#phase-2-planning) — slide count, outline, canvas grid
 - [Phase 3: Canvas Setup](#phase-3-canvas-setup) — locate space, create all slides
@@ -26,29 +28,38 @@ This is the end-to-end workflow for creating presentation decks on the ardot can
 
 ## Phase 0: Requirement Clarification (MANDATORY)
 
-**Run before any MCP call.** Resolve four inputs from the current request, prior messages, attachments, and referenced materials:
+**Run before any MCP call.** Resolve five inputs from the current request, prior messages, attachments, and referenced materials:
 
+- **Research**: `skip` | `light` | `deep` — always asked in **0.0** before outline work.
 - **Content source**: provided materials, web research, or free creation.
 - **Scenario**: audience, purpose, and delivery context.
 - **Style**: visual direction or references.
 - **Slide count**: explicit count or count implied by an approved outline.
 
-User-provided information is already confirmed. Do not repeat questions or reopen a clear choice.
+User-provided information is already confirmed. Do not repeat questions or reopen a clear choice — except Research, which 0.0 always asks.
 
-If anything material is missing or ambiguous, use **one AskUserQuestion call** containing only those gaps. If nothing is missing, skip the question and continue. Defaults are allowed only when the user delegates a choice or says they are unsure; record the assumption briefly.
+If anything material is missing or ambiguous (other than Research), use **one AskUserQuestion call** containing only those gaps. If nothing is missing, skip that gap question and continue. Defaults are allowed only when the user delegates a choice or says they are unsure; record the assumption briefly.
 
 When clarification is required:
 
-- For an unresolved source, offer: provided materials / web research / free creation.
+- For an unresolved source, offer: provided materials / web research / free creation. Source asks only where content comes from — never re-ask Research depth (0.0 owns it).
 - For an unresolved style, offer exactly 5 concise, topic-specific directions; preserve any style or reference already supplied.
 - For a delegated slide count, use the scenario range: pitch 10–12, internal review 6–8, keynote 15–20, training 8–15, quick share 5–7.
 - Reconfirm only a slide count outside 3–30.
 
-Do not enter Phase 1 until all four inputs are resolved and `slide-outline.md` is generated.
+Do not enter Phase 1 until Research is answered, `slide-outline.md` is approved, and Research ≠ `skip` implies **0.2** is done.
+
+### 0.0 Ask Research (MANDATORY — before outline)
+
+**Every** deck task must call `AskUserQuestion` for Research **before** starting 0.1. No skip, no silent default, no inferring from context.
+
+0.0 uses its own dedicated `AskUserQuestion` call — never merge it with the Phase 0 gap questions.
+
+Offer exactly: `skip` / `light` (2–4 searches) / `deep` (up to ~8 searches). Wait for the answer, then continue to 0.1.
 
 ### 0.1 Generate `slide-outline.md`
 
-Synthesize the four resolved dimensions into an outline file and **save it to the project workspace** (alongside the design file or in the conversation working directory) as `slide-outline.md`. This file is referenced in Phase 2.1 and Phase 4.1 — do **not** skip generation.
+Synthesize the resolved dimensions (Research + content source + scenario + style + slide count) into an outline file and **save it to the project workspace** (alongside the design file or in the conversation working directory) as `slide-outline.md`. This file is referenced in Phase 2.1 and Phase 4.1 — do **not** skip generation.
 
 The file MUST follow this structure exactly:
 
@@ -59,14 +70,15 @@ The file MUST follow this structure exactly:
 - Topic: <one-sentence topic>
 - Scenario: <resolved scenario>
 - Content Source: <provided | web research | free creation>
+- Research: <skip | light | deep> — <one-line reason>
 - Style: <chosen style name> — <2–3 sentence palette/type/motif direction>
 - Slide Count: <N>
 - Generated At: <ISO timestamp>
 
 ## Source Materials
 <If "provided": list/summarize the user-supplied materials.
-If "web research": list the planned search queries and target source types.
-If "free creation": write "N/A — generated from topic knowledge.">
+If "web research" or Research is light/deep: list the planned search queries (replace with findings after 0.2).
+If "free creation" and Research is skip: write "N/A — generated from topic knowledge.">
 
 ## Slide-by-Slide Outline
 1. **Slide 1 — <Role: Cover>** — <one-line message> | Layout hint: L?? | Image provided: yes/no | Chart: yes/no
@@ -80,7 +92,11 @@ If "free creation": write "N/A — generated from topic knowledge.">
 ```
 ### Ask User Confirmation(Gated)
 
-Show the generated outline to the user and **use the AskUserQuestion tool** to ask for explicit confirmation ("approve / revise"). If the user requests changes, update the file and re-confirm. **Only after explicit approval may you advance to Phase 1.**
+Show the generated outline to the user and **use the AskUserQuestion tool** to ask for explicit confirmation ("approve / revise"). If the user requests changes, update the file and re-confirm. **Only after explicit approval** continue: Research = `skip` → Phase 1; otherwise → **0.2** (no canvas MCP until 0.2 finishes).
+
+### 0.2 Research Execution (when Research ≠ skip)
+
+After outline approval: run `WebSearch` / `WebFetch` (`light` 2–4 calls, `deep` ≤8; parallelize). Write `slide-research.md` (findings, data points + sources, per-slide facts). Backfill outline Source Materials / data-backed one-liners. Re-ask outline confirmation only if structure must change. Then Phase 1.
 
 ---
 
@@ -145,7 +161,7 @@ Plan the deck before touching the canvas. Do NOT start creating slides until pla
 
 ### 2.1 Determine Slide Count & Outline
 
-**Read `slide-outline.md` (generated in Phase 0.1) — it is the authoritative source for slide count, roles, and per-slide messages.** Do not invent a new count or re-decide roles here.
+**Read `slide-outline.md` (generated in Phase 0.1) — it is the authoritative source for slide count, roles, and per-slide messages.** Do not invent a new count or re-decide roles here. If Research ≠ `skip`, also use `slide-research.md` (return to 0.2 if missing).
 
 From the outline file, extract:
 - Total slide count `N` (Meta → Slide Count)
@@ -213,7 +229,7 @@ Generate slides **one at a time, sequentially**. For each slide `i` from 1 to N,
 
 ### 4.1 Generate Slide Content
 
-Before generating slide `i`, re-read its row in `slide-outline.md` (role, one-line message, layout hint, dark/chart flags) and treat it as the spec for this slide.
+Before generating slide `i`, re-read its row in `slide-outline.md` (role, one-line message, layout hint, dark/chart flags) and treat it as the spec for this slide. When Research ≠ `skip`, use facts from `slide-research.md` (return to 0.2 if missing); omit only when Research = `skip`.
 
 Call `batch_edit` (≤25 ops) to add content into slide `i`'s frame. Build order:
 1. **Background layer** — gradient fill + decorative pattern (Rule 2)
