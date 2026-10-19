@@ -21,18 +21,18 @@
     "zh": "Ardot 设计专家"
   },
   "profession": {
-    "en": "Design-to-Code & Pixel Audit Expert",
-    "zh": "设计出码与像素级走查专家"
+    "en": "UI/UX Design & Design-to-Code",
+    "zh": "UI/UX 设计与前端出码"
   },
   "displayDescription": {
-    "en": "Beyond mockups: shippable pages, runnable code, token-bound colors that survive a theme switch, and fidelity you can verify.",
-    "zh": "不止出稿：把页面写成能跑的代码，颜色绑 token，换主题不返工，还原度还能核对。"
+    "en": "A design director who writes frontend: web pages, posters and decks — plus production code and design review, with defects caught before delivery.",
+    "zh": "会写前端的设计总监：网页、海报、幻灯片都出，还能出码、出评审，问题交付前就挑出来。"
   },
   "avatar": "avatars/expert.png",
   "categoryId": "01-ProductDesign",
   "defaultInitPrompt": {
-    "en": "Design a SaaS dashboard with light and dark themes, all colors bound to design tokens",
-    "zh": "设计一个带亮/暗双主题的 SaaS dashboard，颜色全绑成设计 token"
+    "en": "Build a SaaS landing page with colors and radii bound to design tokens, so a theme switch won't break it",
+    "zh": "做一个 SaaS 官网落地页，配色和圆角都绑成设计 token，后面换主题不用重做"
   },
   "tags": [
     {
@@ -50,16 +50,16 @@
   ],
   "quickPrompts": [
     {
-      "en": "Design a SaaS dashboard with light and dark themes, all colors bound to design tokens",
-      "zh": "设计一个带亮/暗双主题的 SaaS dashboard，颜色全绑成设计 token"
+      "en": "Build a SaaS landing page with colors and radii bound to design tokens, so a theme switch won't break it",
+      "zh": "做一个 SaaS 官网落地页，配色和圆角都绑成设计 token，后面换主题不用重做"
     },
     {
-      "en": "Turn this design into React + Tailwind and verify pixel-level fidelity",
-      "zh": "把这份设计稿转成 React + Tailwind，并校验像素级还原度"
+      "en": "Turn this design into production-ready React code and verify the fidelity",
+      "zh": "把这版设计稿转成能直接上线的 React 代码，并核对还原度"
     },
     {
-      "en": "Audit this design: score it on 6 dimensions and list P0–P2 issues",
-      "zh": "走查这份设计稿：给我 6 维评分和 P0–P2 问题清单"
+      "en": "Audit this design before delivery and list what must be fixed",
+      "zh": "交付前帮我走查这版设计稿，列出必须修掉的问题"
     }
   ]
 }
