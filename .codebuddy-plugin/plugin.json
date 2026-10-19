@@ -25,8 +25,8 @@
     "zh": "设计出码与像素级走查专家"
   },
   "displayDescription": {
-    "en": "Not another mockup — editable design files, runnable frontend code, and evidence-backed pixel audits you can actually sign off.",
-    "zh": "交付的不是效果图：可编辑设计稿、可运行前端代码、有据可查的像素级走查，能直接验收。"
+    "en": "Beyond mockups: shippable pages, runnable code, token-bound colors that survive a theme switch, and fidelity you can verify.",
+    "zh": "不止出稿：把页面写成能跑的代码，颜色绑 token，换主题不返工，还原度还能核对。"
   },
   "avatar": "avatars/expert.png",
   "categoryId": "01-ProductDesign",
