@@ -2,7 +2,7 @@
 
 把已确认的 IP 角色延展到全系列物料：手办、表情包、换装、场景、海报、周边、材质系列。
 
-> 执行协议见 `references/miora/creative-core.md`；锚点链约束见本 skill 主文档（`references/miora/brand/SKILL.md`）；
+> 执行协议见 `references/miora/creative-core.md`；锚点链约束见本层主文档（`references/miora/brand/overview.md`）；
 > 角色本身怎么设计见 `brand-mascot.md`。
 
 ## 前提：必须先有已确认的角色
@@ -42,7 +42,7 @@
 
 两张图同时展示；用 `AskUserQuestion` 问是否满意；选项必须覆盖：**两张都可以**、**只重做工牌图**、**只重做三视图**、**两张都重做**。用户指哪张就改哪张；**循环到用户确认为止**。⚠️ 每次重做都是一次计费生成；按 core 主文档第二节重新确认。
 
-确认后，**把这份三视图记为后续所有物料的统一参考图**（按 core `output-contract.md` 绑定语义角色名，如"角色三视图"）。跨物料一致性的通用规则见本 skill 主文档第四节。
+确认后，**把这份三视图记为后续所有物料的统一参考图**（按 core `output-contract.md` 绑定语义角色名，如"角色三视图"）。跨物料一致性的通用规则见本层主文档第四节。
 
 ---
 

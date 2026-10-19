@@ -2,9 +2,12 @@
 
 > ⚠️ **非官方声明**：本专家由社区个人维护（作者 Sinclair），与 Ardot 官方无任何隶属或合作关系。Ardot 是其各自权利人的商标。
 
-> 这是一个自包含的 Ardot 设计专家，技能与规则已随包完整内置，唯一外部依赖是 Ardot MCP 服务需保持连接。
-> **可跨 IDE 使用**：WorkBuddy（含设计创意模式）以及 Cursor / Claude Code / Cline 等任意支持 MCP 的 IDE。
+> 这是一个自包含的 Ardot 设计专家，技能与规则已随包完整内置。
+> **可跨 IDE 使用**：WorkBuddy（含设计创意模式）以及 Cursor / Claude Code / Cline 等任意支持 MCP 的 IDE；
 > MCP 通道名在运行时探测，不写死。
+>
+> **没有 MCP 也不会空手而归**：连上 Ardot MCP 就直接改画布；探测不到通道时，先交付一份可执行的
+> `DESIGN-SPEC.md` 规格文档，再问你要不要落画布。
 
 ## 人设
 
@@ -17,10 +20,12 @@
 - **Ardot MCP 服务** —— 必须安装并连接（唯一外部依赖）
 - **ardot-design-assistant-local 技能** —— 已完整内置在 `skills/ardot-design-assistant-local/`，其全部规则与指南文件（`references/`）一并随包提供
 
-若 Ardot MCP 未连接，专家会按规范提示用户先安装并连接 Ardot MCP 服务（设计助手与规则已随专家内置，无需单独安装技能）。
+未连接 Ardot MCP 时，专家会交付 `DESIGN-SPEC.md` 规格文档，并给出「落画布 / 出 HTML 预览 / 改规格」三个选项；
+只有用户明确说“只要画布”才会停下来提示连接（设计助手与规则已随专家内置，无需单独安装技能）。
 
 ## 安装
 
+以下为**本地开发 / 手动安装**路径；从专家中心直接安装的用户可跳过本节。
 本专家需注册到 WorkBuddy 的 `marketplace.json` 后，才会出现在专家中心。仅复制文件夹不会自动生效，请二选一完成注册：
 
 **方式 A：通过专家中心导入（推荐）**
@@ -39,7 +44,7 @@
    （无需传 `--session-id`；`.created-by-session` 只是本地标记，可忽略）
 3. 重启 / 刷新专家中心，专家即出现
 
-**使用前**：必须安装并连接 **Ardot MCP** 服务，否则专家会提示你先连接 MCP。
+**使用前**：想直接在画布上改，需要安装并连接 **Ardot MCP**；只想要规格 / 评审 / 转码方案，不连也能用。
 
 ## 擅长领域
 
@@ -62,10 +67,10 @@ ardot-design-expert/
 ├── skills/ardot-design-assistant-local/  # 设计助理技能（自包含）
 │   ├── SKILL.md                    # 主入口：可移植性说明 / 通道探测 / 三处纠正 / 宿主注入加载门 / 工作流 / 硬规则
 │   ├── PROVENANCE.md               # 溯源：哪些文件与上游同源、哪些是本地分叉/独有、同步流程
-│   ├── sync-check.sh               # 维护用：检测与WorkBuddy 内置技能的漂移（普通使用者无需运行）
 │   ├── scripts/                    # 直播海报风格目录拉取脚本（Node ≥ 18，零本地依赖）
-│   └── references/                 # 51 份，全部随包提供
+│   └── references/                 # 52 份，全部随包提供
 │       ├── 【核心规则】
+│       ├── spec-mode.md            # 🆕 无 Ardot MCP 时的规格交付（9 节结构 + 收尾三问）
 │       ├── design-rules.md         # 唯一事实来源：编辑原则 / 坐标 / flexbox / 组件 / 变量 / 共享样式 / 属性 schema / 排障 / ⛔ Forbidden Patterns
 │       ├── style-guide.md          # 视觉风格哲学（反 AI 套路 / 方差等级 / Bento 网格 / 创意弹药库）
 │       ├── style-guide-tags.md     # search_style_guide 英文关键词清单（fetch_style_guide_tags 工具不存在，读本地文件）
@@ -86,7 +91,7 @@ ardot-design-expert/
 │       ├── design-review-workflow.md       # 设计稿本身质量走查（视觉 / 交互 / 内容）
 │       ├── code-review-workflow.md         # 设计↔代码双向校对（模式 A / 模式 B）
 │       ├── 【海报】
-│       ├── guidelines-poster.md# 通用海报 / 封面 / banner / 电商主图
+│       ├── guidelines-poster.md   # 通用海报 / 封面 / banner / 电商主图
 │       ├── livestream-poster/      # 🆕 直播海报（3 条风格工作流 + 自适应尺寸 + DSL 合成）
 │       ├── 【类型指南】
 │       ├── guidelines-{landing-page,web-app,mobile-app,table,slides,code,tailwind}.md
@@ -98,30 +103,38 @@ ardot-design-expert/
 └── README.md
 ```
 
-## 上游关系
+> `tools/sync-check.sh`（漂移检测）只存在于仓库，**不随包分发**，用法见 `tools/README.md`。
+> 接手维护（或换 AI 助手）时，先读根目录的 `AGENTS.md`。
+> `references/miora/{brand,image,video}/overview.md` 与 `references/livestream-poster/overview.md` 是各层入口，
+> 均为普通文档（无 frontmatter），不会被注册成独立技能。
 
-本专家包是 WorkBuddy 内置 Ardot 技能族（`ardot-design-core` / `ardot-ui-design` / `ardot-slides` /
-`ardot-poster` / `livestream-poster` / `ardot-design-to-code` 与 Miora 四件套）的**自包含 fork**。
+## 与内置技能的关系
 
-保留 fork 是有意的产品决策：**必须能在任意支持 MCP 的 IDE 中独立运行，不依赖宿主注入任何内置技能**。
-代价是上游升级不会自动同步，因此：
+本包与 WorkBuddy 内置的 Ardot 技能族同源（`ardot-design-core` / `ardot-ui-design` / `ardot-slides` /
+`ardot-poster` / `livestream-poster` / `ardot-design-to-code` 与 Miora 四件套），但解决的是不同问题。
 
-- `PROVENANCE.md` 标注了每个文件的来源（`verbatim` 与上游逐字节一致 / `fork` 本地分叉 / `local-only` 独有）
-- 维护者可运行 `bash sync-check.sh` 机械检测漂移
+**增量**（内置技能族没有的组合）：
+
+- **无 MCP 仍可交付**：探测不到画布通道时产出 `DESIGN-SPEC.md`，而不是一句“请先连接”
+- **绑定前先读 token 的硬门**：写画布之前先 `fetch_variables`，禁止直接写 hex
+- **交付前双证据走查**：节点声明值 × 实际渲染像素，缺一不下结论
+- **跨 IDE 可移植**：规则随包走，不依赖宿主注入
+
+**为什么保留完整 fork**：必须能在任意支持 MCP 的 IDE 里独立运行。代价是上游升级不会自动同步，
+因此 `PROVENANCE.md` 逐文件标注来源（`verbatim` / `fork` / `local-only`），维护者可用
+`bash tools/sync-check.sh` 机械检测漂移。
 
 在 WorkBuddy 设计创意模式下，宿主会额外注入同源技能。`SKILL.md` 的「宿主注入加载门」会
 **跳过与上游逐字节相同的文件、只加载本地分叉部分**，避免双份规则冲突并节省上下文。
 
-> 使用者**无需关心**以上机制 —— 直接安装使用即可。`PROVENANCE.md` 与 `sync-check.sh` 只服务于维护本 fork。
+> 使用者**无需关心**以上机制 —— 直接安装使用即可。`PROVENANCE.md` 与 `tools/sync-check.sh` 只服务于维护本 fork。
 
-## 依赖
+## 能力与工具要求
 
 除 Ardot MCP 外，部分能力依赖对应宿主环境（缺失时会明确提示，不会静默失败）：
 
 | 能力 | 所需工具 | 缺失时行为 |
 |---|---|---|
-| 画布设计（UI / 页面 / 幻灯片 / 海报 / 转码） | `ardot_*` MCP | 停止并提示连接 Ardot MCP |
-| 直播海报 | `ImageGen` | 停止并提示，Ardot 画布部分不受影响 |
-| AI 生图 / 生视频 / 品牌资产 | `miora_*` MCP | 停止并提示，画布能力不受影响 |
-
-```
+| 画布设计（UI / 页面 / 幻灯片 / 海报 / 转码） | `ardot_*` MCP | 交付 `DESIGN-SPEC.md` 规格文档，再询问下一步（不再空手终止） |
+| 直播海报 | `ImageGen` | 停止并提示，规格交付与其余能力不受影响 |
+| AI 生图 / 生视频 / 品牌资产 | `miora_*` MCP | 停止并提示，画布与规格能力不受影响 |

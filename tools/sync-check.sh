@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # sync-check.sh — 检测本专家包与 WorkBuddy 内置设计技能族的漂移
 #
-# 用法：在本脚本所在目录执行  bash sync-check.sh
+# 用法（在仓库根目录执行，脚本内部会切到 skill 目录）：
+#   bash tools/sync-check.sh
 # 覆盖上游路径：
-#   ARDOT_UPSTREAM=/path/to/ardot/<ver>/skills bash sync-check.sh
-#   MIORA_CACHE=/path/to/plugins/cache/workbuddy-builtin bash sync-check.sh
+#   ARDOT_UPSTREAM=/path/to/ardot/<ver>/skills bash tools/sync-check.sh
+#   MIORA_CACHE=/path/to/plugins/cache/workbuddy-builtin bash tools/sync-check.sh
 #
 # 输出三类：
 #   SAFE-TO-OVERWRITE  上游有更新、本包未改动 → 可安全覆盖
@@ -18,7 +19,7 @@
 #   旧安装目录 resources/plugins/workbuddy-builtin/skills/ 已不再承载 ardot 族。
 
 set -uo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/../skills/ardot-design-assistant-local" || exit 1
 
 CACHE="${MIORA_CACHE:-$HOME/.workbuddy/plugins/cache/workbuddy-builtin}"
 
@@ -37,7 +38,7 @@ if [ ! -d "${ARDOT_UPSTREAM:-/nonexistent}" ]; then
   for cand in \
     "$HOME/.workbuddy/resources/workbuddy-builtin/skills" \
     "/Applications/WorkBuddy.app/Contents/Resources/app.asar.unpacked/resources/plugins/workbuddy-builtin/skills" \
-    "/d/codeSoftware/WorkBuddy/resources/app.asar.unpacked/resources/plugins/workbuddy-builtin/skills"
+    "$LOCALAPPDATA/Programs/WorkBuddy/resources/app.asar.unpacked/resources/plugins/workbuddy-builtin/skills"
   do
     if [ -d "$cand/ardot-design-core" ]; then ARDOT_UPSTREAM="$cand"; break; fi
   done
@@ -89,17 +90,17 @@ MIORA_PAIRS=(
   "references/miora/output-contract.md|$M_CORE/references/output-contract.md"
   "references/miora/quality-gates.md|$M_CORE/references/quality-gates.md"
   "references/miora/canvas-delivery.md|$M_CORE/references/canvas-delivery.md"
-  "references/miora/brand/SKILL.md|$M_BRAND/SKILL.md"
+  "references/miora/brand/overview.md|$M_BRAND/SKILL.md"
   "references/miora/brand/brand-logo.md|$M_BRAND/references/brand-logo.md"
   "references/miora/brand/brand-mascot.md|$M_BRAND/references/brand-mascot.md"
   "references/miora/brand/brand-full-package.md|$M_BRAND/references/brand-full-package.md"
   "references/miora/brand/ip-materials.md|$M_BRAND/references/ip-materials.md"
-  "references/miora/image/SKILL.md|$M_IMAGE/SKILL.md"
+  "references/miora/image/overview.md|$M_IMAGE/SKILL.md"
   "references/miora/image/ecommerce-detail.md|$M_IMAGE/references/ecommerce-detail.md"
   "references/miora/image/series-consistency.md|$M_IMAGE/references/series-consistency.md"
-  "references/miora/video/SKILL.md|$M_VIDEO/SKILL.md"
+  "references/miora/video/overview.md|$M_VIDEO/SKILL.md"
   "references/miora/video/short-video.md|$M_VIDEO/references/short-video.md"
-  "references/livestream-poster/SKILL.md|$UPSTREAM/livestream-poster/SKILL.md"
+  "references/livestream-poster/overview.md|$UPSTREAM/livestream-poster/SKILL.md"
   "references/livestream-poster/adaptive-sizing.md|$UPSTREAM/livestream-poster/references/adaptive-sizing.md"
   "references/livestream-poster/dsl-md-format.md|$UPSTREAM/livestream-poster/references/dsl-md-format.md"
   "references/livestream-poster/fallback-prompt-rules.md|$UPSTREAM/livestream-poster/references/fallback-prompt-rules.md"

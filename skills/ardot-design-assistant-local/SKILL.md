@@ -12,7 +12,7 @@ description: |
   Triggers 覆盖中英文口语化表达。所有画布操作必须经过 ardot MCP 工具。
   本 skill 自带全部规则与工作流，不依赖任何外部 skill，可在任意支持 MCP 的 IDE 中独立运行。
 metadata:
-  version: "1.6.0"
+  version: "1.6.2"
   author: Sinclair
   license: MIT
   upstream: "WorkBuddy built-in design skills 5.8.3（2026-10-18 对齐）"
@@ -29,8 +29,8 @@ metadata:
 
 | 运行环境 | 差异 | 本 skill 的行为 |
 |---|---|---|
-| **其他 IDE**（Cursor / Claude Code / Cline 等） | 无 WorkBuddy 内置技能、无指令块 | 完全正常，走本文件全部流程即可 |
-| **WorkBuddy · 日常办公 / 代码开发模式** | Ardot MCP 可能未注入 | 按下面「MCP 通道探测」判定；拿不到画布工具就终止 |
+| **其他 IDE**（Cursor / Claude Code / Cline 等） | 无内置技能、无指令块；Ardot MCP 需自行连接 | 连上走本文件全部流程；没连上走 Spec Mode（文末） |
+| **WorkBuddy · 日常办公 / 代码开发模式** | Ardot MCP 可能未注入 | 按下面「MCP 通道探测」判定；拿不到画布工具则进入 **Spec Mode**（出规格文档，见文末） |
 | **WorkBuddy · 设计创意模式** | 会**额外**注入 `ardot-design-core` + 领域技能 + Miora 五件套 | **执行下面的「宿主注入加载门」**：只读本包分叉部分，跳过 verbatim 文件 |
 
 ### 宿主注入加载门（WorkBuddy 设计创意模式必读）
@@ -70,7 +70,7 @@ metadata:
 3. **文件开关通道单独判定**：`create_design` / `open_design` 未必在画布通道下。
    - 有 → 可代用户建 / 开文件（异步，调用后等待就绪，用 `fetch_file_info` 确认）。
    - 都没有 → **不要**尝试代开代建，引导用户在 Ardot 编辑器中手动打开 / 新建 `.ardot` 文件。
-4. 全部命名空间不可用 → 按文末「环境不可用」话术终止。
+4. 全部命名空间不可用 → 进入 **Spec Mode**（见文末「环境不可用 → 规格交付」），产出规格文档并询问用户下一步；**仅当用户明确拒绝文档时才终止**。
 
 > 历史坑（勿复现）：早期版本写死过"`mcp__ardot-design__*` 是主通道、`mcp__ardot__*` 常 `NO_ADAPTER`"。
 > 在部分环境里**恰好相反**（`ardot-design` 指向已禁用的 `127.0.0.1:50501` 本地路由，而 `ardot` 才是活通道）。
@@ -145,6 +145,7 @@ metadata:
 | `references/extract-style-guide-from-web.md` | 网站 → 设计指南提取 |
 | `references/code-review-workflow.md` | 设计↔代码**双向**校对：**模式 A** 代码→设计稿 还原度评审 + **模式 B** 设计稿→代码 反向对齐（双证据硬门） |
 | `references/design-review-workflow.md` | 设计稿**本身**质量走查（视觉 / 交互 / 内容 + WCAG 对比度 + 状态机） |
+| `references/spec-mode.md` | **画布不可用时的规格交付**：9 节文档结构 + 收尾三问 + 质量门（无 Ardot MCP 时必读） |
 
 ### 类型指南
 
@@ -156,7 +157,7 @@ metadata:
 | `references/guidelines-table.md` | 表格 / 数据密集 |
 | `references/guidelines-slides.md` | 幻灯片 |
 | `references/guidelines-poster.md` | **通用**海报 / 封面 / banner / 电商主图 / 展架（画布内可编辑交付物） |
-| `references/livestream-poster/SKILL.md` | **直播海报**（生图底图 + 画布排版；含 3 条风格工作流 + 自适应尺寸 + 人物尺寸控制 + DSL 合成）。先读它再进`workflows/` |
+| `references/livestream-poster/overview.md` | **直播海报**（生图底图 + 画布排版；含 3 条风格工作流 + 自适应尺寸 + 人物尺寸控制 + DSL 合成）。先读它再进`workflows/` |
 | `references/guidelines-code.md` | 转代码（+ `references/guidelines-tailwind.md` 若用 Tailwind） |
 
 ### 生成媒体（Miora 家族）
@@ -168,9 +169,9 @@ metadata:
 | File | 触发 |
 |---|---|
 | `references/miora/creative-core.md` | **Miora 底座，必先读**：意图识别、参数契约、费用边界、画布交付、质量门 |
-| `references/miora/brand/SKILL.md` + `brand-logo.md` / `brand-mascot.md` / `brand-full-package.md` / `ip-materials.md` | Logo、吉祥物 / IP 角色、品牌VI 全案、IP 物料延展 |
-| `references/miora/image/SKILL.md` + `ecommerce-detail.md` / `series-consistency.md` | 电商详情图、App 图标、插画、游戏原画、系列一致性 |
-| `references/miora/video/SKILL.md` + `short-video.md` | 短视频、动效|
+| `references/miora/brand/overview.md` + `brand-logo.md` / `brand-mascot.md` / `brand-full-package.md` / `ip-materials.md` | Logo、吉祥物 / IP 角色、品牌VI 全案、IP 物料延展 |
+| `references/miora/image/overview.md` + `ecommerce-detail.md` / `series-consistency.md` | 电商详情图、App 图标、插画、游戏原画、系列一致性 |
+| `references/miora/video/overview.md` + `short-video.md` | 短视频、动效|
 
 ### 家族分诊（不确定交付形态时先问）
 
@@ -226,7 +227,7 @@ metadata:
 | 2 | mobile, app, 移动端 | `guidelines-mobile-app.md` |
 | 3 | landing, 营销, 落地页 | `guidelines-landing-page.md` |
 | 4 | poster, 海报, 封面, banner, 电商主图, 展架 | `guidelines-poster.md` |
-| 4.5 | 直播海报, 直播宣传图, 预告海报, livestream poster | `references/livestream-poster/SKILL.md`（先读，再按其工作流表进 `workflows/`） |
+| 4.5 | 直播海报, 直播宣传图, 预告海报, livestream poster | `references/livestream-poster/overview.md`（先读，再按其工作流表进 `workflows/`） |
 | 5 | table, 表格 | `guidelines-table.md` |
 | 6 | 转代码, 出码, 生成应用 | `references/guidelines-code.md`（+ `references/guidelines-tailwind.md`） |
 | 7 | web app（默认） | `guidelines-web-app.md` |
@@ -364,7 +365,7 @@ metadata:
 | 设计稿对齐真实代码（改设计贴代码） | `references/code-review-workflow.md` 模式 B |
 | 设计稿质量评审（审**设计稿本身**） | `references/design-review-workflow.md` |
 | **通用海报 / 封面 / banner** | `references/guidelines-poster.md`（画布内可编辑交付物） |
-| **直播海报** | `references/livestream-poster/SKILL.md` → 按其工作流选择表进 `workflows/style-reference\|style-selection\|style-matching.md`，再 `render-and-compose.md` 出图排版。⛔ 依赖 `ImageGen` 工具，工具不可用时停止并告知用户 |
+| **直播海报** | `references/livestream-poster/overview.md` → 按其工作流选择表进 `workflows/style-reference\|style-selection\|style-matching.md`，再 `render-and-compose.md` 出图排版。⛔ 依赖 `ImageGen` 工具，工具不可用时停止并告知用户 |
 | **AI 生图 / 生视频 / 品牌资产** | 先读 `references/miora/creative-core.md`（环境护栏 + 家族底座），再按 `references/miora/{brand,image,video}/` 领域文档走。⛔ `miora_*` 工具不可用时立即停止并告知用户，不要伪造产物 |
 
 ### 海报交付后动作（硬规则）
@@ -409,13 +410,18 @@ metadata:
 
 ---
 
-## 环境不可用
+## 环境不可用 → 规格交付（Spec Mode）
 
-画布通道探测全部失败时，停止设计操作并**原样输出**：
+画布通道探测全部失败时，**不要空手结束**。按 `references/spec-mode.md` 交付一份规格文档：
+
+1. 一句话说明现状（用户语言）：`未检测到 Ardot MCP，本次先交付规格文档（DESIGN-SPEC.md），不占用画布。`
+2. 按 spec-mode 的固定 9 节写 `DESIGN-SPEC.md` 到用户工作目录（用户指定路径优先）。
+3. 用 `AskUserQuestion` 给出三个选项：连接 MCP 后落画布 / 基于规格出 HTML 预览 / 先改规格（无该工具时用普通提问列 1/2/3）。
+
+⛔ 禁止：声称已在画布完成、编造截图路径、用"请先安装"一句话打发用户。
+⛔ 例外：用户明确拒绝文档（「我就要画布」「别写文档」）时，才原样输出下面提示并停止。
 
 > 🎨 要使用 Ardot 设计功能，请确认 **Ardot MCP** 服务已安装并连接。
->
-> （设计助手及其规则已随本专家一同打包，无需单独安装 skill。）
 
 > WorkBuddy 用户补充提示：Ardot 连接器是「系统上下文连接器」，只在**设计创意**模式下按会话自动注入，
 > 不会出现在连接器面板里。切到日常办公 / 代码开发模式会拿不到画布工具。

@@ -35,7 +35,7 @@
 
 ## 3. 合成 prompt
 
-加载 [../references/adaptive-sizing.md](../references/adaptive-sizing.md)，根据海报比例确定人物位置和文字留白。
+加载 [../references/adaptive-sizing.md](../adaptive-sizing.md)，根据海报比例确定人物位置和文字留白。
 
 ### 有用户人物照片
 
@@ -68,4 +68,4 @@ No text, no letters, no numbers anywhere in the image.
 
 ## 4. 渲染与交付
 
-Prompt 合成后加载 [../references/render-and-compose.md](../references/render-and-compose.md)，执行建文件、生图、自适应排版和最终验证。
+Prompt 合成后加载 [../references/render-and-compose.md](../render-and-compose.md)，执行建文件、生图、自适应排版和最终验证。

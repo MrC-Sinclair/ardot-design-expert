@@ -1,11 +1,3 @@
----
-name: miora-brand-design
-description: 品牌视觉设计的决策层。当交付物是品牌资产时使用——Logo、品牌吉祥物 / IP 角色、品牌 VI 全案、IP 物料延展。负责品牌信息采集、需求范围识别，以及以 Logo 为锚点的一致性约束。不负责工具路由、确认或失败处理（那些在 miora-creative-core），也不做通用图片生成（那在 miora-image-generation）。
-allowed-tools: 
-disable-model-invocation: true
-user-invocable: false
----
-
 # Miora 品牌设计
 
 🔴 **先检查 `references/miora/creative-core.md` 加载了没有。没有就立刻 Read `references/miora/creative-core.md`，再往下读。**

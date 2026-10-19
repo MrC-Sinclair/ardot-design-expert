@@ -52,9 +52,9 @@ Miora 规则已打包进本专家包，但**生成能力依赖 `miora_*` MCP 工
 
 | 交付物 | Skill |
 |---|---|
-| 品牌资产 — Logo、品牌吉祥物 / IP 角色、品牌 VI 全案、IP 周边与材质系列 | `references/miora/brand/SKILL.md` |
-| 其他静态图片 — 电商详情图、App 图标、海报、插画、游戏角色原画、单张带 logo 的图 | `references/miora/image/SKILL.md` |
-| 会动 / 会响的 — 视频、动效 | `references/miora/video/SKILL.md` |
+| 品牌资产 — Logo、品牌吉祥物 / IP 角色、品牌 VI 全案、IP 周边与材质系列 | `references/miora/brand/overview.md` |
+| 其他静态图片 — 电商详情图、App 图标、海报、插画、游戏角色原画、单张带 logo 的图 | `references/miora/image/overview.md` |
+| 会动 / 会响的 — 视频、动效 | `references/miora/video/overview.md` |
 
 ### 定具体场景
 

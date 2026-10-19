@@ -112,7 +112,7 @@ node "$skillDir/scripts/fetch-operation-styles.mjs"
 node "$skillDir/scripts/fetch-operation-design.mjs" "$styleId"
 ```
 
-读取脚本输出作为所选风格的完整 Markdown，并按 [../references/style-guide-semantics.md](../references/style-guide-semantics.md) 解释。命令失败、输出为空，或无法识别 `imagePrompt` / `textLayout` 时，转入 **步骤 3B 兜底路径**。
+读取脚本输出作为所选风格的完整 Markdown，并按 [../references/style-guide-semantics.md](../style-guide-semantics.md) 解释。命令失败、输出为空，或无法识别 `imagePrompt` / `textLayout` 时，转入 **步骤 3B 兜底路径**。
 
 对用户只说「已选定视觉风格」，不要暴露目录、id、URL、脚本或内部文件。
 
@@ -120,14 +120,14 @@ node "$skillDir/scripts/fetch-operation-design.mjs" "$styleId"
 
 读取完整 Markdown 或足以覆盖所有语义角色的范围，不使用固定行数或章节字母截断。提取画布、生图、人物、文字排版、前景说明和矢量素材。
 
-按 [../references/adaptive-sizing.md](../references/adaptive-sizing.md) 的映射设置尺寸，并按 `style-guide-semantics.md` 适配排版。
+按 [../references/adaptive-sizing.md](../adaptive-sizing.md) 的映射设置尺寸，并按 `style-guide-semantics.md` 适配排版。
 
 ## 3B. 无合适匹配：兜底路径
 
 加载：
 
-1. [../references/fallback-prompt-rules.md](../references/fallback-prompt-rules.md)：根据用户风格文字或直播主题生成背景 prompt
-2. [../references/dsl-md-format.md](../references/dsl-md-format.md)：生图后读图定框，以 MD DSL 自适应排版
+1. [../references/fallback-prompt-rules.md](../fallback-prompt-rules.md)：根据用户风格文字或直播主题生成背景 prompt
+2. [../references/dsl-md-format.md](../dsl-md-format.md)：生图后读图定框，以 MD DSL 自适应排版
 
 兜底时不得假装取得了完整风格规则，也不使用 `adaptive-sizing.md` 的固定坐标表。
 
@@ -144,7 +144,7 @@ No frames, no borders, no windows around the people - they stand directly on the
 No text, no letters, no numbers anywhere in the image.
 ```
 
-禁止添加原文没有的视觉元素或自由发挥姿势；目标比例不兼容时允许按尺寸归一化规则重写景别。示例见 [../references/prompt-examples.md](../references/prompt-examples.md)。
+禁止添加原文没有的视觉元素或自由发挥姿势；目标比例不兼容时允许按尺寸归一化规则重写景别。示例见 [../references/prompt-examples.md](../prompt-examples.md)。
 
 ### 4.2 兜底路径 + 有用户人物照片
 
@@ -177,7 +177,7 @@ No text, no letters, no numbers anywhere in the image.
 
 ## 5. 渲染与交付
 
-Prompt 合成后加载 [../references/render-and-compose.md](../references/render-and-compose.md)，执行建文件、生图、画布排版和最终验证：
+Prompt 合成后加载 [../references/render-and-compose.md](../render-and-compose.md)，执行建文件、生图、画布排版和最终验证：
 
 - 已匹配风格：按 `style-guide-semantics.md` 排版
 - 兜底路径：用 `dsl-md-format.md` 读图定框后排版

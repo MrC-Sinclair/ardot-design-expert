@@ -1,16 +1,8 @@
----
-name: miora-image-generation
-description: 图片生成与编辑的决策层。当交付物是静态图片时使用——覆盖 prompt 构建、比例与尺寸映射、参考图使用、系列一致性锚点链、数量纪律，以及电商详情图等具体场景。品牌类需求（Logo、吉祥物、VI 全案、IP 物料）在 miora-brand-design。
-allowed-tools: 
-disable-model-invocation: true
-user-invocable: false
----
-
 # Miora 图片生成
 
 先检查 `references/miora/creative-core.md` 加载了没有。没有就立刻 Read `references/miora/creative-core.md`，再往下读。
 
-品牌类需求不在本层。Logo、品牌吉祥物 / IP 角色、品牌 VI 全案、IP 物料延展都在 `references/miora/brand/SKILL.md`。用户的需求落在这些上面时，交给品牌层，不要在这里做一个更浅的版本。
+品牌类需求不在本层。Logo、品牌吉祥物 / IP 角色、品牌 VI 全案、IP 物料延展都在 `references/miora/brand/overview.md`。用户的需求落在这些上面时，交给品牌层，不要在这里做一个更浅的版本。
 
 ## references
 
@@ -33,7 +25,7 @@ user-invocable: false
 容易混淆的几组，判断错了整套产出都不对：
 
 - **电商详情图** ≠ 轮播主图 ≠ listing 文案。详情图是 below-the-fold 的模块叙事。
-- **App 图标** ≠ Logo ≠ UI 图标集。App 图标是方形单焦点、给系统用的；**Logo 是品牌标志（→ `references/miora/brand/SKILL.md`）**；UI 图标集是成套小尺寸功能图标（本层不做）。
+- **App 图标** ≠ Logo ≠ UI 图标集。App 图标是方形单焦点、给系统用的；**Logo 是品牌标志（→ `references/miora/brand/overview.md`）**；UI 图标集是成套小尺寸功能图标（本层不做）。
 - **普通海报 / 插画** ≠ 品牌物料。带品牌标识、要跟一整套品牌资产保持一致的，属于品牌层。单张、不涉及品牌一致性的，本层直接做。
 
 ---

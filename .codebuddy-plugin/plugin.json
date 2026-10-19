@@ -1,7 +1,7 @@
 {
   "name": "ardot-design-expert",
-  "version": "1.6.1",
-  "description": "Delivers more than mockups: token-bound UI on the Ardot canvas, production-ready frontend code, and dual-evidence pixel audits. Self-contained; runs in any MCP-capable IDE.",
+  "version": "1.6.2",
+  "description": "Design director that also writes frontend: token-bound UI on the Ardot canvas, production-ready code, and pixel audits — plus a build-ready DESIGN-SPEC.md whenever Ardot MCP is not connected.",
   "author": {
     "name": "Sinclair",
     "email": "2256843428@qq.com"

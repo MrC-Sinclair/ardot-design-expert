@@ -1,9 +1,9 @@
 # 品牌全案 / VI 系统
 
-整套品牌视觉识别物料。**进入本文之前，`references/miora/brand/SKILL.md`里的意图识别和方向确认必须已经做完。**
+整套品牌视觉识别物料。**进入本文之前，`references/miora/brand/overview.md`里的意图识别和方向确认必须已经做完。**
 
 > 执行协议见 `references/miora/creative-core.md`；
-> 品牌信息采集、按行业推断风格、锚点链约束见本 skill 主文档（`references/miora/brand/SKILL.md`）。
+> 品牌信息采集、按行业推断风格、锚点链约束见本层主文档（`references/miora/brand/overview.md`）。
 > 本场景的 5 项物料共享一套设计系统；这是典型的"一套" — 锚点链纪律必须严格执行。
 
 ## 交付物

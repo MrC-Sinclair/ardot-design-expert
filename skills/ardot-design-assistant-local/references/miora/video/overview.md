@@ -1,11 +1,3 @@
----
-name: miora-video-generation
-description: 视频生成的决策层。当交付物是会动的内容时使用——覆盖镜头与运动描述、时长与画幅、主体一致性、失败处置与跨轮次。
-allowed-tools: 
-disable-model-invocation: true
-user-invocable: false
----
-
 # Miora 视频生成
 
 先检查 `references/miora/creative-core.md` 加载了没有。没有就立刻 Read `references/miora/creative-core.md`，再往下读。

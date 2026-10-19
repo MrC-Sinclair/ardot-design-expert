@@ -60,7 +60,7 @@ AskUserQuestion({
 
 ## 2. 确认风格规则
 
-使用用户明确引用的风格文件或上下文中已经给出的完整风格规则，并加载 [../references/style-guide-semantics.md](../references/style-guide-semantics.md)。至少应能识别 `imagePrompt` 和 `textLayout`；人物描述、前景说明和矢量素材按语义角色选用。
+使用用户明确引用的风格文件或上下文中已经给出的完整风格规则，并加载 [../references/style-guide-semantics.md](../style-guide-semantics.md)。至少应能识别 `imagePrompt` 和 `textLayout`；人物描述、前景说明和矢量素材按语义角色选用。
 
 若只有名称、短风格词或不完整描述，说明路由条件不成立，应改走 `style-matching.md`；禁止无边界扫描用户磁盘，也不得假装已经取得完整风格文件。
 
@@ -70,7 +70,7 @@ AskUserQuestion({
 
 读取完整文件或足以覆盖所有语义角色的范围，不使用固定行数或章节字母截断。按 `style-guide-semantics.md` 提取画布、生图、人物、文字排版、前景说明和矢量素材。
 
-选择「沿用视觉风格原比例」时使用 `canvas` 原尺寸；用户指定其他比例或自定义尺寸时，按 [../references/adaptive-sizing.md](../references/adaptive-sizing.md) 选择生图尺寸，并按 `style-guide-semantics.md` 适配排版。
+选择「沿用视觉风格原比例」时使用 `canvas` 原尺寸；用户指定其他比例或自定义尺寸时，按 [../references/adaptive-sizing.md](../adaptive-sizing.md) 选择生图尺寸，并按 `style-guide-semantics.md` 适配排版。
 
 ## 4. 合成 prompt
 
@@ -85,7 +85,7 @@ No frames, no borders, no windows around the people - they stand directly on the
 No text, no letters, no numbers anywhere in the image.
 ```
 
-禁止添加原文没有的视觉元素或自由发挥姿势；目标比例不兼容时允许按尺寸归一化规则重写景别。示例见 [../references/prompt-examples.md](../references/prompt-examples.md)。
+禁止添加原文没有的视觉元素或自由发挥姿势；目标比例不兼容时允许按尺寸归一化规则重写景别。示例见 [../references/prompt-examples.md](../prompt-examples.md)。
 
 ### AI 生成人物
 
@@ -100,4 +100,4 @@ No text, no letters, no numbers anywhere in the image.
 
 ## 5. 渲染与交付
 
-Prompt 合成后加载 [../references/render-and-compose.md](../references/render-and-compose.md)，执行建文件、生图、画布排版和最终验证。
+Prompt 合成后加载 [../references/render-and-compose.md](../render-and-compose.md)，执行建文件、生图、画布排版和最终验证。

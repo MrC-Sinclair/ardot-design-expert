@@ -1,14 +1,3 @@
----
-name: livestream-poster
-description: >
-  生成直播宣传海报：支持完整风格文件、风格目录静默匹配和用户风格参考图三种工作流，收集人物、Logo、文案与比例后，用 ImageGen 生成底图并在 Ardot 画布完成排版。
-  当用户提到「直播海报」「直播宣传图」「直播预告海报」「线上直播海报」「livestream poster」，或引用直播海报风格文件时使用。
-disable-model-invocation: true
-user-invocable: false
-agent_created: true
-version: "0.1.0"
----
-
 # Livestream Poster — 直播海报生成
 
 本技能用于生成直播宣传海报。文件创建/打开、画布 schema 和基础验证以 `references/design-rules.md` 为准；本技能负责工作流选择和直播海报业务规则。

@@ -4,7 +4,7 @@
 保留 fork 是**有意的产品决策**：本包必须能在**任意支持 MCP 的 IDE**（Cursor / Claude Code /
 Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内置技能。
 
-代价是**上游升级不会自动同步**。本文件 + `sync-check.sh` 就是为此存在的机制。
+代价是**上游升级不会自动同步**。本文件 + `tools/sync-check.sh` 就是为此存在的机制。
 
 ---
 
@@ -17,8 +17,8 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 | 读取路径（Windows） | `%USERPROFILE%/.workbuddy/plugins/cache/workbuddy-builtin/ardot/<ver>/skills/`；miora 在 `.../workbuddy-builtin/skill-miora-*/<ver>/` |
 | 读取路径（macOS） | `~/.workbuddy/plugins/cache/workbuddy-builtin/ardot/<ver>/skills/` |
 | 最近一次同步 | **2026-10-18**（对齐 5.8.3） |
-| 本地版本 | **1.6.0**（2026-10-18） |
-| 同步方式 | `bash sync-check.sh`（自动解析最新版本目录） |
+| 本地版本 | **1.6.2**（2026-10-19） |
+| 同步方式 | `bash tools/sync-check.sh`（在仓库根目录执行，自动解析最新版本目录） |
 
 > ⚠️ **上游结构在 5.8.x 变了**：ardot 技能族不再放在
 > `resources/plugins/workbuddy-builtin/skills/`，而是打包成独立插件 `ardot`，
@@ -41,6 +41,12 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 ---
 
 ## 三、文件分类（**改之前先看这里**）
+
+> **1.6.2 结构调整**：4 个嵌套 `SKILL.md`（livestream-poster、miora/brand、miora/image、miora/video）
+> 已改名为 `overview.md` 并去掉 frontmatter —— 它们只是参考资料，不应被当成独立技能入口。
+> `sync-check.sh` 已移出技能目录到仓库 `tools/`，不再随包分发。
+> 新增 `references/spec-mode.md`（本地原创）：无 Ardot MCP 时交付 `DESIGN-SPEC.md` 并询问用户下一步。
+
 
 ### A. `verbatim` — 与上游逐字节一致（上游改动会覆盖回来）
 
@@ -105,14 +111,14 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 ## 四、同步流程
 
 ```bash
-bash sync-check.sh          # 在本 skill 目录下执行
+bash tools/sync-check.sh    # 在仓库根目录执行
 ```
 
 脚本会自动解析 `<cache>/ardot/` 与 `<cache>/skill-miora-*/` 下**最新版本**的目录；也可手动指定：
 
 ```bash
-ARDOT_UPSTREAM=/path/to/ardot/5.8.3.../skills bash sync-check.sh
-MIORA_CACHE=/path/to/plugins/cache/workbuddy-builtin bash sync-check.sh
+ARDOT_UPSTREAM=/path/to/ardot/5.8.3.../skills bash tools/sync-check.sh
+MIORA_CACHE=/path/to/plugins/cache/workbuddy-builtin bash tools/sync-check.sh
 ```
 
 输出分四类：
