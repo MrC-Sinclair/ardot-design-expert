@@ -1,7 +1,7 @@
 {
   "name": "ardot-design-expert",
-  "version": "1.6.0",
-  "description": "Expert in Ardot design software: builds pixel-perfect UI on canvas, converts designs into production-ready frontend code, and audits design-vs-code fidelity in both directions. Self-contained; runs in any MCP-capable IDE.",
+  "version": "1.6.1",
+  "description": "Delivers more than mockups: token-bound UI on the Ardot canvas, production-ready frontend code, and dual-evidence pixel audits. Self-contained; runs in any MCP-capable IDE.",
   "author": {
     "name": "Sinclair",
     "email": "2256843428@qq.com"
@@ -21,18 +21,18 @@
     "zh": "Ardot 设计专家"
   },
   "profession": {
-    "en": "UI/UX Design & Frontend Expert",
-    "zh": "UI/UX 设计与前端专家"
+    "en": "Design-to-Code & Pixel Audit Expert",
+    "zh": "设计出码与像素级走查专家"
   },
   "displayDescription": {
-    "en": "Master of Ardot design software — pixel-perfect UI on canvas, production-ready frontend code, and bidirectional design-vs-code fidelity audits. Self-contained, portable across IDEs.",
-    "zh": "精通Ardot设计软件，能做像素级UI设计与设计稿转代码，并双向走查设计稿与代码质量。"
+    "en": "Not another mockup — editable design files, runnable frontend code, and evidence-backed pixel audits you can actually sign off.",
+    "zh": "交付的不是效果图：可编辑设计稿、可运行前端代码、有据可查的像素级走查，能直接验收。"
   },
   "avatar": "avatars/expert.png",
   "categoryId": "01-ProductDesign",
   "defaultInitPrompt": {
-    "en": "Design a mobile app home screen for me in Ardot",
-    "zh": "帮我在 Ardot 上设计一个移动端 App 首页"
+    "en": "Design a SaaS dashboard with light and dark themes, all colors bound to design tokens",
+    "zh": "设计一个带亮/暗双主题的 SaaS dashboard，颜色全绑成设计 token"
   },
   "tags": [
     {
@@ -41,25 +41,25 @@
     },
     {
       "en": "Design-to-Code",
-      "zh": "设计转代码"
+      "zh": "设计稿转代码"
     },
     {
-      "en": "Design Review",
-      "zh": "设计稿走查"
+      "en": "Pixel-Perfect Audit",
+      "zh": "像素级走查"
     }
   ],
   "quickPrompts": [
     {
-      "en": "Design a mobile app home screen for me in Ardot",
-      "zh": "帮我在 Ardot 上设计一个移动端 App 首页"
+      "en": "Design a SaaS dashboard with light and dark themes, all colors bound to design tokens",
+      "zh": "设计一个带亮/暗双主题的 SaaS dashboard，颜色全绑成设计 token"
     },
     {
-      "en": "Convert this design draft into React + Tailwind code",
-      "zh": "把这个设计稿转成 React + Tailwind 代码"
+      "en": "Turn this design into React + Tailwind and verify pixel-level fidelity",
+      "zh": "把这份设计稿转成 React + Tailwind，并校验像素级还原度"
     },
     {
-      "en": "Review this design draft for quality issues",
-      "zh": "评审这版设计稿的质量问题"
+      "en": "Audit this design: score it on 6 dimensions and list P0–P2 issues",
+      "zh": "走查这份设计稿：给我 6 维评分和 P0–P2 问题清单"
     }
   ]
 }
