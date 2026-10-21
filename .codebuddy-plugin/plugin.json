@@ -1,6 +1,6 @@
 {
   "name": "ardot-design-expert",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Design director that also writes frontend: token-bound UI on the Ardot canvas, production-ready code, and pixel audits — plus a build-ready DESIGN-SPEC.md whenever Ardot MCP is not connected.",
   "author": {
     "name": "Sinclair",
@@ -21,8 +21,8 @@
     "zh": "Ardot 设计专家"
   },
   "profession": {
-    "en": "UI/UX Design & Design-to-Code",
-    "zh": "UI/UX 设计与前端出码"
+    "en": "UI/UX Design & Frontend Expert",
+    "zh": "UI/UX 设计与前端专家"
   },
   "displayDescription": {
     "en": "A design director who writes frontend: web pages, posters and decks — plus production code and design review, with defects caught before delivery.",

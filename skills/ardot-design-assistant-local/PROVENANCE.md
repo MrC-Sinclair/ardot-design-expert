@@ -17,7 +17,7 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 | 读取路径（Windows） | `%USERPROFILE%/.workbuddy/plugins/cache/workbuddy-builtin/ardot/<ver>/skills/`；miora 在 `.../workbuddy-builtin/skill-miora-*/<ver>/` |
 | 读取路径（macOS） | `~/.workbuddy/plugins/cache/workbuddy-builtin/ardot/<ver>/skills/` |
 | 最近一次同步 | **2026-10-18**（对齐 5.8.3） |
-| 本地版本 | **1.6.2**（2026-10-19） |
+| 本地版本 | **1.6.3**（2026-10-21） |
 | 同步方式 | `bash tools/sync-check.sh`（在仓库根目录执行，自动解析最新版本目录） |
 
 > ⚠️ **上游结构在 5.8.x 变了**：ardot 技能族不再放在
