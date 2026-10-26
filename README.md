@@ -66,7 +66,6 @@ ardot-design-expert/
 ├── agents/ardot-design-expert.md   # 人设 / 提示词（Jax）
 ├── skills/ardot-design-assistant-local/  # 设计助理技能（自包含）
 │   ├── SKILL.md                    # 主入口：可移植性说明 / 通道探测 / 五处纠正 / 宿主注入加载门 / 工作流 / 硬规则
-│   ├── PROVENANCE.md               # 维护者文档：每份文件的来源与本地改动（用户无需阅读）
 │   ├── scripts/                    # 直播海报风格目录拉取脚本（Node ≥ 18，零本地依赖）
 │   └── references/                 # 57 份，全部随包提供
 │       ├── 【核心规则】
@@ -127,7 +126,8 @@ ardot-design-expert/
 - **跨 IDE 可移植**：规则随包走，不依赖宿主注入
 
 **为什么规则随包走**：必须能在任意支持 MCP 的 IDE 里独立运行。代价是上游升级不会自动同步，
-因此 `PROVENANCE.md`（维护者文档，说明每一份文件的来源）与 `bash tools/sync-check.sh` 用来检测漂移。
+因此 `skills/ardot-design-assistant-local/PROVENANCE.md`（维护者文档，说明每一份文件的来源，**不随包分发**）与
+`bash tools/sync-check.sh` 用来检测漂移。
 
 > 使用者**无需关心**以上机制 —— 直接安装使用即可。
 

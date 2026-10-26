@@ -20,6 +20,7 @@ WorkBuddy 专家包 `ardot-design-expert`（当前 1.7.0）。人设是「会写
 
 ```
 tools/  AGENTS.md  CLAUDE.md  .git/  .workbuddy/
+skills/ardot-design-assistant-local/PROVENANCE.md   # 溯源文档：留在仓库，不进包
 ```
 
 打包（在仓库上一级目录执行）：
@@ -32,7 +33,7 @@ with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
         z.write(src/f, f'ardot-design-expert/{f}')
     for d in ['.codebuddy-plugin', 'agents', 'avatars', 'skills']:
         for p in sorted((src/d).rglob('*')):
-            if p.is_file():
+            if p.is_file() and p.name != 'PROVENANCE.md':   # 溯源文档不随包
                 z.write(p, f'ardot-design-expert/{p.relative_to(src).as_posix()}')
 ```
 

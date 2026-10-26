@@ -50,7 +50,7 @@ metadata:
 | `ardot-schema.md` · `effects-guide.md` · `apply-variables-tool-usage.md` · `guidelines-web-app.md` · `guidelines-mobile-app.md` · `guidelines-table.md` · `guidelines-slides.md` · `guidelines-code.md` · `guidelines-tailwind.md` · `extract-style-guide-from-web.md` · `references/miora/**` | **`design-rules.md`**（本地扩充 40KB + wrap 网格 + 空区/阻断性缺陷规则）· **`design-variables.md`**（Bind Before Build + 读回口径）· **`style-guide.md`**（字体回退）· **`component-instance.md`** · **`shared-styles.md`** · **`batch-edit-tool-usage.md`**（`G()` placeholder-only）· **`ardot-workflow.md`** · **`slides-workflow.md`**（Research 门）· **`design-to-code-workflow.md`** · **`guidelines-landing-page.md`**（Section Selection 硬门）· **`guidelines-poster.md`**（1.6.4 起为分叉：§8 多尺寸 + §8.3 ImageGen 改写，宿主那份仍是失效的 `text_to_image` 链路）· **`design-mode-equivalents.md`** · **`poster-multisize-pipeline.md`** · **`guidelines-logo.md`** · **`design-review-workflow.md`** · **`code-review-workflow.md`** · **`slides-agent-teams-workflow.md`** · **`style-guide-tags.md`** |
 
 > ⚠️ 重叠文件**冲突时一律以本包为准**——本包规则更严格，且已修正若干失效写法。
-> 上游独有的新增内容不会自动进来，需按 `PROVENANCE.md` 合并（`bash sync-check.sh` 检测漂移）。
+> 规则源的新增内容不会自动进来；维护者按仓库内的 `PROVENANCE.md` 合并（`bash tools/sync-check.sh` 检测漂移）。
 
 > 宿主可能预置一些结论（指令块），见「宿主注入指令块」——**出现就服从，没出现也不影响本流程**。
 
