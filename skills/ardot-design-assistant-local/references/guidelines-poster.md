@@ -321,3 +321,59 @@ This is a procedure, not a wishlist. Each step is a hard gate.
 9. **Only then** report completion. If you skipped the audit, the poster is not done.
 
 Hard reminder: any of the bans in §0.3 = invalid output = redo. The 28 px floor is the single most-violated rule and the single biggest reason posters look amateur. Treat it as sacred.
+
+# 8. MULTI-SIZE CONSISTENCY (when one brief asks for ≥ 2 sizes with the same subject)
+
+> **本地补录说明（非官方原文）**：本节在此前版本中**整段缺失**（本地旧稿只到 §7），
+> 导致"同一 brief 出竖版+横版+方版"时没有一致性约束。现已按官方 `posters` 规范补入，
+> 唯一改动是 §8.3 —— 官方原文依赖的 `text_to_image` / `edit_image` 在本通道**不是可调用工具**；
+> §8.3 指向的 `ardot-poster` SKILL「Step 5 → Multi-size shared master visual」**在任何环境都不存在**
+> （上游 `skill-ardot-poster` 插件的 SKILL.md 里没有这个 Step，也没有 `text_to_image`）。已替换为可执行的
+> ImageGen 产线。**§8.1 / §8.2 与官方逐字一致；§8.4 的判定标准不变，仅把"用 `edit_image` 再生"改成
+> "走 §8.3 的派生路径"**（否则会指向不存在的工具）。
+
+Independent per-size image generation drifts on characters, objects, and scene structure — the resulting deck reads as unrelated pieces, not one campaign. When the brief asks for the same subject at multiple sizes, enforce these rules on top of §0–§7.
+
+## 8.1 What must stay identical across sizes
+
+- **Subject identity**: same characters (count, appearance, pose family, clothing), same primary product/object, same scene type. No size may add or remove a key subject element that the others lack.
+- **Palette**: identical dominant / secondary / accent hex — no size-specific color drift.
+- **Lighting & materials**: same light direction, key/fill contrast, and material treatment (matte / gloss / metal / fabric).
+- **Style**: same rendering style (photo / illustration / 3D / duotone) with the same finish.
+
+## 8.2 What must adapt per size
+
+- Framing and subject scale (portrait crops zoom into the subject; landscape crops extend the environment).
+- Background extension to fill the aspect ratio, using content consistent with the master (extend the same scene — never introduce new elements).
+- Text region layout so critical copy avoids collision with the subject at that aspect ratio.
+- Focal hierarchy re-anchoring: hero text lands in the natural quiet zone for that ratio, not mechanically copied from another size.
+
+## 8.3 Production path（本地替换执行版）
+
+> ⚠️ **与官方原文的取舍**：官方 §8.3 要求「用 `text_to_image` 出母版 → `edit_image` 逐尺寸重构图 →
+> 按 `ardot-poster` SKILL Step 5 回填」。这三个依赖在本通道**都不存在**，照原文执行必然失败。
+> 本地改为等价链路，判定标准（§8.1/§8.2/§8.4）不变。
+
+执行链路：**一张母版 + N 张图生图派生 + 逐张上传绑定**。
+
+1. 尺寸 → Layout Contract 先定死（P/L/S 契约），写清每尺寸标题落位区。
+2. `ImageGen` 出一张母版（`size` 取 1024 系最接近比例，如 `1024x1536`）。
+3. 每个尺寸用 `ImageGen({ image1: <母版路径>, size: <该比例>, input_fidelity: "high" })` 重构图一次。
+4. 逐张 `register_assets` → `curl -X PUT` → `upload_images({items:[{nodeId, filePath: downloadUrl}]})` 回填背景 frame。
+5. 标题等文案一律活字压在图上，**不烘进图**。
+
+⛔ 不要用 `G()` 生成这些背景图（它只有 `"placeholder"`）。⛔ 同一节点只生成 + 绑定一次，不重试。
+
+**完整可执行步骤、锚点清单模板、各比例重构指令、降级路径见 `references/poster-multisize-pipeline.md`。**
+（含成本告知、命名留档、多尺寸审计表、反模式清单。）
+
+## 8.4 Post-draw multi-size audit (in addition to §0.5)
+
+After the standard audit, for every additional size beyond the first:
+
+1. **Subject match**: same characters/objects/scene as size #1? If drift is visible (different faces, different product, different scene), reframing was not enough — regenerate the failing size once via the §8.3 step 3 path, then accept.
+2. **Palette match**: dominant/secondary/accent hex within ±5 across sizes? If not, favor cropping/overlay adjustments before regenerating.
+3. **Text–subject collision**: at each size, does hero copy land in a quiet zone rather than on top of a face / product hotspot? If yes, re-lay text — never crop the subject away.
+4. **No orphan elements**: no size introduces a graphic element (a logo, a badge, a caption) that the others do not have, unless the brief explicitly requires it for that size.
+
+Regeneration budget: master image → at most once; each per-size reframe → at most once. Beyond that, resolve remaining issues through layout, cropping, and overlays, not more generation.

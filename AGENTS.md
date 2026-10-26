@@ -4,7 +4,7 @@
 
 ## 这是什么
 
-WorkBuddy 专家包 `ardot-design-expert`（当前 1.6.3）。人设是「会写前端的设计总监 Jax」，
+WorkBuddy 专家包 `ardot-design-expert`（当前 1.6.4）。人设是「会写前端的设计总监 Jax」，
 通过 Ardot MCP 操作设计画布，也能把设计稿转成前端代码、做设计↔代码双向走查。
 核心能力全部在 `skills/ardot-design-assistant-local/`，包里不带任何外部 skill 依赖。
 
@@ -50,6 +50,8 @@ with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
 - `skills/ardot-design-assistant-local/PROVENANCE.md`：逐文件标注 `verbatim`（与上游逐字节一致，改了会被覆盖）
   / `fork`（本地分叉，需人工合并）/ `local-only`。**动 reference 之前先查这张表。**
 - `references/design-rules.md`：画布操作的唯一事实来源，其他文档与它冲突时以它为准。
+- `tools/official/`：官方 `fetch_guidelines` 原文快照（**不随包分发**）。改海报 / 多尺寸规则前，
+  用它和 `guidelines-poster.md` 做 diff；官方原文里仍有失效写法，**不要整段照抄进 references**。
 
 ## 无 MCP 时的行为（这是本包的关键差异，不要改回去）
 

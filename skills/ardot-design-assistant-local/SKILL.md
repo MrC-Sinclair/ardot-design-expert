@@ -12,7 +12,7 @@ description: |
   Triggers 覆盖中英文口语化表达。所有画布操作必须经过 ardot MCP 工具。
   本 skill 自带全部规则与工作流，不依赖任何外部 skill，可在任意支持 MCP 的 IDE 中独立运行。
 metadata:
-  version: "1.6.3"
+  version: "1.6.4"
   author: Sinclair
   license: MIT
   upstream: "WorkBuddy built-in design skills 5.8.3（2026-10-18 对齐）"
@@ -30,7 +30,7 @@ metadata:
 | 运行环境 | 差异 | 本 skill 的行为 |
 |---|---|---|
 | **其他 IDE**（Cursor / Claude Code / Cline 等） | 无内置技能、无指令块；Ardot MCP 需自行连接 | 连上走本文件全部流程；没连上走 Spec Mode（文末） |
-| **WorkBuddy · 日常办公 / 代码开发模式** | Ardot MCP 可能未注入 | 按下面「MCP 通道探测」判定；拿不到画布工具则进入 **Spec Mode**（出规格文档，见文末） |
+| **WorkBuddy · 日常办公 / 代码开发模式** | Ardot MCP 可能未注入 | 按下面「通道与能力探测」判定；拿不到画布工具则进入 **Spec Mode**（出规格文档，见文末） |
 | **WorkBuddy · 设计创意模式** | 会**额外**注入 `ardot-design-core` + 领域技能 + Miora 五件套 | **执行下面的「宿主注入加载门」**：只读本包分叉部分，跳过 verbatim 文件 |
 
 ### 宿主注入加载门（WorkBuddy 设计创意模式必读）
@@ -48,7 +48,7 @@ metadata:
 
 | 跳过（与上游一致，宿主那份可直接用） | 仍须读本包（本地分叉/独有，**跳过会丢本地规则**） |
 |---|---|
-| `ardot-schema.md` · `effects-guide.md` · `apply-variables-tool-usage.md` · `guidelines-web-app.md` · `guidelines-mobile-app.md` · `guidelines-table.md` · `guidelines-slides.md` · `guidelines-code.md` · `guidelines-tailwind.md` · `guidelines-poster.md` · `extract-style-guide-from-web.md` · `references/miora/**` | **`design-rules.md`**（本地扩充 40KB + wrap 网格 + 空区/阻断性缺陷规则）· **`design-variables.md`**（Bind Before Build + 读回口径）· **`style-guide.md`**（字体回退）· **`component-instance.md`** · **`shared-styles.md`** · **`batch-edit-tool-usage.md`**（`G()` placeholder-only）· **`ardot-workflow.md`** · **`slides-workflow.md`**（Research 门）· **`design-to-code-workflow.md`** · **`guidelines-landing-page.md`**（Section Selection 硬门）· **`design-review-workflow.md`** · **`code-review-workflow.md`** · **`slides-agent-teams-workflow.md`** · **`style-guide-tags.md`** |
+| `ardot-schema.md` · `effects-guide.md` · `apply-variables-tool-usage.md` · `guidelines-web-app.md` · `guidelines-mobile-app.md` · `guidelines-table.md` · `guidelines-slides.md` · `guidelines-code.md` · `guidelines-tailwind.md` · `extract-style-guide-from-web.md` · `references/miora/**` | **`design-rules.md`**（本地扩充 40KB + wrap 网格 + 空区/阻断性缺陷规则）· **`design-variables.md`**（Bind Before Build + 读回口径）· **`style-guide.md`**（字体回退）· **`component-instance.md`** · **`shared-styles.md`** · **`batch-edit-tool-usage.md`**（`G()` placeholder-only）· **`ardot-workflow.md`** · **`slides-workflow.md`**（Research 门）· **`design-to-code-workflow.md`** · **`guidelines-landing-page.md`**（Section Selection 硬门）· **`guidelines-poster.md`**（1.6.4 起为分叉：§8 多尺寸 + §8.3 ImageGen 改写，宿主那份仍是失效的 `text_to_image` 链路）· **`design-mode-equivalents.md`** · **`poster-multisize-pipeline.md`** · **`guidelines-logo.md`** · **`design-review-workflow.md`** · **`code-review-workflow.md`** · **`slides-agent-teams-workflow.md`** · **`style-guide-tags.md`** |
 
 > ⚠️ 上游文件与本包分叉文件**冲突时一律以本包为准**——本包是当前环境的权威规则源。
 > 上游独有的新增内容不会自动进来，需按 `PROVENANCE.md` 合并（`bash sync-check.sh` 检测漂移）。
@@ -57,7 +57,7 @@ metadata:
 
 ---
 
-## MCP 通道探测（第一步，必做）
+## 通道与能力探测（第一步，必做）
 
 **不要假设通道名。** 不同环境 / 版本下 Ardot 会以不同命名空间暴露工具（历史出现过
 `mcp__ardot__*`、`mcp__ardot-design__*`、`mcp__ardot-remote__*`），且**文件开关类工具
@@ -76,15 +76,37 @@ metadata:
 > 在部分环境里**恰好相反**（`ardot-design` 指向已禁用的 `127.0.0.1:50501` 本地路由，而 `ardot` 才是活通道）。
 > 故此处一律以探测为准。
 
+### 能力探测清单（一次探完，先报结论再动手）
+
+通道只是第一项。**另外三项也要在开工前探明**，否则会按"设计创意模式应该有"去假设，然后失败在半路。
+
+| # | 探测项 | 怎么探 | 探到 → | 探不到 → |
+|---|---|---|---|---|
+| 1 | 画布通道 | `fetch_editor_state` / `fetch_file_info` | 正常做设计 | Spec Mode（见文末） |
+| 2 | 宿主指令块 | 会话里是否出现 `<ardot_file_directive>` / `<ardot_image_gen>` / `<ardot_design_style>` | 服从注入 | 按 `design-mode-equivalents.md` 的等价规则自判 |
+| 3 | 真图能力 | `ImageGen`（或 `miora_*`）是否存在 | 生图 → `register_assets` → PUT → `upload_images` | 降级 `G(node,"placeholder",...)` + 交付时给出建议 prompt |
+| 4 | Miora 工具集 | `miora_*` + `connect_cloud_service` 是否注册 | 走 `references/miora/` 家族 | 停止该路线并告知；**只出图**时用 ImageGen 兜底 |
+
+探完在对话里记一行，给用户看，也给自己对齐后续分支：
+
+```
+能力：画布 ✅ / 指令块 ❌ / ImageGen ✅ / Miora ❌
+```
+
+⛔ **能力按探测结果算，不按模式算。** 不要因为"现在是设计创意模式"就假设 Miora / 风格模板可用，
+也不要因为"不是设计创意模式"就假设画布不可用——两头都实测过会翻车。
+
 ---
 
-## 三处实测纠正（与部分文档 / 旧描述不一致，以本文件为准）
+## 五处实测纠正（与部分文档 / 旧描述不一致，以本文件为准）
 
 | # | 错误写法 | ✅ 正确 |
 |---|---|---|
-| 1 | `G(node, "stock", ...)` / `G(node, "ai", ...)` | `G()` **只接受 `"placeholder"`**（灰底 + 短标签占位块，prompt 写 **≤20 字符短标签**，用用户语言），**没有 `stock`，也没有 `ai`**。真实图片走**生图 → 上传 → 绑定 fill** 三步：`ImageGen` 或 `mcp-miora` 出图 → `register_assets` 取 `uploadUrl` → HTTP PUT 上传 → `upload_images([{nodeId, filePath: downloadUrl}])` |
+| 1 | `G(node, "stock", ...)` / `G(node, "ai", ...)` / "`G()` 支持 `"ai"` 与 `"placeholder"` 两种模式" | `G()` **只接受 `"placeholder"`**（灰底 + 短标签占位块，prompt 写 **≤20 字符短标签**，用用户语言），**没有 `stock`，也没有 `ai`**。`batch_edit` 的 MCP schema 里 `type` 的枚举**只有 `"placeholder"` 这一个值**，服务端写死，补不了。真实图片走**生图 → 上传 → 绑定 fill** 三步：`ImageGen` 或 `mcp-miora` 出图 → `register_assets` 取 `uploadUrl` → HTTP PUT 上传 → `upload_images([{nodeId, filePath: downloadUrl}])` |
 | 2 | `capture_screenshot({ screenShotDir: "..." })` | 当前 MCP **没有** `screenShotDir` 参数，只有 `fileUrl` + `nodeIds`。截图由工具返回可下载 URL，**下载并 Read 图片**才叫视觉验证；不要把截图写到磁盘任何目录 |
 | 3 | 一次 `batch_edit` 塞满整页 | 每批 ≤ 25 ops，按逻辑区块拆 |
+| 4 | `text_to_image(...)` / `edit_image(...)`，或"按 `ardot-poster` SKILL Step 5 出多尺寸母版" | **这两条链路都跑不通**：`text_to_image` / `edit_image` 在本通道**不是可调用工具**；`ardot-poster` SKILL 的「Step 5」**在任何环境都不存在**（上游 `skill-ardot-poster` 插件里没有这个 Step）。**官方 `posters` 规范 §8.3 原文写的就是这条失效链路**，照抄必然失败。多尺寸真图改走 `ImageGen`：一张母版 → 每尺寸 `ImageGen({image1: 母版, ...})` 派生 → `register_assets` → PUT → `upload_images`。可执行步骤见 `references/poster-multisize-pipeline.md` |
+| 5 | 直接把 `fetch_guidelines` 返回的正文当执行稿照抄 | 官方原文**仍带失效示例**（如 `landing-page` 里的 `G(hero, "ai", ...)`、用 G 搜 Unsplash 图库）。`fetch_guidelines` 与本地 `guidelines-*.md` 冲突时**以本地工作副本为准**（工作副本已把失效段替换为可执行链路）。官方原文只作 diff 基线（快照在仓库 `tools/official/`，不随包分发） |
 
 **ardot MCP 中不存在、禁止调用的工具**：`fetch_style_guide`、`fetch_style_guide_tags`、
 `scan_all_unique_properties`、`substitute_all_matching_properties`。
@@ -92,7 +114,7 @@ metadata:
 
 ---
 
-## 宿主注入指令块（仅 WorkBuddy 设计创意模式；出现即服从）
+## 宿主注入指令块（WorkBuddy 设计创意模式会注入；**出现即服从**）
 
 | 指令块 | 行为 |
 |---|---|
@@ -108,6 +130,10 @@ metadata:
 > 确认文件 / 取 fileId 用 `fetch_file_info`，不是再调一次 create / open。
 > 新建的空文件根 PageID 为 `0:1`，此时跳过 `fetch_editor_state`（无内容可读）。
 
+**没有注入时**（其他 IDE / 日常办公 / 代码开发模式）**不等于每步都要问用户**：
+三个块的默认判定、以及"什么情况下才该问"的边界，见 `references/design-mode-equivalents.md`。
+该文件是注入块的等价物——行为一致，只是结论由本 skill 自己推。
+
 ---
 
 ## Reference Files
@@ -121,8 +147,10 @@ metadata:
 | `references/design-rules.md` | **唯一事实来源** — 编辑原则、坐标、flexbox、文本、组件、颜色、变量、共享样式、表格、图片、效果、SVG、属性 schema、排障、生成后校验、⛔ Forbidden Patterns |
 | `references/style-guide.md` | 视觉风格哲学 — 排版 / 配色 / 布局 / 表面处理 / 方差等级 / 反 AI 套路 / Bento 网格 / 创意弹药库 |
 | `references/style-guide-tags.md` | `search_style_guide` 的**英文关键词灵感库**（按轴分组）。选词前读它，别凭空编 |
+| `references/style-lexicon.md` | **风格词典**：20 个风格的「中文名 → 英文检索词 → 三条硬特征 → 配色取向 → 适用产品」+ 产品类型反查 + L1–L4 分层 + **4 个高频风格的 token 兜底**（极简 / 杂志排版 / 液态玻璃 / 新粗野）。用户说不清要什么风格时，先用它收敛到一个 L2 主风格，再取英文词去检索 |
 | `references/effects-guide.md` | 复合视觉效果配方：玻璃拟态 / 霓虹发光 / 金属 / 渐变描边 / 虹彩 / 新拟态。**动手画之前必读**（参数格式与常规预期不同） |
 | `references/ardot-schema.md` | 节点属性 schema（Node Types / Property Mixins / Node→Mixin 组合 / 属性默认值省略优化） |
+| `references/design-mode-equivalents.md` | **无宿主指令块时的行为等价物**：`<ardot_file_directive>` / `<ardot_image_gen>` / `<ardot_design_style>` 三块的默认判定表、"何时才该问用户"的边界。**在非设计创意模式、或注入缺失时必读** |
 
 ### 专项能力
 
@@ -156,15 +184,21 @@ metadata:
 | `references/guidelines-mobile-app.md` | 移动端 / App |
 | `references/guidelines-table.md` | 表格 / 数据密集 |
 | `references/guidelines-slides.md` | 幻灯片 |
-| `references/guidelines-poster.md` | **通用**海报 / 封面 / banner / 电商主图 / 展架（画布内可编辑交付物） |
+| `references/guidelines-poster.md` | **通用**海报 / 封面 / banner / 电商主图 / 展架（画布内可编辑交付物）。§0 硬约束 + §3 的 13 个 Layout Contract + §8 多尺寸一致性 |
+| `references/poster-multisize-pipeline.md` | **海报多尺寸套图**（同一 brief 出 ≥2 尺寸）：中国主流投放尺寸表（公众号 2.35:1 / 小红书 3:4 / 朋友圈 1:1 / 电商 1:1 / 抖音 9:16）+ 小画布排版档位 + 母版派生 + 跨尺寸审计。**出第二张图之前必读**——每个尺寸独立生成会全盘漂移 |
+| `references/guidelines-logo.md` | **Logo / 标识 / 品牌标志**落地（画布内可编辑稿）。⚠️ 非官方标准（官方 8 个 topic 无 logo），含"无布尔运算、禁止手写 path"等能力边界 |
 | `references/livestream-poster/overview.md` | **直播海报**（生图底图 + 画布排版；含 3 条风格工作流 + 自适应尺寸 + 人物尺寸控制 + DSL 合成）。先读它再进`workflows/` |
 | `references/guidelines-code.md` | 转代码（+ `references/guidelines-tailwind.md` 若用 Tailwind） |
+
+> 官方 `fetch_guidelines` 的原文**仍带失效示例**（如 `G(hero, "ai", ...)`、用 G 搜 Unsplash），
+> 所以**执行一律读上表的 `guidelines-*.md` 工作副本**，不要照抄工具返回的正文。
+> 维护者可在仓库 `tools/official/` 查看官方原文快照做 diff——**该目录不随包分发**，故不在此索引。
 
 ### 生成媒体（Miora 家族）
 
 >⛔ **先读环境护栏**：`references/miora/creative-core.md` 开头有「环境前置检查」。
-> `miora_*` MCP 工具**只在 WorkBuddy 设计创意模式存在**，其他 IDE 里探测不到 →
-> 立即停止 Miora 路线并告知用户，**不要伪造产物**。Ardot 画布路线不受影响。
+> `miora_*` MCP 工具**是否可用取决于当前会话有没有注入这套工具，不按 IDE / 模式预设**——
+> 探测不到就立即停止 Miora 路线并告知用户，**不要伪造产物**。Ardot 画布路线不受影响。
 
 | File | 触发 |
 |---|---|
@@ -199,7 +233,7 @@ metadata:
 
 - 调 `fetch_editor_state({includeSchema: false, includeGeneralEditInstructions: false})` 确认有打开的文件与当前选区。
 - **硬门**：拿到有效文件前，不要发出任何写操作（I/U/C/M/D/G）。
-- 没有打开的文件 → 按「MCP 通道探测」第 3 条处理（能代开就代开，不能就引导用户手动开）。
+- 没有打开的文件 → 按「通道与能力探测」第 3 条处理（能代开就代开，不能就引导用户手动开）。
 
 ### Step 1: 读取现有状态（并行）
 
@@ -226,10 +260,12 @@ metadata:
 | 1 | slides, 幻灯片, 演示文稿 | `guidelines-slides.md` |
 | 2 | mobile, app, 移动端 | `guidelines-mobile-app.md` |
 | 3 | landing, 营销, 落地页 | `guidelines-landing-page.md` |
-| 4 | poster, 海报, 封面, banner, 电商主图, 展架 | `guidelines-poster.md` |
+| 4 | poster, 海报, 封面, banner, 电商主图, 展架 | `guidelines-poster.md`（**单一尺寸**；要出 ≥2 个尺寸 / 平台时转 4.6） |
 | 4.5 | 直播海报, 直播宣传图, 预告海报, livestream poster | `references/livestream-poster/overview.md`（先读，再按其工作流表进 `workflows/`） |
+| 4.6 | 多尺寸, 多平台, 套图, 一套图, 竖版+横版, 公众号首图, 小红书封面, 朋友圈 | `references/poster-multisize-pipeline.md`（先定尺寸→契约映射，再生成第一张图；**含中国主流投放尺寸表 + 小画布排版档位**） |
 | 5 | table, 表格 | `guidelines-table.md` |
 | 6 | 转代码, 出码, 生成应用 | `references/guidelines-code.md`（+ `references/guidelines-tailwind.md`） |
+| 6.5 | logo, 标识, 标志, 品牌图形, wordmark | `references/guidelines-logo.md`（⚠️ 自建标准；无布尔运算） |
 | 7 | web app（默认） | `guidelines-web-app.md` |
 
 > ⛔ **用户指引优先**：用户给出的风格约束（自由文本、`DESIGN.md`、design tokens）与任何指南、
@@ -241,10 +277,18 @@ metadata:
 ### Step 4: 获取视觉风格
 
 **若用户已给出明确风格约束、或有 `<ardot_design_style>` 指令块 → 跳过本步。**
+（两者都没有时，是否该问 / 该按什么默认走，见 `references/design-mode-equivalents.md` §三。）
 
-1. Read `references/style-guide.md` 套用「反 AI 套路」定调；再 Read `references/style-guide-tags.md` 取英文关键词。
-2. `search_style_guide({ styleKeywords, colorKeywords, typographyKeywords, layoutKeywords, sceneKeywords, compositionKeywords })`（建议 `topK: 3`）。所有关键词**必须英文**；按 `summary` + `bestFor` 选，不唯 `score`。
-3. `build_style_guide({ style, color, typography, layout, scene, composition })` 物化 tokens，**直接读返回值套用**，不要凭记忆编。
+1. Read `references/style-guide.md` 套用「反 AI 套路」定调。
+2. Read `references/style-lexicon.md`：把用户的话（含"高级一点""像苹果"这类模糊说法）**归一到 1 个 L2 大风格**，
+   取它的英文检索词；再用 `references/style-guide-tags.md` 补该方向的细分词。
+   ⛔ 一次只选 **1 个 L2 主风格 + 最多 1 个 L3/L4 叠加项**，两个 L2 混搭 = 没风格。
+3. `search_style_guide({ styleKeywords, colorKeywords, typographyKeywords, layoutKeywords, sceneKeywords, compositionKeywords })`（建议 `topK: 3`）。所有关键词**必须英文**；按 `summary` + `bestFor` 选，不唯 `score`。
+4. `build_style_guide({ style, color, typography, layout, scene, composition })` 物化 tokens，**直接读返回值套用**，不要凭记忆编。
+   - 主表只给方向、**不给数值**；hex / 圆角 / 阴影一律来自 `build_style_guide` 返回值或用户给定的 token。
+   - **`build_style_guide` 不可用 / 返回空** → 用 `style-lexicon.md` §4 的 4 个 token 兜底
+     （极简 / 杂志排版 / 液态玻璃 / 新粗野），并在交付说明标注「参数为估算，非官方 token 库」。
+   - 兜底同样受设计系统门约束：文件有 COLOR 变量时**必须绑变量**，兜底值只用来判断该绑哪个语义角色。
 
 ### Step 5–6: 空间 + 检视（并行）
 
@@ -263,8 +307,10 @@ metadata:
 - 每次用 `batch_edit` 都要读 `references/batch-edit-tool-usage.md`；用 `apply_variables` 读 `references/apply-variables-tool-usage.md`。
 - 改实例 / 组件 / 变体前必读 `references/component-instance.md`。
 
-**图片模式**：有 `<ardot_image_gen>` 指令块就按它走；没有则按 `references/design-rules.md` 的 Images 规则自选。
+**图片模式**：有 `<ardot_image_gen>` 指令块就按它走；**没有则按 `references/design-mode-equivalents.md` §二 的决策树自判**
+（默认偏 placeholder；成品海报 / 唯一主角 / 用户要真图才走真图，且真图数 > 3 或估算 > 30 credits 先报预算）。
 真图一律「生图工具出图 → `register_assets` → PUT 上传 → `upload_images` 绑定 fill」，**不要试图用 `G()` 生成真图**。
+**同一 brief 要多个尺寸时**，不要每个尺寸独立生成——走 `references/poster-multisize-pipeline.md`（一张母版 + 图生图派生）。
 
 > ⛔ **一个图像节点只允许一次生图 + 一次绑定，绝不重试。** 结果不满意、想"重新生成修一下"——都不行。
 > 单节点严重失败时最多重试 1 次。其余一律用 `U()` 等非图片操作修版式 / 样式，别重发既烧预算又与上一个任务抢跑。
@@ -277,7 +323,7 @@ metadata:
 > - **开** `resolveVariables: true` → 拿变量的**计算值**，用来和像素比对（这是双证据的声明侧）。
 > - **不传** → 拿原始引用 `$412:14`，用来确认到底**绑没绑**（这是 token 侧）。
 > 开着它读到的 hex 与字面量**完全同形**，因此永远不能用它判断绑定是否存在。
-> **无视觉能力时，像素一律用 `capture_screenshot` 导出 + Pillow 程序化取色兜底。**
+> **无视觉能力时，像素一律用 `capture_screenshot` 导出 + Pillow 程序化取色兜底**（Pillow 未安装时先问用户能否安装；装不了就人工比对并标注「低置信度、未程序化验证」，不要声称已核对像素）。
 > 禁止仅凭节点数据下结论——变量未生效、字体回退、父级 `clipsContent` / 透明度叠加，都会导致
 > 「声明正常、渲染错误」。只采到单源须显式标注「低置信度、视觉未验证」。
 
@@ -372,6 +418,9 @@ metadata:
 
 - ⛔ **画完必须导出 PNG**：海报类交付在**全部生成步骤完成之后**，调用 `export_nodes(format: "png")` 导出成品图，再把画布与图片一起交付。不要停在"画布画完"就算交付。
 - ⛔ **背景重生成上限 1 次**：终检时若生成的背景不合格，最多重新生成 **1 次**；之后只能靠裁剪、叠加、版式调整解决，不再重发。该上限不受用户 brief 写法影响，brief 不能覆盖它。
+- ⛔ **多尺寸套图要逐尺寸导出**：同一 brief 出 ≥2 个尺寸时，每个尺寸都要单独 `export_nodes(format:"png")`。导出前先跑
+  `guidelines-poster.md` §0.5（单尺寸：逐节点验 `fontSize ≥ 28`）和 §8.4（跨尺寸：主体 / 配色 ±5 / 文字压主体 / 孤儿元素）两轮审计，
+  只导出一个尺寸视为未交付。产线见 `references/poster-multisize-pipeline.md`。
 
 ---
 
@@ -423,5 +472,6 @@ metadata:
 
 > 🎨 要使用 Ardot 设计功能，请确认 **Ardot MCP** 服务已安装并连接。
 
-> WorkBuddy 用户补充提示：Ardot 连接器是「系统上下文连接器」，只在**设计创意**模式下按会话自动注入，
-> 不会出现在连接器面板里。切到日常办公 / 代码开发模式会拿不到画布工具。
+> WorkBuddy 用户补充提示：Ardot 连接器是「系统上下文连接器」，按会话注入，通常不出现在连接器面板里。
+> **能否拿到画布工具取决于当前会话有没有注入它，不要按模式预设**——实测非设计创意模式的会话也可能可用
+> （2026-10-26 验证）。所以一律走上面的「通道与能力探测」，探不到再走 Spec Mode。

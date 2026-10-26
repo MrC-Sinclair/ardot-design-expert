@@ -65,12 +65,13 @@ ardot-design-expert/
 ├── .codebuddy-plugin/plugin.json   # 专家元数据（含展示字段）
 ├── agents/ardot-design-expert.md   # 人设 / 提示词（Jax）
 ├── skills/ardot-design-assistant-local/  # 设计助理技能（自包含）
-│   ├── SKILL.md                    # 主入口：可移植性说明 / 通道探测 / 三处纠正 / 宿主注入加载门 / 工作流 / 硬规则
+│   ├── SKILL.md                    # 主入口：可移植性说明 / 通道探测 / 五处纠正 / 宿主注入加载门 / 工作流 / 硬规则
 │   ├── PROVENANCE.md               # 溯源：哪些文件与上游同源、哪些是本地分叉/独有、同步流程
 │   ├── scripts/                    # 直播海报风格目录拉取脚本（Node ≥ 18，零本地依赖）
-│   └── references/                 # 52 份，全部随包提供
+│   └── references/                 # 55 份，全部随包提供
 │       ├── 【核心规则】
 │       ├── spec-mode.md            # 🆕 无 Ardot MCP 时的规格交付（9 节结构 + 收尾三问）
+│       ├── design-mode-equivalents.md  # 🆕 无宿主指令块时，三块注入行为的等价判定 + "何时该问"边界
 │       ├── design-rules.md         # 唯一事实来源：编辑原则 / 坐标 / flexbox / 组件 / 变量 / 共享样式 / 属性 schema / 排障 / ⛔ Forbidden Patterns
 │       ├── style-guide.md          # 视觉风格哲学（反 AI 套路 / 方差等级 / Bento 网格 / 创意弹药库）
 │       ├── style-guide-tags.md     # search_style_guide 英文关键词清单（fetch_style_guide_tags 工具不存在，读本地文件）
@@ -91,7 +92,9 @@ ardot-design-expert/
 │       ├── design-review-workflow.md       # 设计稿本身质量走查（视觉 / 交互 / 内容）
 │       ├── code-review-workflow.md         # 设计↔代码双向校对（模式 A / 模式 B）
 │       ├── 【海报】
-│       ├── guidelines-poster.md   # 通用海报 / 封面 / banner / 电商主图
+│       ├── guidelines-poster.md   # 通用海报 / 封面 / banner / 电商主图（§0 硬约束 + 13 个 Layout Contract + §8 多尺寸）
+│       ├── poster-multisize-pipeline.md # 🆕 多尺寸套图可执行产线（母版 + 图生图派生 + 回填 + 跨尺寸审计）
+│       ├── guidelines-logo.md     # 🆕 Logo 落地（⚠️ 非官方标准，官方 8 个 topic 无 logo）
 │       ├── livestream-poster/      # 🆕 直播海报（3 条风格工作流 + 自适应尺寸 + DSL 合成）
 │       ├── 【类型指南】
 │       ├── guidelines-{landing-page,web-app,mobile-app,table,slides,code,tailwind}.md
@@ -103,7 +106,7 @@ ardot-design-expert/
 └── README.md
 ```
 
-> `tools/sync-check.sh`（漂移检测）只存在于仓库，**不随包分发**，用法见 `tools/README.md`。
+> `tools/`（漂移检测脚本 + 官方规则快照 `official/`）只存在于仓库，**不随包分发**，用法见 `tools/README.md`。
 > 接手维护（或换 AI 助手）时，先读根目录的 `AGENTS.md`。
 > `references/miora/{brand,image,video}/overview.md` 与 `references/livestream-poster/overview.md` 是各层入口，
 > 均为普通文档（无 frontmatter），不会被注册成独立技能。
@@ -136,5 +139,12 @@ ardot-design-expert/
 | 能力 | 所需工具 | 缺失时行为 |
 |---|---|---|
 | 画布设计（UI / 页面 / 幻灯片 / 海报 / 转码） | `ardot_*` MCP | 交付 `DESIGN-SPEC.md` 规格文档，再询问下一步（不再空手终止） |
+| 海报多尺寸套图（母版 + 派生） | `ImageGen` + `ardot_*` | 降级为 `G()` 占位 + 给出建议 prompt，版式照常交付 |
 | 直播海报 | `ImageGen` | 停止并提示，规格交付与其余能力不受影响 |
 | AI 生图 / 生视频 / 品牌资产 | `miora_*` MCP | 停止并提示，画布与规格能力不受影响 |
+
+> 生图按张计费（单张约 5–10 credits）。`SKILL.md` 与 `poster-multisize-pipeline.md` 都要求**生成前先告知用户**，
+> 不会静默消耗额度。
+
+> 非设计创意模式（其他 IDE、日常办公、代码开发）下，宿主的三个指令块不存在。
+> 此时按 `references/design-mode-equivalents.md` 的等价规则走——**行为一致，但不会每步都问用户**。

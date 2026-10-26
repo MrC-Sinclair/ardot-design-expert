@@ -17,7 +17,8 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 | 读取路径（Windows） | `%USERPROFILE%/.workbuddy/plugins/cache/workbuddy-builtin/ardot/<ver>/skills/`；miora 在 `.../workbuddy-builtin/skill-miora-*/<ver>/` |
 | 读取路径（macOS） | `~/.workbuddy/plugins/cache/workbuddy-builtin/ardot/<ver>/skills/` |
 | 最近一次同步 | **2026-10-18**（对齐 5.8.3） |
-| 本地版本 | **1.6.3**（2026-10-21） |
+| 官方规则复核 | **2026-10-26**（`fetch_guidelines` 8 个 topic 逐个拉取比对，见 §三 D） |
+| 本地版本 | **1.6.4**（2026-10-26） |
 | 同步方式 | `bash tools/sync-check.sh`（在仓库根目录执行，自动解析最新版本目录） |
 
 > ⚠️ **上游结构在 5.8.x 变了**：ardot 技能族不再放在
@@ -63,16 +64,16 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 | `references/guidelines-table.md` | `ardot-ui-design/references/guidelines-table.md` |
 | `references/guidelines-web-app.md` | `ardot-ui-design/references/guidelines-web-app.md` |
 | `references/guidelines-slides.md` | `ardot-slides/references/guidelines-slides.md` |
-| `references/guidelines-poster.md` | `ardot-poster/references/guidelines-poster.md` |
 | `references/extract-style-guide-from-web.md` | `ardot-design-to-code/workflows/extract-style-guide-from-web.md` |
 | `references/miora/**`（15 个文件） | `skill-miora-creative-core` / `-brand-design` / `-image-generation` / `-video-generation` |
 | `references/livestream-poster/**`（11 个文件） | `livestream-poster/`（SKILL + references + workflows） |
 | `scripts/*.mjs`（2 个） | `livestream-poster/scripts/`（`fetch-operation-styles.mjs` / `fetch-operation-design.mjs`） |
 
-> ⚠️ **例外**：`references/miora/**` 与 `guidelines-poster.md` 虽源自上游，但已做**本地化改造**
+> ⚠️ **例外**：`references/miora/**` 虽源自上游，但已做**本地化改造**
 > —— 内部路径引用全部重写为本包路径（`Skill(miora-creative-core)` → `Read references/miora/creative-core.md`），
-> `creative-core.md` 另加了「环境前置检查」护栏。**再同步时必须重新做这两步改造**，否则会退回成
-> 指向不存在 skill 的死链。
+> `creative-core.md` 另加了「环境前置检查」护栏，其降级提示也改为「换到已注入 Miora 的会话，或改用
+> `ImageGen` 出图」而不是「请切到设计创意模式」（模式≠工具可用性，实测已证伪）。
+> **再同步时必须重新做这一步改造**，否则会退回成指向不存在 skill 的死链。
 
 ### B. `fork` — 本地分叉，本包为权威（上游更新时需人工合并）
 
@@ -88,6 +89,7 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 | `references/slides-workflow.md` | `ardot-slides/workflows/slides-workflow.md` | 流程细化；1.6.0 并入 **Phase 0.0 Research 门 / 0.2 研究执行 / `slide-research.md`** |
 | `references/design-to-code-workflow.md` | `ardot-design-to-code/workflows/design-to-code-workflow.md` | 流程细化（Phase 0 平台澄清、双证据终验）；1.6.0 补 `export_nodes` 路径保真、无预览能力时的降级 |
 | `references/guidelines-landing-page.md` | `ardot-ui-design/references/guidelines-landing-page.md` | `G()` 管线更正；1.6.0 并入 **Section Selection 硬门**（AskUserQuestion 多选） |
+| `references/guidelines-poster.md` | `ardot-poster/references/guidelines-poster.md` | **1.6.4 由 A 类移入**：本地旧稿只到 §7，**整段缺 §8 多尺寸一致性**，已补入；§8.3 依赖的 `text_to_image` / `edit_image` / `ardot-poster` SKILL 在本通道均不存在，改写为 ImageGen 产线并指向 `poster-multisize-pipeline.md` |
 | `SKILL.md` | —（本地原创） | 入口：MCP 探测、实测纠正、宿主指令块、分层校验、硬约束表、海报交付后动作 |
 
 > **合并方向永远是「上游 → 本包」**：先看上游新增了什么，再决定是否并入本包。
@@ -105,6 +107,35 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 | `references/code-review-workflow.md` | 设计↔代码**双向**校对（模式 A 还原度 / 模式 B 反向对齐） |
 | `references/slides-agent-teams-workflow.md` | 幻灯片 Agent Teams 协作流程（多 agent，质量更高） |
 | `references/style-guide-tags.md` | `search_style_guide` 英文关键词灵感库（替代不存在的 `fetch_style_guide_tags`） |
+| `references/style-lexicon.md` | **风格词典**：20 个风格的名称 / 英文检索词 / 硬特征 / 配色取向 / 适用产品 + 产品类型反查 + L1–L4 分层 + **4 个高频风格的 token 兜底**。素材为维护者本人整理的 21 条 UI 风格分类，已结构化并修正原文第 20 条与第 3 条重复的问题 |
+| `references/design-mode-equivalents.md` | **装配层等价物**：把 `ardot_file_directive` / `ardot_image_gen` / `ardot_design_style` 三个宿主注入块的默认行为，转写成可判定规则 + "何时才该问用户"的边界。宿主不注入时靠它保持行为一致 |
+| `references/poster-multisize-pipeline.md` | **海报多尺寸可执行产线**（替代官方 §8.3 的失效链路）：母版 → 图生图派生 → 逐张回填 → 跨尺寸审计 → 降级路径 |
+| `references/guidelines-logo.md` | Logo / 标识落地标准。⚠️ **非官方来源**——官方 8 个 topic 无 `logo`；含"无布尔运算 / 禁止凭记忆手写 path"能力边界 |
+
+### D. `snapshot` — 官方原文快照（仅作 diff 基线，**不执行、不随包分发**）
+
+`tools/official/` 存放 `fetch_guidelines` 的官方原文，用途是与上游对 diff，不是执行稿。
+
+> 📦 **位置在 `tools/` 下是有意的**：打包只收 `.codebuddy-plugin/` `agents/` `avatars/` `skills/`，
+> `tools/` 整体排除，所以这些文件**不会打进交付 zip**，也不会给用户一个打不开的路径。
+> 代价是 `SKILL.md` 不得索引它们（已遵守）。开发/维护时照常 Read。
+
+| 文件（仓库内） | 来源 | 说明 |
+|---|---|---|
+| `tools/official/posters.md` | `fetch_guidelines(topic:"posters")` 2026-10-26 | ✅ 逐字快照，含 §0–§8 全 13 个 Layout Contract 与 28px 下限 |
+| `tools/official/README.md` | 本地原创 | 快照策略、刷新步骤、优先级裁决 |
+
+> ⚠️ **为什么只有 1 张快照**：其余 7 个 topic 的官方原文**仍带失效指令**
+> （`landing-page` 里的 `G(hero, "ai", ...)`、用 G 搜 Unsplash），逐字快照会把它们原样搬回仓库，
+> 直接违反本文件 §四 第 2 条回归检查。**"逐字快照"与"不得声称 G() 支持 ai"互斥**，
+> 故这 7 个 topic 以本地工作副本为准，不设快照。详见 `tools/official/README.md`。
+
+> 📌 **2026-10-26 复核发现（上游缓存落后于服务端）**：已安装的 `skill-ardot-poster` 插件（5.6.2）里的
+> `references/guidelines-poster.md` 与本地旧稿**逐字节一致（21350 B，均止于 §7）**；但 live
+> `fetch_guidelines(topic:"posters")` 已多出 **§8 多尺寸一致性**。说明 `sync-check.sh` 只能对齐**磁盘缓存**，
+> 对不上**服务端已更新的规则**——这两条线要分别核。同时确认：该插件 `SKILL.md` 里**没有** §8.3 所指的
+> 「Step 5 → Multi-size shared master visual」，也没有 `text_to_image` / `edit_image`，
+> 即 §8.3 是一处**任何环境下都悬空的引用**，不是本包缺依赖。
 
 ---
 
@@ -135,7 +166,16 @@ MIORA_CACHE=/path/to/plugins/cache/workbuddy-builtin bash tools/sync-check.sh
 3. 复扫不存在的工具：`grep -rn "scan_all_unique_properties\|substitute_all_matching_properties\|fetch_style_guide_tags" references/`
    （命中处必须是在「⛔ 不存在 / 禁止」的条款句里）
 4. 复扫死链：`grep -rn "Skill(miora\|ardot-design-core/\|{SKILL_ROOT}" references/` 应为 0 命中
-5. 若 `guidelines-poster.md` 或 `references/miora/**` 被覆盖，重做「A类例外」里的本地化改造
+5. 若 `references/miora/**` 被覆盖，重做「A类例外」里的本地化改造
+6. 若 `guidelines-poster.md` 被上游覆盖，**必须重做 §8.3 的改写**（上游原文引用 `text_to_image` /
+   `edit_image` / `ardot-poster`，三者在当前通道均不存在），并保留 §8.1 / §8.2 / §8.4 原文
+7. 复扫不存在的生图工具：`grep -rn "text_to_image\|edit_image" references/`
+   （命中只允许出现在「不存在 / 已替代」的说明句里，不允许出现在执行步骤中）
+8. 快照越界检查：`grep -n 'G(.*"ai"' tools/official/*.md`。**快照正文**（`posters.md` 及未来的
+   `<topic>.md`）必须 0 命中；`README.md` 的命中可接受（那是在引用失效示例做说明，属"禁止"语境）。
+   若快照正文命中，说明把带失效示例的 topic 存了快照，应删除该文件。
+9. 索引覆盖检查：`references/*.md` 每个文件都必须出现在 `SKILL.md` 的 Reference Files 里
+   （`for f in references/*.md; do grep -q "$f" SKILL.md || echo "MISSING $f"; done`）
 
 ---
 
