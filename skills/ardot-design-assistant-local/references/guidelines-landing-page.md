@@ -228,6 +228,29 @@ Your goal is to maintain rhythm. Alternate between text-heavy sections and more 
 
 Visual sections should not be decorative; they should clarify, support, or enhance the content. Use them to reset attention, increase clarity, and strengthen storytelling when the previous section has relied heavily on text.
 
+# Eyebrow Budget (Hard Gate)
+
+An "eyebrow" is the small label sitting above a section headline: uppercase, letter-spaced, usually one or two words — `HOW IT WORKS`, `核心优势`, `解决方案`, `FEATURES`.
+
+It is the fastest way to make a page look generated. Every block gets one, every one says nothing, and the page becomes a stack of labels instead of an argument.
+
+**Rule — mechanical, not a matter of taste:**
+
+- At most **1 eyebrow per 3 sections**. The Hero counts as 1 section.
+- Allowed count = `ceil(sectionCount / 3)`. An 8-section page gets at most 3.
+- Count them **before** delivery: iterate the visible labels, tally, compare. Over budget → delete the extras, do not shrink them.
+- **Default action is delete.** In most cases the headline already carries the meaning; the label is a crutch.
+
+**Chinese pages are worse by default.** Chinese has no upper/lower case, so the model fakes an eyebrow with "smaller size + wider letter-spacing" on every single block. Treat any repeated 4-character label at 60–70% of the headline size as an eyebrow and count it.
+
+**Also banned (same family):**
+
+- Section numbering labels (`01 / 02 / 03`, `00 — INDEX`, `PART ONE`). This is the eyebrow's louder cousin.
+- Eyebrow + number combos (`01 · 核心优势`).
+- An eyebrow whose text repeats the headline's first three words.
+
+**Exception:** a brief that explicitly needs a labelled hierarchy (government report pages, multi-part proposals, regulatory decks) may relax to 1 per 2 sections — but say so in the delivery note, and still never exceed that.
+
 # Hero Section
 
 The hero compresses the entire product into one screen. If the visitor only sees the hero, they should understand what this is and what to do next.

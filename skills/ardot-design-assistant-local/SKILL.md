@@ -12,11 +12,11 @@ description: |
   Triggers 覆盖中英文口语化表达。所有画布操作必须经过 ardot MCP 工具。
   本 skill 自带全部规则与工作流，不依赖任何外部 skill，可在任意支持 MCP 的 IDE 中独立运行。
 metadata:
-  version: "1.6.4"
+  version: "1.7.0"
   author: Sinclair
   license: MIT
   upstream: "WorkBuddy built-in design skills 5.8.3（2026-10-18 对齐）"
-  portability: "自包含。已在 WorkBuddy（含设计创意模式）与其他支持 MCP 的 IDE 中验证；MCP 通道名以运行时探测为准，不写死。"
+  portability: "自包含。已在多个支持 MCP 的 IDE 中验证；MCP 通道名以运行时探测为准，不写死。"
 ---
 
 # Ardot Design Assistant
@@ -31,14 +31,13 @@ metadata:
 |---|---|---|
 | **其他 IDE**（Cursor / Claude Code / Cline 等） | 无内置技能、无指令块；Ardot MCP 需自行连接 | 连上走本文件全部流程；没连上走 Spec Mode（文末） |
 | **WorkBuddy · 日常办公 / 代码开发模式** | Ardot MCP 可能未注入 | 按下面「通道与能力探测」判定；拿不到画布工具则进入 **Spec Mode**（出规格文档，见文末） |
-| **WorkBuddy · 设计创意模式** | 会**额外**注入 `ardot-design-core` + 领域技能 + Miora 五件套 | **执行下面的「宿主注入加载门」**：只读本包分叉部分，跳过 verbatim 文件 |
+| **宿主已注入同源设计技能** | 会额外提供一套设计规则与领域指南 | **执行下面的「宿主注入加载门」**：只读本包独有/更严格的部分，跳过内容重叠的文件 |
 
-### 宿主注入加载门（WorkBuddy 设计创意模式必读）
+### 宿主注入加载门（同源技能同时在场时必读）
 
-宿主注入的 `ardot-design-core` / `ardot-ui-design` / `ardot-slides` / `ardot-poster` / `ardot-design-to-code`
-与本包 **10 份 reference 逐字节相同**（另有若干仅差本地化路径改写）。两套同时进上下文会导致规则冲突
-（模型看到"两套都说对"）并白烧 100KB+ 上下文。5.8.x 起宿主还可能额外注入 `design-router` —— 它只做家族分诊，
-与本文件「家族分诊」一节等价，**不需要读**。
+宿主可能注入一套设计核心技能 + 领域技能，它与本包部分 reference **内容重叠**（另有若干仅差本地化路径改写）。
+两套同时进上下文会导致规则打架（模型看到"两套都说对"）并白烧 100KB+ 上下文。
+宿主还可能提供只做家族分诊的路由技能——它与本文件「家族分诊」一节等价，**不需要读**。
 
 **判定与处置**：
 
@@ -46,14 +45,14 @@ metadata:
 2. **未注入**（其他 IDE / 其他模式）→ 按本文件「Reference Files」正常加载全部所需 reference。
 3. **已注入** → 执行**跳过清单**，只读本包分叉部分：
 
-| 跳过（与上游一致，宿主那份可直接用） | 仍须读本包（本地分叉/独有，**跳过会丢本地规则**） |
+| 可跳过（内容重叠，用宿主版本即可） | 仍须读本包（本包独有/更严格，**跳过会丢规则**） |
 |---|---|
 | `ardot-schema.md` · `effects-guide.md` · `apply-variables-tool-usage.md` · `guidelines-web-app.md` · `guidelines-mobile-app.md` · `guidelines-table.md` · `guidelines-slides.md` · `guidelines-code.md` · `guidelines-tailwind.md` · `extract-style-guide-from-web.md` · `references/miora/**` | **`design-rules.md`**（本地扩充 40KB + wrap 网格 + 空区/阻断性缺陷规则）· **`design-variables.md`**（Bind Before Build + 读回口径）· **`style-guide.md`**（字体回退）· **`component-instance.md`** · **`shared-styles.md`** · **`batch-edit-tool-usage.md`**（`G()` placeholder-only）· **`ardot-workflow.md`** · **`slides-workflow.md`**（Research 门）· **`design-to-code-workflow.md`** · **`guidelines-landing-page.md`**（Section Selection 硬门）· **`guidelines-poster.md`**（1.6.4 起为分叉：§8 多尺寸 + §8.3 ImageGen 改写，宿主那份仍是失效的 `text_to_image` 链路）· **`design-mode-equivalents.md`** · **`poster-multisize-pipeline.md`** · **`guidelines-logo.md`** · **`design-review-workflow.md`** · **`code-review-workflow.md`** · **`slides-agent-teams-workflow.md`** · **`style-guide-tags.md`** |
 
-> ⚠️ 上游文件与本包分叉文件**冲突时一律以本包为准**——本包是当前环境的权威规则源。
+> ⚠️ 重叠文件**冲突时一律以本包为准**——本包规则更严格，且已修正若干失效写法。
 > 上游独有的新增内容不会自动进来，需按 `PROVENANCE.md` 合并（`bash sync-check.sh` 检测漂移）。
 
-> 设计创意模式下宿主会预置一些结论（指令块），见「宿主注入指令块」——**出现就服从，没出现也不影响本流程**。
+> 宿主可能预置一些结论（指令块），见「宿主注入指令块」——**出现就服从，没出现也不影响本流程**。
 
 ---
 
@@ -78,7 +77,7 @@ metadata:
 
 ### 能力探测清单（一次探完，先报结论再动手）
 
-通道只是第一项。**另外三项也要在开工前探明**，否则会按"设计创意模式应该有"去假设，然后失败在半路。
+通道只是第一项。**另外三项也要在开工前探明**，否则会按"应该具备"去假设，然后失败在半路。
 
 | # | 探测项 | 怎么探 | 探到 → | 探不到 → |
 |---|---|---|---|---|
@@ -93,8 +92,8 @@ metadata:
 能力：画布 ✅ / 指令块 ❌ / ImageGen ✅ / Miora ❌
 ```
 
-⛔ **能力按探测结果算，不按模式算。** 不要因为"现在是设计创意模式"就假设 Miora / 风格模板可用，
-也不要因为"不是设计创意模式"就假设画布不可用——两头都实测过会翻车。
+⛔ **能力按探测结果算，不按环境假设算。** 不要因为"这个环境应该有"就假设 Miora / 风格模板可用，
+也不要因为"这个环境大概没有"就假设画布不可用——两头都实测过会翻车。
 
 ---
 
@@ -114,7 +113,7 @@ metadata:
 
 ---
 
-## 宿主注入指令块（WorkBuddy 设计创意模式会注入；**出现即服从**）
+## 宿主注入指令块（宿主可能注入；**出现即服从**）
 
 | 指令块 | 行为 |
 |---|---|
@@ -150,7 +149,7 @@ metadata:
 | `references/style-lexicon.md` | **风格词典**：20 个风格的「中文名 → 英文检索词 → 三条硬特征 → 配色取向 → 适用产品」+ 产品类型反查 + L1–L4 分层 + **4 个高频风格的 token 兜底**（极简 / 杂志排版 / 液态玻璃 / 新粗野）。用户说不清要什么风格时，先用它收敛到一个 L2 主风格，再取英文词去检索 |
 | `references/effects-guide.md` | 复合视觉效果配方：玻璃拟态 / 霓虹发光 / 金属 / 渐变描边 / 虹彩 / 新拟态。**动手画之前必读**（参数格式与常规预期不同） |
 | `references/ardot-schema.md` | 节点属性 schema（Node Types / Property Mixins / Node→Mixin 组合 / 属性默认值省略优化） |
-| `references/design-mode-equivalents.md` | **无宿主指令块时的行为等价物**：`<ardot_file_directive>` / `<ardot_image_gen>` / `<ardot_design_style>` 三块的默认判定表、"何时才该问用户"的边界。**在非设计创意模式、或注入缺失时必读** |
+| `references/design-mode-equivalents.md` | **无宿主指令块时的行为等价物**：`<ardot_file_directive>` / `<ardot_image_gen>` / `<ardot_design_style>` 三块的默认判定表、"何时才该问用户"的边界。**注入缺失时必读** |
 
 ### 专项能力
 
@@ -172,7 +171,8 @@ metadata:
 | `references/design-to-code-workflow.md` | 设计 → 前端代码（含 Phase 0 平台澄清、导出、映射、本地预览、双证据终验） |
 | `references/extract-style-guide-from-web.md` | 网站 → 设计指南提取 |
 | `references/code-review-workflow.md` | 设计↔代码**双向**校对：**模式 A** 代码→设计稿 还原度评审 + **模式 B** 设计稿→代码 反向对齐（双证据硬门） |
-| `references/design-review-workflow.md` | 设计稿**本身**质量走查（视觉 / 交互 / 内容 + WCAG 对比度 + 状态机） |
+| `references/design-review-workflow.md` | 设计稿**本身**质量走查（6 维评分卡 + 硬指标计数 + WCAG 对比度 + 状态机） |
+| `references/redesign-protocol.md` | **改版 / 现代化 / 翻新存量稿**：三模式判定 → 动手前审计 → 保留红线 → 7 级现代化杠杆（一次一级）→ 样板确认 → 对账验收 |
 | `references/spec-mode.md` | **画布不可用时的规格交付**：9 节文档结构 + 收尾三问 + 质量门（无 Ardot MCP 时必读） |
 
 ### 类型指南
@@ -353,6 +353,9 @@ metadata:
   **确定语言后、发出第一个内容类 `batch_edit` 之前，必须向用户发一行公告**
   （如 `本次设计稿内容将使用中文生成` / `Generating the design content in English`）。每个设计任务都要发。
 - 🎯 **目标节点优先**：用户指名 / 选中了具体节点，就只改那个节点；没指定才自行推断。
+- ✍️ **文案标点与眉标（硬门）**：可见文案**禁装饰性 `——`**（全页 ≤1 处，标题 / 按钮内 **0** 处），
+  也不许用 `—` / `-` 当分隔符；眉标每 **3 个 section ≤ 1 个**（Hero 算 1），section 编号标签（`01 / 02`）一并禁。
+  **交付前数一遍，超了删，不许缩小冒充。** 规则细节：`style-guide.md` §9、`guidelines-landing-page.md` § Eyebrow Budget。
 - 🎨 **设计系统门（硬门）**：发出任何 `I()` / `U()` **之前**必须先 `fetch_variables`。文件存在 **COLOR 变量集**
   且目标属性有语义对应 token 时，颜色 / 圆角 / 间距只能写 `$<variableId>` 或 `$:<SetName>:<VariableName>`
   （同一文件二选一，不混用，GUID 优先）；出现字面量 `#xxxxxx` 即返工。
@@ -400,7 +403,7 @@ metadata:
 
 > ⚠️ **硬门**：进入任一专用流程前**必须先 Read 对应 reference**，未读不得产出结论、不得动手。
 > 输出须符合对应格式——`code-review` 必须含 **5 维还原度评分卡 + P0–P2 清单**，
-> `design-review` 必须含 **6 维质量评分卡 + P0–P2 清单**——否则视为未完成。
+> `design-review` 必须含 **6 维质量评分卡 + 硬指标计数（破折号 / 眉标 / 中文空话，要给数字）+ P0–P2 清单**——否则视为未完成。
 
 | 任务 | 流程 |
 |---|---|
@@ -410,6 +413,7 @@ metadata:
 | 代码还原设计稿的还原度评审 | `references/code-review-workflow.md` 模式 A |
 | 设计稿对齐真实代码（改设计贴代码） | `references/code-review-workflow.md` 模式 B |
 | 设计稿质量评审（审**设计稿本身**） | `references/design-review-workflow.md` |
+| **改版 / 现代化 / 翻新（已有设计稿）** | `references/redesign-protocol.md`。⛔ **先判三模式**（绿地 / 保留式 / 推翻式），判不出就问一句，别默认推翻；⛔ 未审计不许动手 |
 | **通用海报 / 封面 / banner** | `references/guidelines-poster.md`（画布内可编辑交付物） |
 | **直播海报** | `references/livestream-poster/overview.md` → 按其工作流选择表进 `workflows/style-reference\|style-selection\|style-matching.md`，再 `render-and-compose.md` 出图排版。⛔ 依赖 `ImageGen` 工具，工具不可用时停止并告知用户 |
 | **AI 生图 / 生视频 / 品牌资产** | 先读 `references/miora/creative-core.md`（环境护栏 + 家族底座），再按 `references/miora/{brand,image,video}/` 领域文档走。⛔ `miora_*` 工具不可用时立即停止并告知用户，不要伪造产物 |
@@ -473,5 +477,5 @@ metadata:
 > 🎨 要使用 Ardot 设计功能，请确认 **Ardot MCP** 服务已安装并连接。
 
 > WorkBuddy 用户补充提示：Ardot 连接器是「系统上下文连接器」，按会话注入，通常不出现在连接器面板里。
-> **能否拿到画布工具取决于当前会话有没有注入它，不要按模式预设**——实测非设计创意模式的会话也可能可用
-> （2026-10-26 验证）。所以一律走上面的「通道与能力探测」，探不到再走 Spec Mode。
+> **能否拿到画布工具只取决于当前会话是否连上了 Ardot MCP，不要按环境预设**——实测同一环境下也会时有时无。
+> 所以一律走上面的「通道与能力探测」，探不到再走 Spec Mode。

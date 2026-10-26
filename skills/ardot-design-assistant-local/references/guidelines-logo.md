@@ -163,7 +163,7 @@ ImageGen({
 | 矢量节点怎么安全导入 | `design-rules.md` §「SVG Icons」（`svg` 属性写法与截图验证） |
 | 代码内联 SVG 怎么改 | `design-rules.md` §「Raw-code SVG」（改 `<path d>` 的验证纪律） |
 | 组件、实例、变体 | `component-instance.md` |
-| 品牌 VI 全案、吉祥物、IP 延展（**生成类交付**） | `miora/brand/overview.md`（需 `miora_*` 工具） |
+| 品牌 VI 全案、吉祥物、IP 延展（**生成类交付**） | `miora/brand/overview.md`（需 `miora_*` 工具；工具不可用时如实告知，不要用画布硬凑） |
 | 海报里的 logo 摆放 | `guidelines-poster.md`（logo 属 footer 组，受 28px 下限约束） |
 
 > **分诊提醒**：要「可编辑的 logo 设计稿」走本文（Ardot 画布）；要「成品 logo 图 / 整套品牌视觉」

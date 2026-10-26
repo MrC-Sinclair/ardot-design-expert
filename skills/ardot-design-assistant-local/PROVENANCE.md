@@ -1,10 +1,10 @@
 # PROVENANCE · 溯源与同步说明
 
-本专家包 `ardot-design-assistant-local` 是 **WorkBuddy 内置设计技能族的 fork**。
-保留 fork 是**有意的产品决策**：本包必须能在**任意支持 MCP 的 IDE**（Cursor / Claude Code /
-Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内置技能。
+本专家包 `ardot-design-assistant-local` 以公开的 Ardot 设计规则为基础，并做了**大量本地扩充与失效修正**。
+规则随包走是**有意的产品决策**：本包必须能在**任意支持 MCP 的 IDE** 中独立运行，不依赖宿主提供任何技能。
 
-代价是**上游升级不会自动同步**。本文件 + `tools/sync-check.sh` 就是为此存在的机制。
+代价是规则源更新不会自动同步。本文件 + `tools/sync-check.sh` 就是为此存在的机制。
+下面的表格逐份标注来源，**不做模糊处理**。
 
 ---
 
@@ -18,7 +18,7 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 | 读取路径（macOS） | `~/.workbuddy/plugins/cache/workbuddy-builtin/ardot/<ver>/skills/` |
 | 最近一次同步 | **2026-10-18**（对齐 5.8.3） |
 | 官方规则复核 | **2026-10-26**（`fetch_guidelines` 8 个 topic 逐个拉取比对，见 §三 D） |
-| 本地版本 | **1.6.4**（2026-10-26） |
+| 本地版本 | **1.7.0**（2026-10-26） |
 | 同步方式 | `bash tools/sync-check.sh`（在仓库根目录执行，自动解析最新版本目录） |
 
 > ⚠️ **上游结构在 5.8.x 变了**：ardot 技能族不再放在
@@ -72,7 +72,7 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 > ⚠️ **例外**：`references/miora/**` 虽源自上游，但已做**本地化改造**
 > —— 内部路径引用全部重写为本包路径（`Skill(miora-creative-core)` → `Read references/miora/creative-core.md`），
 > `creative-core.md` 另加了「环境前置检查」护栏，其降级提示也改为「换到已注入 Miora 的会话，或改用
-> `ImageGen` 出图」而不是「请切到设计创意模式」（模式≠工具可用性，实测已证伪）。
+> `ImageGen` 出图」（模式≠工具可用性，实测已证伪）。
 > **再同步时必须重新做这一步改造**，否则会退回成指向不存在 skill 的死链。
 
 ### B. `fork` — 本地分叉，本包为权威（上游更新时需人工合并）
@@ -80,7 +80,7 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 | 本包文件 | 上游来源 | 分叉内容 |
 |---|---|---|
 | `references/design-rules.md` | `ardot-design-core/rules/design-rules.md` | **本地扩充约 40KB**（组件属性定义 / 变体 / 组件属性绑定等章节为本地独有）；修正上游 `screenShotDir`、`G() "ai"/"stock"` 等失效参数。1.5.1 加 `Bind Before Build`、`T2b` 校验档；**1.6.0 并入上游 `layout:"wrap"` 卡片网格、截图稀缺原则、空区告警复核、阻断性缺陷不得当成功交付** |
-| `references/style-guide.md` | `ardot-design-core/rules/style-guide.md` | 字体可用性回退（Inter 作兜底）、`G()` 枚举更正 |
+| `references/style-guide.md` | `ardot-design-core/rules/style-guide.md` | 字体可用性回退（Inter 作兜底）、`G()` 枚举更正；**1.7.0 补 §9 破折号零容忍 + 中文 slop 词表 + 眉标预算** |
 | `references/shared-styles.md` | `ardot-design-core/func-rule/shared-styles/SKILL.md` | 去 frontmatter，正文一致 |
 | `references/component-instance.md` | `ardot-design-core/func-rule/component-instance/SKILL.md` | 小幅修订；1.6.0 补 `libraryKey` 不得传给 `open_design`/`create_design` |
 | `references/design-variables.md` | `ardot-design-core/func-rule/design-variables/SKILL.md` | 小幅修订；「写画布前必做（Bind Before Build）」与 `resolveVariables` 读回口径 |
@@ -88,7 +88,7 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 | `references/batch-edit-tool-usage.md` | `ardot-design-core/tool-usage/batch-edit.md` | 小幅修订；1.6.0 把 `G()` 段对齐为 placeholder-only + 上传管线 |
 | `references/slides-workflow.md` | `ardot-slides/workflows/slides-workflow.md` | 流程细化；1.6.0 并入 **Phase 0.0 Research 门 / 0.2 研究执行 / `slide-research.md`** |
 | `references/design-to-code-workflow.md` | `ardot-design-to-code/workflows/design-to-code-workflow.md` | 流程细化（Phase 0 平台澄清、双证据终验）；1.6.0 补 `export_nodes` 路径保真、无预览能力时的降级 |
-| `references/guidelines-landing-page.md` | `ardot-ui-design/references/guidelines-landing-page.md` | `G()` 管线更正；1.6.0 并入 **Section Selection 硬门**（AskUserQuestion 多选） |
+| `references/guidelines-landing-page.md` | `ardot-ui-design/references/guidelines-landing-page.md` | `G()` 管线更正；1.6.0 并入 **Section Selection 硬门**；**1.7.0 补 Eyebrow Budget 硬门** |
 | `references/guidelines-poster.md` | `ardot-poster/references/guidelines-poster.md` | **1.6.4 由 A 类移入**：本地旧稿只到 §7，**整段缺 §8 多尺寸一致性**，已补入；§8.3 依赖的 `text_to_image` / `edit_image` / `ardot-poster` SKILL 在本通道均不存在，改写为 ImageGen 产线并指向 `poster-multisize-pipeline.md` |
 | `SKILL.md` | —（本地原创） | 入口：MCP 探测、实测纠正、宿主指令块、分层校验、硬约束表、海报交付后动作 |
 
@@ -103,7 +103,8 @@ Cline / WorkBuddy 各模式）中独立运行，不依赖宿主注入任何内�
 
 | 文件 | 用途 |
 |---|---|
-| `references/design-review-workflow.md` | 设计稿**本身**质量走查（6 维评分卡 + P0–P2） |
+| `references/design-review-workflow.md` | 设计稿**本身**质量走查（6 维评分卡 + P0–P2）；**1.7.0 加硬指标计数**（破折号 / 眉标 / 中文空话） |
+| `references/redesign-protocol.md` | **改版协议**：绿地 / 保留式 / 推翻式三模式、动手前审计、保留红线、7 级现代化杠杆、样板确认、对账验收 |
 | `references/code-review-workflow.md` | 设计↔代码**双向**校对（模式 A 还原度 / 模式 B 反向对齐） |
 | `references/slides-agent-teams-workflow.md` | 幻灯片 Agent Teams 协作流程（多 agent，质量更高） |
 | `references/style-guide-tags.md` | `search_style_guide` 英文关键词灵感库（替代不存在的 `fetch_style_guide_tags`） |

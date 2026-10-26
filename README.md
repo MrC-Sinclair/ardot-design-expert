@@ -3,7 +3,7 @@
 > ⚠️ **非官方声明**：本专家由社区个人维护（作者 Sinclair），与 Ardot 官方无任何隶属或合作关系。Ardot 是其各自权利人的商标。
 
 > 这是一个自包含的 Ardot 设计专家，技能与规则已随包完整内置。
-> **可跨 IDE 使用**：WorkBuddy（含设计创意模式）以及 Cursor / Claude Code / Cline 等任意支持 MCP 的 IDE；
+> **可跨 IDE 使用**：任意支持 MCP 的 IDE（WorkBuddy、Cursor、Claude Code、Cline 等）；
 > MCP 通道名在运行时探测，不写死。
 >
 > **没有 MCP 也不会空手而归**：连上 Ardot MCP 就直接改画布；探测不到通道时，先交付一份可执行的
@@ -66,14 +66,15 @@ ardot-design-expert/
 ├── agents/ardot-design-expert.md   # 人设 / 提示词（Jax）
 ├── skills/ardot-design-assistant-local/  # 设计助理技能（自包含）
 │   ├── SKILL.md                    # 主入口：可移植性说明 / 通道探测 / 五处纠正 / 宿主注入加载门 / 工作流 / 硬规则
-│   ├── PROVENANCE.md               # 溯源：哪些文件与上游同源、哪些是本地分叉/独有、同步流程
+│   ├── PROVENANCE.md               # 维护者文档：每份文件的来源与本地改动（用户无需阅读）
 │   ├── scripts/                    # 直播海报风格目录拉取脚本（Node ≥ 18，零本地依赖）
-│   └── references/                 # 55 份，全部随包提供
+│   └── references/                 # 57 份，全部随包提供
 │       ├── 【核心规则】
 │       ├── spec-mode.md            # 🆕 无 Ardot MCP 时的规格交付（9 节结构 + 收尾三问）
 │       ├── design-mode-equivalents.md  # 🆕 无宿主指令块时，三块注入行为的等价判定 + "何时该问"边界
 │       ├── design-rules.md         # 唯一事实来源：编辑原则 / 坐标 / flexbox / 组件 / 变量 / 共享样式 / 属性 schema / 排障 / ⛔ Forbidden Patterns
-│       ├── style-guide.md          # 视觉风格哲学（反 AI 套路 / 方差等级 / Bento 网格 / 创意弹药库）
+│       ├── style-guide.md          # 视觉风格哲学（反 AI 套路 / 三旋钮 / Bento / 破折号与眉标硬门）
+│       ├── style-lexicon.md        # 🆕 风格词典：20 个风格 → 英文检索词 / 硬特征 / 适用 + 4 个 token 兜底
 │       ├── style-guide-tags.md     # search_style_guide 英文关键词清单（fetch_style_guide_tags 工具不存在，读本地文件）
 │       ├── effects-guide.md        # 🆕 复合效果配方：玻璃拟态 / 霓虹 / 金属 / 渐变描边 / 虹彩 / 新拟态
 │       ├── ardot-schema.md         # 🆕 节点属性 schema（Node→Mixin 组合 / 属性默认值）
@@ -89,7 +90,8 @@ ardot-design-expert/
 │       ├── slides-agent-teams-workflow.md  # 幻灯片 Agent Teams 协作（须用户显式点选）
 │       ├── design-to-code-workflow.md      # 设计→代码（Phase 0 平台澄清 … Phase 4 双证据终验）
 │       ├── extract-style-guide-from-web.md # 从网页提取风格指南
-│       ├── design-review-workflow.md       # 设计稿本身质量走查（视觉 / 交互 / 内容）
+│       ├── design-review-workflow.md       # 设计稿本身质量走查（6 维评分卡 + 硬指标计数）
+│       ├── redesign-protocol.md    # 🆕 改版协议：三模式判定 / 审计 / 保留红线 / 7 级杠杆 / 对账验收
 │       ├── code-review-workflow.md         # 设计↔代码双向校对（模式 A / 模式 B）
 │       ├── 【海报】
 │       ├── guidelines-poster.md   # 通用海报 / 封面 / banner / 电商主图（§0 硬约束 + 13 个 Layout Contract + §8 多尺寸）
@@ -111,26 +113,23 @@ ardot-design-expert/
 > `references/miora/{brand,image,video}/overview.md` 与 `references/livestream-poster/overview.md` 是各层入口，
 > 均为普通文档（无 frontmatter），不会被注册成独立技能。
 
-## 与内置技能的关系
+## 与同类设计技能的关系
 
-本包与 WorkBuddy 内置的 Ardot 技能族同源（`ardot-design-core` / `ardot-ui-design` / `ardot-slides` /
-`ardot-poster` / `livestream-poster` / `ardot-design-to-code` 与 Miora 四件套），但解决的是不同问题。
+本包可以在已经装了其他 Ardot 设计技能的环境里共存：两者**内容有重叠**，冲突时以本包为准
+（本包规则更严格，并修正了若干已失效的写法）。
 
-**增量**（内置技能族没有的组合）：
+**本包的增量**（那些技能里没有的组合）：
 
 - **无 MCP 仍可交付**：探测不到画布通道时产出 `DESIGN-SPEC.md`，而不是一句“请先连接”
 - **绑定前先读 token 的硬门**：写画布之前先 `fetch_variables`，禁止直接写 hex
 - **交付前双证据走查**：节点声明值 × 实际渲染像素，缺一不下结论
+- **可机械判定的文案硬门**：破折号、眉标预算、中文空话，都给数字不给感觉
 - **跨 IDE 可移植**：规则随包走，不依赖宿主注入
 
-**为什么保留完整 fork**：必须能在任意支持 MCP 的 IDE 里独立运行。代价是上游升级不会自动同步，
-因此 `PROVENANCE.md` 逐文件标注来源（`verbatim` / `fork` / `local-only`），维护者可用
-`bash tools/sync-check.sh` 机械检测漂移。
+**为什么规则随包走**：必须能在任意支持 MCP 的 IDE 里独立运行。代价是上游升级不会自动同步，
+因此 `PROVENANCE.md`（维护者文档，说明每一份文件的来源）与 `bash tools/sync-check.sh` 用来检测漂移。
 
-在 WorkBuddy 设计创意模式下，宿主会额外注入同源技能。`SKILL.md` 的「宿主注入加载门」会
-**跳过与上游逐字节相同的文件、只加载本地分叉部分**，避免双份规则冲突并节省上下文。
-
-> 使用者**无需关心**以上机制 —— 直接安装使用即可。`PROVENANCE.md` 与 `tools/sync-check.sh` 只服务于维护本 fork。
+> 使用者**无需关心**以上机制 —— 直接安装使用即可。
 
 ## 能力与工具要求
 
@@ -146,5 +145,5 @@ ardot-design-expert/
 > 生图按张计费（单张约 5–10 credits）。`SKILL.md` 与 `poster-multisize-pipeline.md` 都要求**生成前先告知用户**，
 > 不会静默消耗额度。
 
-> 非设计创意模式（其他 IDE、日常办公、代码开发）下，宿主的三个指令块不存在。
-> 此时按 `references/design-mode-equivalents.md` 的等价规则走——**行为一致，但不会每步都问用户**。
+> 宿主没有注入指令块时，按 `references/design-mode-equivalents.md` 的默认规则自判——
+> **行为一致，且不会每步都反问用户**。

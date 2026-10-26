@@ -88,6 +88,11 @@ Even in static design compositions, plan for full interaction cycles:
 
 To guarantee premium, non-generic output, strictly avoid these common AI design signatures:
 
+> **适用范围：这些禁令约束的是"没有品牌约束时的默认选择"，不是品牌本身。**
+> 用户已有品牌色 / 品牌字体 / 品牌图形时，**品牌优先于本条**——品牌主色是紫就留住紫，
+> 本条禁止的是"没想法就自动上紫"。改版保留式任务尤其要守住这个顺序（见 `redesign-protocol.md` §2）。
+> 判断口径：这是**你选的**，还是**用户给的**？你选的受本条约束，用户给的不受。
+
 ### Visual
 * **NO Neon/Outer Glows** — use inner borders or subtle tinted shadows
 * **NO Pure Black (#000000)** — use Off-Black or Zinc-950
@@ -103,6 +108,13 @@ To guarantee premium, non-generic output, strictly avoid these common AI design 
 ### Layout & Spacing
 * **Align & Space Perfectly** — padding and margins must be mathematically precise
 * **NO 3-Column Equal Cards** — use Zig-Zag, asymmetric grid, or horizontal scroll
+* **Eyebrow Budget (hard gate)** — at most 1 small uppercase/kicker label per 3 sections (Hero counts as 1). Mechanical test: `count(eyebrow) <= ceil(sectionCount / 3)`. Chinese copy is the worst offender because there is no case change, so the model fakes an eyebrow with "smaller size + letter-spacing" on every block. Full rule + counting method: `guidelines-landing-page.md` § Eyebrow Budget.
+
+### Copy & Punctuation
+* **ZERO decorative em-dash** — no `—` / `——` used as an appositive insert or explanatory aside, in **any** user-visible string (headline, subhead, eyebrow, body, button, caption, meta, alt). This is the single most reliable AI tell in both English and Chinese copy. Replace with a full stop, a colon, parentheses, or a line break.
+  * Chinese: `——` is legitimate for 话语中断 / 声音延长 / 副标题引出 / 注释说明 — but it gets abused as a decorative pause or a makeshift comma. Budget: **at most 1 per page**, never inside a headline or a button. Separately: **ranges** (`2020–2023`) use the one-em dash `—` or `~`, never `——`.
+  * Never use a lone `—` or `-` as a copy separator (`首页 — 产品`). Use `·` or `|`, or split into two lines.
+  * Machine check before delivery: grep the visible strings for `—` and count.
 
 ### Content & Data (The "Jane Doe" Effect)
 * **NO Generic Names** — "John Doe", "Sarah Chan" are banned. Use creative, realistic-sounding names.
@@ -110,6 +122,22 @@ To guarantee premium, non-generic output, strictly avoid these common AI design 
 * **NO Fake Numbers** — avoid `99.99%`, `50%`. Use organic data (`47.2%`, `+1 (312) 847-1928`).
 * **NO Startup Slop Names** — "Acme", "Nexus", "SmartFlow" are banned. Invent premium, contextual brand names.
 * **NO Filler Words** — avoid "Elevate", "Seamless", "Unleash", "Next-Gen". Use concrete verbs.
+
+#### 中文文案的 slop 词（C 端 / 品牌页禁用）
+
+英文那套（John Doe / Acme / Elevate）在中文稿里对不上号，中文有自己的一套空话。**面向消费者的页面一律替换**：
+
+| 类型 | 禁用 | 换成什么 |
+|---|---|---|
+| 空动词 | 赋能、助力、打造、引领、重塑、焕新 | 具体动作："把 3 步合成 1 步"、"接进现有系统不用改代码" |
+| 空形容 | 极致、无缝、全方位、一站式、全新升级、重磅 | 可验证的事实："2 秒出结果"、"支持 6 种格式"、"离线可用" |
+| 黑话 | 闭环、抓手、底座、生态、数智化、全链路 | 面向 C 端：删。B 端 / 政企 brief 明确要求时可留，**每页 ≤ 2 处** |
+| 假数据 | 99.9%、100+ 客户、行业第一、遥遥领先 | 带小数的真实感数字："47.2%"、"1,284 家门店"、"平均 3.6 天" |
+| 通用名 | 张三、王小明、某某科技、示例公司 | 带地域与行业质感："杭州拱墅 · 做社区烘焙的" |
+
+> **判定口径**：把这句话读给一个不熟悉这个行业的人听，他能不能说出"所以到底做了什么"？
+> 说不出就是空话，换掉。B 端行业语汇不是一律禁——禁的是**用黑话代替信息量**。
+
 
 ### External Resources
 * **NO External Image URLs** — Ardot has no `image` node type; images are fills on a frame/rectangle node. `G()` is **placeholder-only** (`type: "placeholder"`, prompt = short label ≤ 20 chars). For real imagery, generate the file (ImageGen / miora), then `register_assets` → PUT upload → `upload_images` to bind it as the node's fill. There is **no `"stock"` type** and no `"ai"` type on `G()`. Never paste external URLs (Unsplash, picsum.photos, etc.) — they do not work as fills and violate the platform model. One generation + one binding per image node, never retry.
