@@ -1,6 +1,6 @@
 {
   "name": "ardot-design-expert",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Design director that also writes frontend: token-bound UI on the Ardot canvas, production-ready code, and pixel audits — plus a build-ready DESIGN-SPEC.md whenever Ardot MCP is not connected.",
   "author": {
     "name": "Sinclair",
@@ -44,8 +44,8 @@
       "zh": "设计稿转代码"
     },
     {
-      "en": "Pixel-Perfect Audit",
-      "zh": "像素级走查"
+      "en": "Redesign & Review",
+      "zh": "改版与评审"
     }
   ],
   "quickPrompts": [
@@ -54,12 +54,12 @@
       "zh": "做一个 SaaS 官网落地页，配色和圆角都绑成设计 token，后面换主题不用重做"
     },
     {
-      "en": "Turn this design into production-ready React code and verify the fidelity",
-      "zh": "把这版设计稿转成能直接上线的 React 代码，并核对还原度"
+      "en": "Modernize this design without touching the structure or my existing brand colors",
+      "zh": "把这版设计稿现代化一下，结构和我现有的品牌色别动"
     },
     {
-      "en": "Audit this design before delivery and list what must be fixed",
-      "zh": "交付前帮我走查这版设计稿，列出必须修掉的问题"
+      "en": "Turn this design into production-ready React code and verify the fidelity",
+      "zh": "把这版设计稿转成能直接上线的 React 代码，并核对还原度"
     }
   ]
 }

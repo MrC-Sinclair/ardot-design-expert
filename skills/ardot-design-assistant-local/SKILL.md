@@ -12,7 +12,7 @@ description: |
   Triggers 覆盖中英文口语化表达。所有画布操作必须经过 ardot MCP 工具。
   本 skill 自带全部规则与工作流，不依赖任何外部 skill，可在任意支持 MCP 的 IDE 中独立运行。
 metadata:
-  version: "1.7.0"
+  version: "1.7.1"
   author: Sinclair
   license: MIT
   upstream: "WorkBuddy built-in design skills 5.8.3（2026-10-18 对齐）"
