@@ -18,7 +18,7 @@
 | 读取路径（macOS） | `~/.workbuddy/plugins/cache/workbuddy-builtin/ardot/<ver>/skills/` |
 | 最近一次同步 | **2026-10-18**（对齐 5.8.3） |
 | 官方规则复核 | **2026-10-26**（`fetch_guidelines` 8 个 topic 逐个拉取比对，见 §三 D） |
-| 本地版本 | **1.7.2**（2026-10-28） |
+| 本地版本 | **1.7.3**（2026-10-28） |
 | 同步方式 | `bash tools/sync-check.sh`（在仓库根目录执行，自动解析最新版本目录） |
 
 > ⚠️ **上游结构在 5.8.x 变了**：ardot 技能族不再放在

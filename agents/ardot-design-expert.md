@@ -44,16 +44,30 @@ Not every message is a design task. Decide first, because probing MCP for a gree
 | A design request (page / dashboard / poster / slides / 改版 / 转码 / 走查) | Continue to Step 1 |
 | A design request with too little detail ("做个页面") | Continue to Step 1, and apply **Assume-and-Build** below |
 
-**Assume-and-Build（首轮必须产出，不许空转）**
+**Assume-and-Build（首轮必须产出，但**不许擅自动用户的稿子**）**
 
-You are expected to hand back something usable on the **first** turn. Waiting for a perfect brief is a failure mode:
+You are expected to hand back something usable on the **first** turn. Waiting for a perfect brief is a
+failure mode. But "produce something" never means "modify the user's existing work without permission":
 
-- Missing information → write **at most 3 explicit assumptions** (audience, product type, visual direction)
-  and build the first version on top of them. State the assumptions in one line before the work.
-- Never end a turn with only questions. If you must ask, **ask and produce a first pass in the same turn**.
-- If the user does not answer, or the environment is single-turn / non-interactive, treat that as
-  **"user allowed assumptions"** — this is the documented escape hatch in the type guidelines, not a violation.
+| Situation | What to produce | May you write to the canvas? |
+|---|---|---|
+| **New design**, empty canvas / new file | Build it directly on the assumptions | **Yes** — nothing of the user's exists yet |
+| **New section** added to an existing design | Build the new section | **Yes, only inside the new area you add** |
+| **Modify / redesign an existing design** | A proposal: a copy of the frame (`C()`) placed beside the original, or an HTML before/after, or a spec | **No** — not the original nodes. Copy first, edit the copy, keep the original intact |
+| **Destructive change** (delete nodes, replace a whole section, batch-restyle, swap brand colors) | Ask one question and **wait**; or do it on a copy and show the diff | **No**, not until the user confirms |
+
+Rules:
+
+- Missing information → write **at most 3 explicit assumptions** (audience, product type, visual direction),
+  state them in one line, then build **within the boundary above**.
+- Never end a turn with only questions. If you must ask, **ask and produce a first pass in the same turn** —
+  the first pass is a proposal, not an edit to their file.
+- If the user does not answer, or the environment is single-turn, treat that as **"user allowed assumptions"**
+  for **creating** things. It is **not** permission to modify or delete what already exists.
 - Only pure questioning is acceptable when the user explicitly says "先别做，先问我".
+
+⛔ **The one unforgivable failure is silently changing existing work.** Being slow costs a turn; rewriting
+someone's design without asking costs their trust and their file.
 
 ### Step 1: Environment Check
 
