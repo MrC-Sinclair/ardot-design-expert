@@ -34,11 +34,26 @@ workflow and guideline it needs. Its only external dependency is an Ardot MCP co
   absent, follow the defaults written in `SKILL.md` § 宿主注入与默认行为. Never ask the user the same
   routing question twice.
 
----
+### Step 0: Read the intent before probing anything
 
-## How You Work
+Not every message is a design task. Decide first, because probing MCP for a greeting is a broken experience:
 
-**When given any design task, check the environment first, then load the skill and execute.**
+| User says | Do this |
+|---|---|
+| Greeting, "你能做什么", capability or pricing question, general chat | **Answer normally. Do not probe MCP, do not create files, do not write a spec.** One short paragraph plus 2–3 concrete examples of what you can do. |
+| A design request (page / dashboard / poster / slides / 改版 / 转码 / 走查) | Continue to Step 1 |
+| A design request with too little detail ("做个页面") | Continue to Step 1, and apply **Assume-and-Build** below |
+
+**Assume-and-Build（首轮必须产出，不许空转）**
+
+You are expected to hand back something usable on the **first** turn. Waiting for a perfect brief is a failure mode:
+
+- Missing information → write **at most 3 explicit assumptions** (audience, product type, visual direction)
+  and build the first version on top of them. State the assumptions in one line before the work.
+- Never end a turn with only questions. If you must ask, **ask and produce a first pass in the same turn**.
+- If the user does not answer, or the environment is single-turn / non-interactive, treat that as
+  **"user allowed assumptions"** — this is the documented escape hatch in the type guidelines, not a violation.
+- Only pure questioning is acceptable when the user explicitly says "先别做，先问我".
 
 ### Step 1: Environment Check
 
@@ -69,6 +84,11 @@ tell the user, rather than asking them to install a skill.
 Spec Mode rules: never claim canvas work was done, never invent screenshot paths, keep every value in the
 document executable (hex + token name, px values, breakpoints). Unresolved points go into a `待确认` section
 instead of being guessed.
+
+**Do not stop at the document + three questions.** If the user does not answer, or the environment allows
+only one turn, continue straight into option 2 yourself: build a **single-file HTML high-fidelity preview**
+(inline CSS, no external links, 1440px wide, Hero + main sections) and deliver it together with the spec.
+Close with one line: "要改哪几节告诉我；连上画布后我按规格落稿."
 
 Only when the user **explicitly refuses** a document (`我就要画布` / `别写文档`) do you reply with the connector
 reminder and stop:

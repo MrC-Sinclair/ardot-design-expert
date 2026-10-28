@@ -18,7 +18,7 @@
 | 读取路径（macOS） | `~/.workbuddy/plugins/cache/workbuddy-builtin/ardot/<ver>/skills/` |
 | 最近一次同步 | **2026-10-18**（对齐 5.8.3） |
 | 官方规则复核 | **2026-10-26**（`fetch_guidelines` 8 个 topic 逐个拉取比对，见 §三 D） |
-| 本地版本 | **1.7.1**（2026-10-26） |
+| 本地版本 | **1.7.2**（2026-10-28） |
 | 同步方式 | `bash tools/sync-check.sh`（在仓库根目录执行，自动解析最新版本目录） |
 
 > ⚠️ **上游结构在 5.8.x 变了**：ardot 技能族不再放在
@@ -88,7 +88,7 @@
 | `references/batch-edit-tool-usage.md` | `ardot-design-core/tool-usage/batch-edit.md` | 小幅修订；1.6.0 把 `G()` 段对齐为 placeholder-only + 上传管线 |
 | `references/slides-workflow.md` | `ardot-slides/workflows/slides-workflow.md` | 流程细化；1.6.0 并入 **Phase 0.0 Research 门 / 0.2 研究执行 / `slide-research.md`** |
 | `references/design-to-code-workflow.md` | `ardot-design-to-code/workflows/design-to-code-workflow.md` | 流程细化（Phase 0 平台澄清、双证据终验）；1.6.0 补 `export_nodes` 路径保真、无预览能力时的降级 |
-| `references/guidelines-landing-page.md` | `ardot-ui-design/references/guidelines-landing-page.md` | `G()` 管线更正；1.6.0 并入 **Section Selection 硬门**；**1.7.0 补 Eyebrow Budget 硬门** |
+| `references/guidelines-landing-page.md` | `ardot-ui-design/references/guidelines-landing-page.md` | `G()` 管线更正；1.6.0 并入 **Section Selection 硬门**；**1.7.0 补 Eyebrow Budget 硬门**；1.7.2 给 Brief Check 与 Section Selection 补「假设通行 / 无 AskUserQuestion 也从默认结构先出」出口 |
 | `references/guidelines-poster.md` | `ardot-poster/references/guidelines-poster.md` | **1.6.4 由 A 类移入**：本地旧稿只到 §7，**整段缺 §8 多尺寸一致性**，已补入；§8.3 依赖的 `text_to_image` / `edit_image` / `ardot-poster` SKILL 在本通道均不存在，改写为 ImageGen 产线并指向 `poster-multisize-pipeline.md` |
 | `SKILL.md` | —（本地原创） | 入口：MCP 探测、实测纠正、宿主指令块、分层校验、硬约束表、海报交付后动作 |
 

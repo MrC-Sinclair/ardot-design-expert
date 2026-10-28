@@ -1,6 +1,6 @@
 {
   "name": "ardot-design-expert",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "Design director that also writes frontend: token-bound UI on the Ardot canvas, production-ready code, and pixel audits — plus a build-ready DESIGN-SPEC.md whenever Ardot MCP is not connected.",
   "author": {
     "name": "Sinclair",

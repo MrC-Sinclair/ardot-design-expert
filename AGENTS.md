@@ -4,7 +4,7 @@
 
 ## 这是什么
 
-WorkBuddy 专家包 `ardot-design-expert`（当前 1.7.1）。人设是「会写前端的设计总监 Jax」，
+WorkBuddy 专家包 `ardot-design-expert`（当前 1.7.2）。人设是「会写前端的设计总监 Jax」，
 通过 Ardot MCP 操作设计画布，也能把设计稿转成前端代码、做设计↔代码双向走查。
 核心能力全部在 `skills/ardot-design-assistant-local/`，包里不带任何外部 skill 依赖。
 
